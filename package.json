@@ -6,10 +6,12 @@
     "dev": "vite",
     "build": "tsc && vite build && cp -r assets dist/",
     "preview": "vite preview",
-    "start": "serve dist -l $PORT"
+    "start": "node server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
+    "cheerio": "^1.2.0",
+    "express": "^5.2.1",
     "phaser": "^3.87.0",
     "serve": "^14.2.6"
   },

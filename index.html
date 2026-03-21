@@ -497,6 +497,53 @@
       background: rgba(255,215,0,0.30);
     }
 
+    /* ── News ticker ─────────────────────────────────────────────────────── */
+    #news-ticker {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      background: rgba(8, 6, 16, 0.96);
+      border-top: 1px solid rgba(220, 40, 40, 0.45);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      z-index: 600;
+      pointer-events: none;
+    }
+    #ticker-label {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #FF3333;
+      background: rgba(220, 40, 40, 0.18);
+      border-right: 1px solid rgba(220, 40, 40, 0.4);
+      padding: 0 9px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      letter-spacing: 0.5px;
+    }
+    #ticker-track {
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .ticker-span {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #E8DFC8;
+      white-space: nowrap;
+      display: inline-block;
+      position: absolute;
+      left: 0;
+    }
+
     /* ── Language selector ───────────────────────────────────────────────── */
     #lang-selector {
       display: flex;
@@ -1193,6 +1240,12 @@
     });
   </script>
 
+  <!-- Breaking news ticker -->
+  <div id="news-ticker">
+    <span id="ticker-label">🔴 BORGERHOUT</span>
+    <div id="ticker-track"></div>
+  </div>
+
   <script type="module" src="/src/main.ts"></script>
 
   <script>
@@ -1290,6 +1343,65 @@
     hintOverlay.addEventListener('click', (e) => {
       if (e.target === hintOverlay) document.getElementById('hint-close').click();
     });
+  </script>
+
+  <script>
+    // ── Breaking news ticker ──────────────────────────────────────────────
+    (function () {
+      const SPEED        = 90;   // px per second
+      const REFRESH_MS   = 4 * 60 * 60 * 1000;
+      const SEPARATOR    = '   \u00B7   ';
+      const FALLBACK     = ['Borgerhout nieuws wordt geladen\u2026'];
+
+      const track = document.getElementById('ticker-track');
+      let   animId = null;
+
+      function startScroll(text) {
+        if (!track) return;
+        if (animId) cancelAnimationFrame(animId);
+        track.innerHTML = '';
+
+        const span = document.createElement('span');
+        span.className = 'ticker-span';
+        span.textContent = text;
+        track.appendChild(span);
+
+        // Wait two frames so the browser can measure scrollWidth
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          const trackW = track.clientWidth;
+          const textW  = span.scrollWidth;
+
+          // Start just off the right edge
+          let x = trackW;
+
+          function tick() {
+            x -= SPEED / 60; // ~60fps
+            if (x < -textW) x = trackW; // loop
+            span.style.transform = 'translateX(' + x + 'px)';
+            animId = requestAnimationFrame(tick);
+          }
+          tick();
+        }));
+      }
+
+      async function loadNews() {
+        try {
+          const res = await fetch('/api/news');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const { headlines } = await res.json();
+          const list = (headlines && headlines.length) ? headlines : FALLBACK;
+          startScroll(list.join(SEPARATOR) + SEPARATOR);
+        } catch (e) {
+          console.warn('[ticker] failed to load news:', e.message);
+          startScroll(FALLBACK.join(SEPARATOR));
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        loadNews();
+        setInterval(loadNews, REFRESH_MS);
+      });
+    })();
   </script>
 </body>
 </html>
