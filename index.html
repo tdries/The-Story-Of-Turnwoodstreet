@@ -294,13 +294,14 @@
   </script>
 
   <script>
-    // ── Feedback modal ────────────────────────────────────────────────────
-    const WEBHOOK = '__DISCORD_WEBHOOK_URL__';   // replaced by Railway env var at build time
+    // ── Feedback → GitHub Issues ──────────────────────────────────────────
+    const GH_TOKEN = '%VITE_GITHUB_TOKEN%';
+    const GH_REPO  = 'tdries/The-Story-Of-Turnwoodstreet';
 
-    const overlay   = document.getElementById('feedback-overlay');
-    const textarea  = document.getElementById('feedback-text');
-    const status    = document.getElementById('feedback-status');
-    const sendBtn   = document.getElementById('btn-send-feedback');
+    const overlay  = document.getElementById('feedback-overlay');
+    const textarea = document.getElementById('feedback-text');
+    const status   = document.getElementById('feedback-status');
+    const sendBtn  = document.getElementById('btn-send-feedback');
 
     document.getElementById('feedback-btn').addEventListener('click', () => {
       overlay.classList.add('open');
@@ -319,29 +320,40 @@
     sendBtn.addEventListener('click', async () => {
       const msg = textarea.value.trim();
       if (!msg) return;
-      if (!WEBHOOK || WEBHOOK === '__DISCORD_WEBHOOK_URL__') {
-        status.textContent = 'Feedback niet geconfigureerd.';
-        status.style.color = '#ff6633';
-        return;
-      }
+
       sendBtn.disabled = true;
       status.textContent = 'Verzenden...';
       status.style.color = '#FFD700';
+
+      // First line of feedback becomes the issue title (max 72 chars)
+      const title = 'Speler feedback: ' + msg.split('\n')[0].slice(0, 55);
+      const body  = `${msg}\n\n---\n*Ingediend via het spel op ${new Date().toISOString()}*`;
+
       try {
-        await fetch(WEBHOOK, {
+        const res = await fetch(`https://api.github.com/repos/${GH_REPO}/issues`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: `🎮 **Feedback Turnwoodstreet**\n\n${msg}` }),
+          headers: {
+            'Authorization': `Bearer ${GH_TOKEN}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ title, body, labels: ['player-feedback'] }),
         });
-        status.textContent = 'Bedankt! Feedback ontvangen.';
-        status.style.color = '#44ff88';
-        textarea.value = '';
-        setTimeout(() => {
-          overlay.classList.remove('open');
-          status.textContent = '';
-          status.style.color = '';
-          sendBtn.disabled = false;
-        }, 1800);
+
+        if (res.ok) {
+          const issue = await res.json();
+          status.textContent = `Bedankt! Issue #${issue.number} aangemaakt.`;
+          status.style.color = '#44ff88';
+          textarea.value = '';
+          setTimeout(() => {
+            overlay.classList.remove('open');
+            status.textContent = '';
+            status.style.color = '';
+            sendBtn.disabled = false;
+          }, 2200);
+        } else {
+          throw new Error(res.status);
+        }
       } catch {
         status.textContent = 'Fout bij verzenden. Probeer opnieuw.';
         status.style.color = '#ff6633';
