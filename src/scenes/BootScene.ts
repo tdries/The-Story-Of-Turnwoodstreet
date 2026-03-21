@@ -86,6 +86,13 @@ export class BootScene extends Phaser.Scene {
     // PNG: 112×24 game-px × SCALE=4  →  448×96 px
     this.load.image('tram', 'assets/Sprites/tram/tram.png');
 
+    // ── Electric step riders (4 variants: kids, moroccan_girl, fitness_boy, lovers) ──
+    // Frame: 36×30 game-px × SCALE=6  →  216×180 px per frame
+    // Sheet: 864×180 px  (flip horizontally for westbound)
+    this.load.spritesheet('steps',
+      'assets/Sprites/steps/steps_sheet.png',
+      { frameWidth: 216, frameHeight: 180 });
+
     // ── Crowd pedestrians (20 variants × 3 frames, horizontal sheet) ───────
     // Frame: 12×28 game-px × SCALE=6  →  72×168 px per frame
     // Sheet: 4320×168 px  (60 frames total)

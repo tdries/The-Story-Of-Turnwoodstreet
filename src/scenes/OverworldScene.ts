@@ -54,6 +54,7 @@ export class OverworldScene extends Phaser.Scene {
     this.spawnVehicles();
     this.spawnTram();
     this.spawnBikers();
+    this.spawnStepRiders();
     this.createPlayer();
     this.setupCamera();
     this.setupCollisions();
@@ -90,6 +91,7 @@ export class OverworldScene extends Phaser.Scene {
     this.updateTram(delta);
     this.updateVehicles(delta);
     this.updateBikers(delta);
+    this.updateStepRiders(delta);
 
     // ── Zone gate check ────────────────────────────────────────────────────
     const px = this.player.sprite.x;
@@ -563,6 +565,55 @@ export class OverworldScene extends Phaser.Scene {
       b.sprite.x += b.vx * dt;
       if (b.vx > 0 && b.sprite.x > W + 30)  b.sprite.x = -30;
       if (b.vx < 0 && b.sprite.x < -30)     b.sprite.x = W + 30;
+    }
+  }
+
+  // Electric step riders: 4 types sharing the bike lanes
+  private stepRiders: Array<{ sprite: Phaser.GameObjects.Image; vx: number }> = [];
+
+  private spawnStepRiders(): void {
+    const H  = OverworldScene.WORLD_H;
+    const W  = OverworldScene.WORLD_W;
+    // Same display size as bikers
+    const SW = 36;
+    const SH = 30;
+
+    const laneF = Math.floor(H * 0.578);   // front bike lane centre
+    const laneR = Math.floor(H * 0.750);   // rear  bike lane centre
+
+    // Electric steps are faster than bikes (typical ~20–25 km/h)
+    const stepSpeeds: Record<number, number> = {
+      0: 110,  // kids         — fast (kids go brrrr)
+      1:  95,  // moroccan_girl — medium-fast
+      2: 125,  // fitness_boy  — fast (show off)
+      3:  80,  // lovers       — relaxed pace
+    };
+
+    // 8 step riders spread across both lanes
+    for (let i = 0; i < 8; i++) {
+      const eastbound = i < 5;   // 5 eastbound, 3 westbound
+      const laneY     = eastbound ? laneF : laneR;
+      const frame     = i % 4;
+      const speed     = stepSpeeds[frame] ?? 100;
+      const x         = Math.floor((W / 8) * i + Phaser.Math.Between(20, 80));
+
+      const img = this.add.image(x, laneY, 'steps', frame)
+        .setDisplaySize(SW, SH)
+        .setOrigin(0.5, 0.5)
+        .setFlipX(!eastbound)
+        .setDepth(laneY + 1);   // slightly above bikers to layer nicely
+
+      this.stepRiders.push({ sprite: img, vx: eastbound ? speed : -speed });
+    }
+  }
+
+  private updateStepRiders(delta: number): void {
+    const W  = OverworldScene.WORLD_W;
+    const dt = delta / 1000;
+    for (const r of this.stepRiders) {
+      r.sprite.x += r.vx * dt;
+      if (r.vx > 0 && r.sprite.x > W + 30)  r.sprite.x = -30;
+      if (r.vx < 0 && r.sprite.x < -30)     r.sprite.x = W + 30;
     }
   }
 
