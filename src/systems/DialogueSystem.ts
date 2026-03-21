@@ -196,6 +196,7 @@ export class DialogueSystem {
     this.pendingChoices = null;
     this.box.hide();
     QuestSystem.checkAll();
+    stateManager.save();
     this.onClose?.();
   }
 }

@@ -37,7 +37,6 @@ export class OverworldScene extends Phaser.Scene {
   }> = [];
 
   private lastPlayerX = 0;
-  private gateHintCooldown = 0;
   private playtimeSyncTimer = 0;
 
   // ── Day/Night cycle ───────────────────────────────────────────────────────
@@ -98,7 +97,7 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    if (this.gateHintCooldown > 0) this.gateHintCooldown -= delta;
+
     this.updateDayCycle(delta);
 
     // Block movement while dialogue is open
@@ -130,12 +129,10 @@ export class OverworldScene extends Phaser.Scene {
 
     // ── Zone gate check ────────────────────────────────────────────────────
     const px = this.player.sprite.x;
-    if (px > this.lastPlayerX && this.gateHintCooldown <= 0) {
+    if (px > this.lastPlayerX) {
       const block = GateSystem.checkTransition(this.lastPlayerX, px);
       if (block) {
-        this.player.sprite.setX(this.lastPlayerX);   // push back
-        this.dialogueSystem.open(this._gateDialogueId(zoneForX(px)));
-        this.gateHintCooldown = 4000;
+        this.player.sprite.setX(this.lastPlayerX);   // push back silently
       }
     }
     this.lastPlayerX = this.player.sprite.x;
