@@ -400,79 +400,104 @@ export class OverworldScene extends Phaser.Scene {
   private static readonly TRAM_SPEED = 44;   // px/s when moving
 
   private spawnVehicles(): void {
-    const H = OverworldScene.WORLD_H;
-    const W = OverworldScene.WORLD_W;
-    const VW = 96;   // vehicle display width (game-px)
-    const VH = 30;   // vehicle display height (game-px)
+    const H  = OverworldScene.WORLD_H;
+    const W  = OverworldScene.WORLD_W;
+    const VW = 96;
+    const VH = 30;
 
-    // Lane 1: eastbound  (moving right), y just above first tram track
-    const laneE = Math.floor(H * 0.625);
-    // Lane 2: westbound  (moving left),  y just below first tram track
-    const laneW = Math.floor(H * 0.665);
+    const laneE = Math.floor(H * 0.625);  // eastbound
+    const laneW = Math.floor(H * 0.665);  // westbound
 
     // [frame, speed px/s, display_w, display_h]
-    type VConf = [number, number, number, number];
-    const types: VConf[] = [
-      [0, 76, VW, VH],          // clio_blue
-      [1, 82, VW, VH],          // clio_red
-      [2, 62, VW + 8, VH],      // kangoo_white (longer van)
-      [3, 70, VW + 4, VH + 2],  // suv_silver
-      [4, 68, VW, VH],          // taxi_bluewhite
-      [5, 48, VW + 20, VH + 4], // bus_delijn (longer + taller)
-      [6, 94, VW - 20, VH - 4], // scooter (smaller + faster)
+    // Eastbound: slowest first so faster cars queue behind naturally
+    const eastTypes: [number, number, number, number][] = [
+      [5, 48, VW + 16, VH + 2],  // bus — slowest leader
+      [2, 62, VW + 6,  VH],      // kangoo
+      [3, 70, VW + 2,  VH],      // suv
+      [4, 72, VW,      VH],      // taxi
+    ];
+    // Westbound mix
+    const westTypes: [number, number, number, number][] = [
+      [0, 68, VW,      VH],      // clio_blue
+      [1, 74, VW,      VH],      // clio_red
+      [6, 88, VW - 16, VH - 4],  // scooter
+      [3, 65, VW + 2,  VH],      // suv
     ];
 
-    // 6 eastbound vehicles spread across world
-    for (let i = 0; i < 6; i++) {
-      const cfg = types[i % types.length];
-      const x   = Math.floor((W / 6) * i + Phaser.Math.Between(20, 80));
-      const img = this.physics.add.staticImage(x, laneE, 'vehicles', cfg[0])
-        .setDisplaySize(cfg[2], cfg[3])
-        .setOrigin(0.5, 0.5)
-        .setDepth(laneE);   // Y-sort: player above lane → behind; below → in front
-      img.setBodySize(cfg[2] * 0.85, cfg[3] * 0.7);
-      img.refreshBody();
-      this.vehicles.push({ sprite: img, vx: cfg[1], baseVx: cfg[1] });
-    }
+    const N = 4;  // cars per lane — 4 cars spread across 2880px ≈ 720px each
 
-    // 6 westbound vehicles spread across world (flipped)
-    for (let i = 0; i < 6; i++) {
-      const cfg = types[(i + 3) % types.length];
-      const x   = Math.floor((W / 6) * i + Phaser.Math.Between(20, 80));
-      const img = this.physics.add.staticImage(x, laneW, 'vehicles', cfg[0])
-        .setDisplaySize(cfg[2], cfg[3])
-        .setOrigin(0.5, 0.5)
-        .setFlipX(true)
-        .setDepth(laneW);
-      img.setBodySize(cfg[2] * 0.85, cfg[3] * 0.7);
-      img.refreshBody();
-      this.vehicles.push({ sprite: img, vx: -cfg[1], baseVx: -cfg[1] });
+    for (let i = 0; i < N; i++) {
+      const spacing = W / N;
+
+      const eConf = eastTypes[i];
+      const ex = Math.floor(spacing * i + spacing * 0.3);
+      const eImg = this.physics.add.staticImage(ex, laneE, 'vehicles', eConf[0])
+        .setDisplaySize(eConf[2], eConf[3]).setOrigin(0.5, 0.5).setDepth(laneE);
+      eImg.setBodySize(eConf[2] * 0.85, eConf[3] * 0.7);
+      eImg.refreshBody();
+      this.vehicles.push({ sprite: eImg, vx: eConf[1], baseVx: eConf[1] });
+
+      const wConf = westTypes[i];
+      const wx = Math.floor(spacing * i + spacing * 0.7);
+      const wImg = this.physics.add.staticImage(wx, laneW, 'vehicles', wConf[0])
+        .setDisplaySize(wConf[2], wConf[3]).setOrigin(0.5, 0.5).setFlipX(true).setDepth(laneW);
+      wImg.setBodySize(wConf[2] * 0.85, wConf[3] * 0.7);
+      wImg.refreshBody();
+      this.vehicles.push({ sprite: wImg, vx: -wConf[1], baseVx: -wConf[1] });
     }
   }
 
   private updateVehicles(delta: number): void {
-    const W   = OverworldScene.WORLD_W;
-    const dt  = delta / 1000;
-    const tramX     = this.tram?.sprite.x ?? null;
-    const tramHalfW = 168;  // half the tram display width (game-px) — 3× original 56
+    const W          = OverworldScene.WORLD_W;
+    const dt         = delta / 1000;
+    const tramX      = this.tram?.sprite.x ?? null;
+    const tramHalfW  = 168;
     const tramMoving = this.tram?.state === 'moving';
+    const SAFE_GAP   = 110;  // minimum px between front bumpers before slowing
+
+    const eastbound = this.vehicles.filter(v => v.baseVx > 0);
+    const westbound = this.vehicles.filter(v => v.baseVx < 0);
 
     for (const v of this.vehicles) {
-      // Eastbound vehicles yield to tram
-      if (v.baseVx > 0 && tramX !== null) {
-        const gap = tramX - tramHalfW - v.sprite.x;   // space between front of car and tram rear
-        if (gap > 0 && gap < 90) {
-          // Within tram shadow — match tram speed or stop
-          v.vx = tramMoving ? Math.min(v.baseVx, OverworldScene.TRAM_SPEED * 0.9) : 0;
-        } else {
-          // Restore base speed (smoothly accelerate)
-          v.vx = Math.min(v.baseVx, v.vx + v.baseVx * dt * 1.5);
+      const isEast  = v.baseVx > 0;
+      const sameLane = isEast ? eastbound : westbound;
+
+      // ── Find gap to nearest car ahead in same lane ─────────────────────
+      let gapAhead = Infinity;
+      for (const other of sameLane) {
+        if (other === v) continue;
+        const rawGap = isEast
+          ? other.sprite.x - v.sprite.x   // positive = other is ahead for eastbound
+          : v.sprite.x - other.sprite.x;  // positive = other is ahead for westbound
+        if (rawGap > 0 && rawGap < gapAhead) gapAhead = rawGap;
+      }
+
+      // ── Target speed: yield to car ahead and/or tram ───────────────────
+      let targetVx = Math.abs(v.baseVx);
+
+      if (gapAhead < SAFE_GAP) {
+        // Slow proportionally — stop completely when gap < 20px
+        targetVx *= Math.max(0, (gapAhead - 20) / (SAFE_GAP - 20));
+      }
+
+      if (isEast && tramX !== null) {
+        const tramGap = tramX - tramHalfW - v.sprite.x;
+        if (tramGap > 0 && tramGap < 120) {
+          targetVx = Math.min(targetVx, tramMoving ? OverworldScene.TRAM_SPEED * 0.9 : 0);
         }
       }
 
+      // ── Smoothly adjust speed ──────────────────────────────────────────
+      const absVx    = Math.abs(v.vx);
+      const accel    = Math.abs(v.baseVx) * 2 * dt;
+      const newAbsVx = absVx < targetVx
+        ? Math.min(targetVx, absVx + accel)   // accelerate
+        : Math.max(targetVx, absVx - accel * 3); // brake faster than accelerate
+      v.vx = isEast ? newAbsVx : -newAbsVx;
+
       v.sprite.x += v.vx * dt;
-      if (v.baseVx > 0 && v.sprite.x > W + 80)  v.sprite.x = -80;
-      if (v.baseVx < 0 && v.sprite.x < -80)     v.sprite.x = W + 80;
+      if (isEast  && v.sprite.x > W + 80) v.sprite.x = -80;
+      if (!isEast && v.sprite.x < -80)    v.sprite.x = W + 80;
       (v.sprite.body as Phaser.Physics.Arcade.StaticBody).reset(v.sprite.x, v.sprite.y);
     }
   }
