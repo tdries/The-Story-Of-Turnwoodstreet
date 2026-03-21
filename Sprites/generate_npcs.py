@@ -423,10 +423,10 @@ def draw_reza(s, ox, oy, frame=0):
     s.put(ox+26, oy+32, "stone_pale", 4,  4)
 
     # ── dark waistcoat ────────────────────────────────────────────────────────
-    s.put(ox+20, oy+32, "stone_dark", 22, 34)
+    s.put(ox+20, oy+32, "stone_dark", 22, 36)  # h=36 so waistcoat reaches jeans (oy+68), no white gap
     s.put(ox+20, oy+32, "stone_mid",   6,  2)  # waistcoat NW
     s.put(ox+20, oy+34, "stone_mid",   2, 18)  # left edge highlight
-    s.put(ox+40, oy+34, "night",       2, 30)  # right shadow
+    s.put(ox+40, oy+34, "night",       2, 32)  # right shadow (extended to match)
     # Vest open front (white shirt visible between lapels)
     s.put(ox+27, oy+33, "white",       8, 28)
     # Vest pocket (left breast)

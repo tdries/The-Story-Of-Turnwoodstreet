@@ -1061,7 +1061,10 @@ export class OverworldScene extends Phaser.Scene {
         // Fully done
         if (flags['fatima_convinced'])
           return 'fatima_all_done';
-        // Earned trust, hint at speculator + Omar
+        // Earned trust, collect signature first
+        if (flags['has_community_trust'] && !flags['sig_fatima'])
+          return 'fatima_signature';
+        // Already signed — hint at speculator + Omar
         if (flags['has_community_trust'])
           return 'fatima_post_trust';
         return 'fatima_intro';
@@ -1103,12 +1106,12 @@ export class OverworldScene extends Phaser.Scene {
         // Has the string → hand it over
         if (flags['oud_quest_accepted'] && stateManager.hasItem('oud_string'))
           return 'reza_oud_found';
+        // Has trust, not yet signed (check before oud reminder — separate quest)
+        if (flags['has_community_trust'] && !flags['sig_reza'])
+          return 'reza_signature';
         // Quest accepted, no string yet → remind where to look
         if (flags['oud_quest_accepted'])
           return 'reza_oud_accept';
-        // Has trust, not yet signed
-        if (flags['has_community_trust'] && !flags['sig_reza'])
-          return 'reza_signature';
         return 'reza_music';
 
       case 'yusuf':
