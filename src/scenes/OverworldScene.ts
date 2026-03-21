@@ -804,28 +804,26 @@ export class OverworldScene extends Phaser.Scene {
 
   private cats: Array<{
     sprite:     Phaser.GameObjects.Image;
-    type:       number;  // 0=orange tabby, 1=black, 2=grey
-    state:      'walking' | 'sitting' | 'jumping';
+    type:       number;   // 0=orange tabby, 1=black, 2=grey
+    state:      'walking' | 'sitting';
+    originX:    number;   // home position — cat wanders within ±80px of this
     vx:         number;
     stateTimer: number;
     rooftopY:   number;
     animTimer:  number;
     animFrame:  number;
-    jumpVy:     number;
   }> = [];
 
   private spawnCats(): void {
     const W = OverworldScene.WORLD_W;
     const H = OverworldScene.WORLD_H;
-    const rooftopY = Math.floor(H * 0.52) - 120;
-
-    const speeds = [28, 22, 32];  // px/s per type (orange is fastest)
+    const rooftopY = Math.floor(H * 0.52) - 118;
 
     for (let i = 0; i < 5; i++) {
-      const x    = Math.floor((W / 5) * i + Phaser.Math.Between(30, 100));
+      const x    = Math.floor((W / 5) * i + Phaser.Math.Between(60, 140));
       const type = i % 3;
       const sprite = this.add.image(x, rooftopY, 'cats', type * 5)
-        .setDisplaySize(16, 10)
+        .setDisplaySize(18, 12)
         .setOrigin(0.5, 1)
         .setDepth(rooftopY);
 
@@ -833,18 +831,17 @@ export class OverworldScene extends Phaser.Scene {
         sprite,
         type,
         state:      'sitting',
-        vx:         speeds[type] * (Phaser.Math.Between(0, 1) === 0 ? 1 : -1),
-        stateTimer: Phaser.Math.Between(1000, 4000),
+        originX:    x,
+        vx:         0,
+        stateTimer: Phaser.Math.Between(2000, 6000),
         rooftopY,
-        animTimer:  Phaser.Math.Between(0, 200),
+        animTimer:  0,
         animFrame:  0,
-        jumpVy:     0,
       });
     }
   }
 
   private updateCats(delta: number): void {
-    const W  = OverworldScene.WORLD_W;
     const dt = delta / 1000;
 
     for (const c of this.cats) {
@@ -854,51 +851,33 @@ export class OverworldScene extends Phaser.Scene {
         c.sprite.x += c.vx * dt;
         c.sprite.setFlipX(c.vx < 0);
 
-        // Wrap around world
-        if (c.sprite.x > W + 20) c.sprite.x = -20;
-        if (c.sprite.x < -20)    c.sprite.x = W + 20;
+        // Turn around when straying too far from home
+        if (c.sprite.x > c.originX + 80 && c.vx > 0) c.vx *= -1;
+        if (c.sprite.x < c.originX - 80 && c.vx < 0) c.vx *= -1;
 
-        // Walk animation: cycle frames 0-4
+        // Walk animation: cycle all 5 frames
         c.animTimer += delta;
-        if (c.animTimer >= 130) {
+        if (c.animTimer >= 160) {
           c.animTimer = 0;
           c.animFrame = (c.animFrame + 1) % 5;
           c.sprite.setFrame(c.type * 5 + c.animFrame);
         }
 
         if (c.stateTimer <= 0) {
+          // Sit — cats rest longer than they walk
           c.state      = 'sitting';
-          c.stateTimer = Phaser.Math.Between(2000, 6000);
+          c.stateTimer = Phaser.Math.Between(4000, 10000);
           c.animFrame  = 0;
-          c.sprite.setFrame(c.type * 5 + 0);  // sit pose
-          // Occasionally reverse direction on next walk
-          if (Phaser.Math.Between(0, 1) === 0) c.vx *= -1;
-        }
-      } else if (c.state === 'sitting') {
-        if (c.stateTimer <= 0) {
-          // Small chance to do a jump, otherwise start walking
-          if (Phaser.Math.Between(0, 4) === 0) {
-            c.state  = 'jumping';
-            c.jumpVy = -60;   // px/s upward
-            c.stateTimer = 800;
-          } else {
-            c.state      = 'walking';
-            c.stateTimer = Phaser.Math.Between(2000, 5000);
-            c.animTimer  = 0;
-          }
+          c.sprite.setFrame(c.type * 5);
         }
       } else {
-        // jumping: simple arc
-        c.jumpVy   += 180 * dt;  // gravity
-        c.sprite.y += c.jumpVy * dt;
-        c.sprite.x += c.vx * 0.5 * dt;
-
-        if (c.sprite.y >= c.rooftopY) {
-          c.sprite.y   = c.rooftopY;
-          c.state      = 'sitting';
-          c.stateTimer = Phaser.Math.Between(1500, 4000);
-          c.jumpVy     = 0;
-          c.sprite.setFrame(c.type * 5 + 0);
+        // Sitting idle
+        if (c.stateTimer <= 0) {
+          // Pick a new direction and walk
+          c.vx         = Phaser.Math.Between(10, 18) * (Phaser.Math.Between(0, 1) === 0 ? 1 : -1);
+          c.state      = 'walking';
+          c.stateTimer = Phaser.Math.Between(2000, 4500);
+          c.animTimer  = 0;
         }
       }
     }
