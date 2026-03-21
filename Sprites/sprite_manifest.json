@@ -1,0 +1,228 @@
+{
+  "_meta": {
+    "project":   "Turnhoutsebaan RPG",
+    "location":  "Borgerhout, Antwerpen, België",
+    "engine":    "Python / Pygame  (port to Phaser.js / Three.js planned)",
+    "style":     "Pixel art — oblique-3D, Flemish ribbon-development aesthetic",
+    "tile_size": 48,
+    "scale":     "1 game-pixel = 1 px; render at 1× then integer-upscale in engine",
+    "conventions": {
+      "naming":     "snake_case — e.g. player_idle_01.png. No spaces, no CamelCase.",
+      "format":     ".png for exports (lossless + alpha). .svg for source vectors. No .jpg.",
+      "dimensions": "Powers of two: 32, 64, 128, 256, 512, 1024 px",
+      "atlas_pad":  "2 px between frames to prevent texture-bleed",
+      "raw_policy": "Working files (.aseprite, .psd, .kra) go in raw_assets/ ONLY — never imported into game"
+    }
+  },
+
+  "folder_structure": {
+    "raw_assets/":         "Reference images + source art files. Never imported by engine.",
+    "characters/player/":  "Player character sprites and animations.",
+    "characters/npcs/":    "All NPC sprite sheets.",
+    "vehicles/":           "Tram, bus, cars, bikes, scooters.",
+    "environment/buildings/": "Building façade references, interior rooms.",
+    "environment/tilesets/":  "48×48 ground tiles: road, sidewalk, tram, crossing.",
+    "environment/props/":     "Lamp posts, trees, benches, bins, bollards, signs.",
+    "items/":              "Quest items and collectibles.",
+    "ui/":                 "HUD panels, dialogue box, icons, font sheet.",
+    "fx/":                 "Particle effects: coin sparkle, dust, tram sparks."
+  },
+
+  "characters": {
+    "player_youssef": {
+      "file":   "characters/player/player_youssef.svg",
+      "type":   "sprite_sheet",
+      "status": "✅ complete (vector source)",
+      "frames": {
+        "bike_idle":   {"col": 0, "w": 40, "h": 60, "desc": "Riding, static"},
+        "bike_pedal":  {"col": 1, "w": 40, "h": 60, "desc": "Riding, pedalling"},
+        "walk_idle":   {"col": 2, "w": 24, "h": 48, "desc": "On foot, idle"},
+        "walk_stride": {"col": 3, "w": 24, "h": 48, "desc": "On foot, stride"}
+      },
+      "palette": {
+        "helmet": "#D02010", "shirt": "#E03020",
+        "pants":  "#2C3850", "skin":  "#FDBBB4",
+        "hair":   "#2C1810", "bike":  "#505050"
+      },
+      "notes": "Youssef — protagonist, Borgerhout resident. Red helmet matches shirt."
+    },
+
+    "npc_sheet": {
+      "file":   "characters/npcs/npc_sheet.svg",
+      "type":   "sprite_sheet",
+      "status": "✅ complete (vector source)",
+      "layout": "4 columns × 2 rows  |  each cell ≈ 80×200 SVG px (4× scale)",
+      "npcs": [
+        {"id": "ouma",       "col": 0, "palette": {"coat":"#9B59B6","cart":"#888888","skin":"#FDBBB4"}, "notes": "Older lady with shopping cart. Slow."},
+        {"id": "hipster",    "col": 1, "palette": {"jacket":"#2ECC71","beanie":"#E67E22","skin":"#FDBBB4"}, "notes": "Beanie + oat-milk coffee."},
+        {"id": "youth",      "col": 2, "palette": {"tracksuit":"#3498DB","sneakers":"#FFFFFF","skin":"#C89060"}, "notes": "Blue tracksuit, phone in hand."},
+        {"id": "shopkeeper", "col": 3, "palette": {"apron":"#E67E22","shirt":"#FAFAFA","skin":"#FDBBB4"}, "notes": "Orange apron, broom."}
+      ],
+      "todo": [
+        "npc_hijab_woman.svg  — Woman in hijab, modest abaya",
+        "npc_djellaba_man.svg — Man in traditional djellaba",
+        "npc_child.svg        — Small child, playful movement",
+        "npc_delivery.svg     — Delivery rider in orange vest"
+      ]
+    }
+  },
+
+  "vehicles": {
+    "tram_delijn": {
+      "file":      "vehicles/tram_delijn.svg",
+      "status":    "✅ complete (vector source)",
+      "game_px":   {"w": 88, "h": 20},
+      "svg_scale": "4×",
+      "frames": {
+        "moving":     {"row": 0, "desc": "In transit"},
+        "doors_open": {"row": 1, "desc": "At stop, doors open 8 px outward"}
+      },
+      "palette": {
+        "body": "#F2F2F2", "stripe": "#1E5FA0",
+        "band": "#F0C000", "glass": "#A8C8EA",
+        "roof": "#CCCCCC", "wheel": "#333333"
+      },
+      "notes": "De Lijn type 7000/7900. Route 10 Wijnegem shown."
+    },
+
+    "todo": [
+      {"id": "bus_delijn",  "size": "200×52 px", "notes": "De Lijn city bus — green/white livery, 3 windows, 2 doors"},
+      {"id": "car_sheet",   "size": "576×40 px", "notes": "6 colour variants side-by-side, 96×40 px each"},
+      {"id": "bakfiets",    "size": "128×64 px", "notes": "Cargo bicycle — wooden box front, 2-frame pedal anim"},
+      {"id": "scooter",     "size": "96×56 px",  "notes": "Orange delivery scooter — rider optional"},
+      {"id": "bicycle",     "size": "64×48 px",  "notes": "Standard city bicycle — prop (no rider)"}
+    ]
+  },
+
+  "environment": {
+    "buildings": {
+      "reference": {
+        "file":   "environment/buildings/building_reference.svg",
+        "status": "✅ complete (vector source)",
+        "styles": [
+          {"id": "borgerhout_classic",    "color": "#E8D5A4", "notes": "Late-19th-c Antwerp eclectic: cornice, pilasters, arched windows"},
+          {"id": "borgerhout_brick",      "color": "#924020", "notes": "Red brick stepped gable — most common on Turnhoutsebaan"},
+          {"id": "borgerhout_art_nouveau","color": "#D4A850", "notes": "Rare art-nouveau: cast-iron balcony, curved lintels"}
+        ]
+      },
+      "real_shops": {
+        "notes": "Source of truth for real Herentalsebaan building appearances",
+        "entries": [
+          {"id": "budgetmkt",  "num": 326, "name": "Budget Market",       "side": "bot", "facade": "red brick, 4 stories, wide red awning"},
+          {"id": "hammam",     "num": 260, "name": "Hammam Borgerhout",   "side": "top", "facade": "terracotta render, teal tiled arch, ornate"},
+          {"id": "aladdin",    "num": 170, "name": "Patisserie Aladdin",  "side": "top", "facade": "cream render, yellow awning, Arabic signage"},
+          {"id": "frituur",    "num": 200, "name": "Frituur de Tram",     "side": "bot", "facade": "white/red, classic Belgian frituur style"},
+          {"id": "theehuys",   "num": 215, "name": "Theehuys Amal",      "side": "top", "facade": "ochre, teal shutters, Arabic + Dutch sign"},
+          {"id": "nachtw",     "num": 240, "name": "Nacht Winkel",        "side": "bot", "facade": "dark grey, neon signage, always lit"},
+          {"id": "charif",     "num": 189, "name": "Bakkerij Charif",     "side": "bot", "facade": "cream, yellow awning, bread in window"},
+          {"id": "borgerHub",  "num": 284, "name": "Borger Hub",          "side": "top", "facade": "renovated, grey, modern green accents"},
+          {"id": "basic_fit",  "num": 360, "name": "Basic-Fit",           "side": "top", "facade": "dark grey, large blue logo"},
+          {"id": "newstar",    "num": 370, "name": "New Star Kebab",      "side": "bot", "facade": "terracotta, red awning, doner rotating sign"}
+        ]
+      },
+      "todo": [
+        "tileset_facades_top.png    — 512×512 atlas: all top-side ribbon buildings",
+        "tileset_facades_bot.png    — 512×512 atlas: all bottom-side ribbon buildings",
+        "interior_bakery.png        — Room interior: bakery / patisserie",
+        "interior_hammam.png        — Room interior: hammam",
+        "interior_tearoom.png       — Room interior: Theehuys Amal",
+        "interior_nightshop.png     — Room interior: Nacht Winkel",
+        "interior_generic.png       — Room interior: fallback"
+      ]
+    },
+
+    "tilesets": {
+      "status": "⏳ procedural (drawn in game.py — export to atlas next)",
+      "tiles": [
+        {"id": "road",       "size": "48×48", "color": "#424038", "notes": "Asphalt with aggregate"},
+        {"id": "lane_mark",  "size": "48×48", "color": "#DEC82D", "notes": "Yellow dashed centre line"},
+        {"id": "sidewalk",   "size": "48×48", "color": "#C0B7A6", "notes": "Belgian bluestone slab"},
+        {"id": "tram_track", "size": "48×48", "color": "#524F4A", "notes": "Concrete bed + 2 steel rails"},
+        {"id": "crossing",   "size": "48×48", "color": "#E4DED6", "notes": "Zebra crossing stripes"},
+        {"id": "door_top",   "size": "48×48", "color": "#C0B7A6", "notes": "Sidewalk tile with recessed arch door"},
+        {"id": "door_bot",   "size": "48×48", "color": "#C0B7A6", "notes": "Same, for south-side buildings"}
+      ]
+    },
+
+    "props": {
+      "status": "⏳ procedural (drawn in game.py — export to atlas next)",
+      "items": [
+        {"id": "lamp_post",   "notes": "Antwerp iron street lamp, double-arm"},
+        {"id": "tree_grate",  "notes": "Urban tree in iron grate — lime/plane tree species"},
+        {"id": "bench",       "notes": "Wood-slat park bench, cast-iron legs"},
+        {"id": "bin",         "notes": "Green cylindrical bin, De Stad Antwerpen logo"},
+        {"id": "bollard",     "notes": "Short yellow-capped black bollard"},
+        {"id": "street_sign", "notes": "Blue-background pole sign: 'Turnhoutsebaan / Borgerhout'"},
+        {"id": "bicycle_prop","notes": "Parked bicycle chained to pole"}
+      ],
+      "todo": [
+        "props_sheet.png   — Single 512×256 atlas with all props above",
+        "cafe_terrace.png  — Outdoor café table + 2 chairs",
+        "merchandise_rack.png — Clothing rack / produce crate outside shop",
+        "flag_be.png       — Belgian black-yellow-red flag on pole"
+      ]
+    }
+  },
+
+  "items": {
+    "file":   "items/items.svg",
+    "status": "✅ complete (vector source)",
+    "entries": [
+      {"id": "coin",       "x":   0, "w": 40, "h": 40, "value": 50,  "desc": "€50 euro coin — main currency"},
+      {"id": "smoske",     "x":  48, "w": 56, "h": 32, "value": 0,   "desc": "Belgian smoske sandwich — HP restore"},
+      {"id": "paraplu",    "x": 124, "w": 64, "h": 80, "quest": "ACT2", "desc": "Blue umbrella — reward, deflects pigeons"},
+      {"id": "permit",     "x": 204, "w": 56, "h": 64, "quest": "ACT3", "desc": "Officiële vergunning nr.2024-KB-0042"},
+      {"id": "kebab_sign", "x": 276, "w": 32, "h": 56, "quest": "ACT4", "desc": "Hand-painted kebab sign — final reward"}
+    ],
+    "todo": [
+      "scooter_obstacle.svg  — Fallen shared scooter, acts as road obstacle",
+      "pigeon_flock.svg      — Pigeon flock on sidewalk (hazard without paraplu)"
+    ]
+  },
+
+  "ui": {
+    "status": "⏳ procedural (drawn in game.py — export to atlas next)",
+    "font":   "Courier New (system) → target: Press Start 2P (Google Fonts)",
+    "sizes":  {"title": 28, "large": 18, "med": 13, "small": 10, "tiny": 8},
+    "palette": {
+      "hud_bg":   "#121008", "hud_fg": "#E6D498",
+      "gold":     "#FFC800", "gold_dk":"#AF8000",
+      "green_ui": "#3CC850", "red_ui": "#DC3C3C"
+    },
+    "todo": [
+      "hud_sheet.png       — Coin icon 16×16, heart 16×16, quest-dot 8×8, map-pin 12×16",
+      "dialogue_box.png    — 9-slice 320×80 px dialogue bubble",
+      "font_pixel.png      — Press Start 2P or similar, ASCII 32-127",
+      "minimap_frame.png   — Corner minimap border",
+      "inventory_slot.png  — 40×40 inventory slot with dark inset"
+    ]
+  },
+
+  "fx": {
+    "status": "⏳ not yet created",
+    "todo": [
+      "fx_coin_pickup.png   — 4-frame sparkle ring (32×32)",
+      "fx_dust_bike.png     — 4-frame dust puff (24×16) — emitted while riding fast",
+      "fx_tram_sparks.png   — 4-frame overhead-wire spark (8×8)",
+      "fx_door_open.png     — 3-frame swinging door (32×64)",
+      "fx_exclamation.png   — '!' pop (16×24, 2 frames) — NPC reaction"
+    ]
+  },
+
+  "raw_assets": {
+    "_policy": "Source / reference files only. Never imported by engine. Keep in version control via Git LFS.",
+    "files": {
+      "gemini_ref_sprite_sheet.png": "Gemini AI ref: full Turnhoutsebaan sprite sheet — characters, vehicles, buildings, props",
+      "gemini_ref_street_scene.png": "Gemini AI ref: street-level scene with tram, NPCs, shops, environment tiles",
+      "gemini_ref_new_collection.png": "Gemini AI ref: new buildings (Hammam, Frituur, Theehuys), vehicles, cultural items"
+    }
+  },
+
+  "quest_fsm": {
+    "ACT1":  {"title": "De Droom",        "type": "shop",    "target": "budgetmkt",                            "reward": null,        "next": "ACT2"},
+    "ACT2":  {"title": "Het Kapitaal",    "type": "collect", "targets": ["thegarden","aladdin","frituur"],      "reward": "PARAPLU",   "next": "ACT3"},
+    "ACT3":  {"title": "De Vergunning",   "type": "shop",    "target": "borgerHub",                            "reward": "PERMIT",    "next": "ACT4"},
+    "ACT4":  {"title": "De Ingrediënten", "type": "collect", "targets": ["charif","hammam","theehuys"],         "reward": "KEBAB_SIGN","next": "FINALE"},
+    "FINALE":{"title": "De Opening!",     "type": "shop",    "target": "budgetmkt",                            "reward": null,        "next": null}
+  }
+}

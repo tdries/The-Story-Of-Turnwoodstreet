@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 128" width="160" height="128" shape-rendering="crispEdges">
+  <!-- YOUSSEF SPRITE SHEET — 4x scale (1 game pixel = 4 SVG units) -->
+  <!-- Row 1: BIKE FRAMES (facing right, idle + pedal) -->
+  <!-- Row 2: WALK FRAMES (facing right, idle + stride) -->
+
+  <!-- ═══ FRAME 1: BIKE IDLE (facing right) — origin 0,0 ═══ -->
+  <!-- Helmet -->
+  <rect x="20" y="0"  width="16" height="4"  fill="#D02010"/><!-- helmet top -->
+  <rect x="16" y="4"  width="24" height="4"  fill="#D02010"/><!-- helmet main -->
+  <!-- Head / Face -->
+  <rect x="16" y="8"  width="24" height="20" fill="#FDBBB4"/><!-- face -->
+  <rect x="16" y="8"  width="24" height="4"  fill="#2C1810"/><!-- hair under helmet -->
+  <rect x="28" y="16" width="4"  height="4"  fill="#111"/>   <!-- eye -->
+  <!-- Shirt/body -->
+  <rect x="12" y="28" width="32" height="28" fill="#E03020"/>
+  <!-- Arms -->
+  <rect x="4"  y="28" width="8"  height="16" fill="#FDBBB4"/>
+  <rect x="44" y="28" width="8"  height="16" fill="#FDBBB4"/>
+  <!-- Bike handlebars -->
+  <rect x="0"  y="20" width="56" height="8"  fill="#444"/>
+  <!-- Bike frame top tube -->
+  <rect x="4"  y="44" width="48" height="8"  fill="#D02010"/>
+  <!-- Pedals -->
+  <rect x="16" y="52" width="8"  height="4"  fill="#D02010"/>
+  <rect x="32" y="52" width="8"  height="4"  fill="#D02010"/>
+  <!-- Wheels (circles approximated with rects) -->
+  <rect x="4"  y="56" width="20" height="20" rx="10" fill="#222"/>
+  <rect x="32" y="56" width="20" height="20" rx="10" fill="#222"/>
+  <rect x="8"  y="60" width="12" height="12" rx="6"  fill="#555"/>
+  <rect x="36" y="60" width="12" height="12" rx="6"  fill="#555"/>
+  <!-- Pants -->
+  <rect x="16" y="56" width="8"  height="8"  fill="#2C3850"/>
+  <rect x="32" y="60" width="8"  height="8"  fill="#2C3850"/>
+
+  <!-- ═══ FRAME 2: BIKE PEDALING — origin 64,0 ═══ -->
+  <rect x="84" y="0"  width="16" height="4"  fill="#D02010"/>
+  <rect x="80" y="4"  width="24" height="4"  fill="#D02010"/>
+  <rect x="80" y="8"  width="24" height="20" fill="#FDBBB4"/>
+  <rect x="80" y="8"  width="24" height="4"  fill="#2C1810"/>
+  <rect x="92" y="16" width="4"  height="4"  fill="#111"/>
+  <rect x="76" y="28" width="32" height="28" fill="#E03020"/>
+  <rect x="68" y="28" width="8"  height="16" fill="#FDBBB4"/>
+  <rect x="108" y="28" width="8" height="16" fill="#FDBBB4"/>
+  <rect x="64" y="20" width="56" height="8"  fill="#444"/>
+  <rect x="68" y="44" width="48" height="8"  fill="#D02010"/>
+  <!-- Pedals (offset for animation) -->
+  <rect x="68" y="48" width="8"  height="4"  fill="#D02010"/><!-- leg down -->
+  <rect x="96" y="56" width="8"  height="4"  fill="#D02010"/><!-- leg up -->
+  <rect x="68" y="56" width="20" height="20" rx="10" fill="#222"/>
+  <rect x="96" y="56" width="20" height="20" rx="10" fill="#222"/>
+  <rect x="72" y="60" width="12" height="12" rx="6"  fill="#555"/>
+  <rect x="100" y="60" width="12" height="12" rx="6" fill="#555"/>
+  <rect x="68" y="60" width="8"  height="8"  fill="#2C3850"/>
+  <rect x="96" y="52" width="8"  height="8"  fill="#2C3850"/>
+
+  <!-- ═══ FRAME 3: WALK IDLE (facing right) — origin 0,80 ═══ -->
+  <!-- Head -->
+  <rect x="4"  y="80" width="24" height="20" fill="#FDBBB4"/>
+  <rect x="4"  y="80" width="24" height="4"  fill="#2C1810"/><!-- hair -->
+  <rect x="20" y="88" width="4"  height="4"  fill="#111"/><!-- eye -->
+  <!-- Body -->
+  <rect x="0"  y="100" width="32" height="28" fill="#E03020"/>
+  <!-- Arms idle -->
+  <rect x="32" y="100" width="8"  height="20" fill="#FDBBB4"/>
+  <rect x="40" y="100" width="8"  height="20" fill="none"/>
+  <!-- Left arm -->
+  <rect x="44" y="100" width="8"  height="20" fill="#FDBBB4"/>
+  <!-- Pants -->
+  <rect x="4"  y="128" width="10" height="20" fill="#2C3850"/>
+  <rect x="18" y="128" width="10" height="20" fill="#2C3850"/>
+
+  <!-- ═══ FRAME 4: WALK STRIDE (facing right) — origin 40,80 ═══ -->
+  <rect x="44" y="80" width="24" height="20" fill="#FDBBB4"/>
+  <rect x="44" y="80" width="24" height="4"  fill="#2C1810"/>
+  <rect x="60" y="88" width="4"  height="4"  fill="#111"/>
+  <rect x="40" y="100" width="32" height="28" fill="#E03020"/>
+  <rect x="32" y="96" width="8"  height="20" fill="#FDBBB4"/><!-- arm forward -->
+  <rect x="72" y="104" width="8" height="20" fill="#FDBBB4"/><!-- arm back -->
+  <!-- Legs striding -->
+  <rect x="40" y="128" width="10" height="20" fill="#2C3850"/><!-- leg forward -->
+  <rect x="58" y="132" width="10" height="20" fill="#2C3850"/><!-- leg back -->
+
+  <!-- Label -->
+  <text x="2"   y="160" font-size="7" fill="#888" font-family="monospace">YOUSSEF BIKE idle · pedal · walk idle · walk stride (4x scale)</text>
+</svg>

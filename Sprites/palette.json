@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "name":    "Turnhoutsebaan RPG — Master Palette",
+    "version": "1.0",
+    "colors":  32,
+    "rule":    "Every pixel in every sprite MUST use one of these 32 hex values. No exceptions.",
+    "light":   "Single light source: top-left (NW). Shadows fall bottom-right.",
+    "scale":   "1 game-pixel = 1 SVG px. Display at 2× or 4× via engine integer scaling.",
+    "grid":    "32×32 px base tile. Buildings snap to 16-px sub-grid for detail."
+  },
+  "palette": {
+    "SKY": {
+      "sky_light":   "#78AFE1",
+      "sky_mid":     "#A8CBE8",
+      "sky_pale":    "#C8DFF2",
+      "cloud":       "#EEF3FA"
+    },
+    "BRICK": {
+      "brick_dark":  "#6E2C18",
+      "brick_mid":   "#984428",
+      "brick_light": "#C07050",
+      "mortar":      "#D4B898"
+    },
+    "RENDER": {
+      "cream_dark":  "#C8A86C",
+      "cream_mid":   "#E8CFA0",
+      "cream_light": "#F4E8C8",
+      "ochre":       "#D4A040"
+    },
+    "STONE": {
+      "stone_dark":  "#606058",
+      "stone_mid":   "#888880",
+      "stone_light": "#B4B0A8",
+      "stone_pale":  "#D8D4CC"
+    },
+    "GROUND": {
+      "asphalt_dark":  "#2C2C28",
+      "asphalt_mid":   "#484440",
+      "asphalt_light": "#686460",
+      "sidewalk":      "#B4AE9E",
+      "cobble":        "#747068",
+      "grass":         "#3C8830"
+    },
+    "TRAM": {
+      "rail":      "#9090A0",
+      "tram_bed":  "#545048",
+      "de_lijn_blue":  "#1C5898",
+      "de_lijn_yellow":"#DDB800"
+    },
+    "ACCENT": {
+      "wood_dark":  "#4A2C10",
+      "wood_light": "#8A5A28",
+      "glass":      "#A0C8E4",
+      "night":      "#0C0C18"
+    },
+    "UI": {
+      "gold":    "#FFD700",
+      "white":   "#F0EEE8",
+      "black":   "#141210",
+      "red_ui":  "#CC2010"
+    }
+  },
+  "usage_guide": {
+    "building_facades": ["brick_dark","brick_mid","brick_light","mortar","cream_dark","cream_mid","cream_light","ochre","stone_mid","stone_light","stone_pale"],
+    "ground_tiles":     ["asphalt_dark","asphalt_mid","asphalt_light","sidewalk","cobble","rail","tram_bed"],
+    "sky_bg":           ["sky_light","sky_mid","sky_pale","cloud"],
+    "windows":          ["glass","stone_dark","wood_dark","wood_light","night"],
+    "awnings":          ["de_lijn_blue","de_lijn_yellow","brick_mid","cream_mid","grass"],
+    "characters":       ["cream_light","ochre","wood_dark","wood_light","stone_dark","white","black","red_ui"]
+  }
+}

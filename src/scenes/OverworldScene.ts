@@ -1,0 +1,815 @@
+import Phaser from 'phaser';
+import { SCENE, GAME_WIDTH, GAME_HEIGHT } from '@core/GameConfig';
+import { InputHandler }   from '@core/InputHandler';
+import { stateManager }   from '@core/StateManager';
+import { Player }         from '@entities/Player';
+import { NPC }            from '@entities/NPC';
+import { HUD }            from '@ui/HUD';
+import { DialogueBox }    from '@ui/DialogueBox';
+import { DialogueSystem } from '@systems/DialogueSystem';
+import { GateSystem, ZONE_STARTS, zoneForX } from '@systems/GateSystem';
+import { QuestSystem }    from '@systems/QuestSystem';
+
+/**
+ * OverworldScene — the main exploration scene.
+ *
+ * World: Top-down oblique view of the Turnhoutsebaan, Borgerhout.
+ * 5 zones gated by capabilities (see _AI_CONTEXT_/05_Gated_Progression.md).
+ * Painter's algorithm: sky → buildings → props → Y-sorted entities → HUD.
+ */
+export class OverworldScene extends Phaser.Scene {
+  private controls!:       InputHandler;
+  private player!:         Player;
+  private npcs:            NPC[]    = [];
+  private crowdNPCs:       Phaser.Physics.Arcade.Sprite[] = [];
+  private hud!:            HUD;
+  private dialogueBox!:    DialogueBox;
+  private dialogueSystem!: DialogueSystem;
+
+  // Gate trigger zones (invisible physics zones)
+  private gateTriggers: Array<{
+    zone:  number;
+    rect:  Phaser.GameObjects.Zone;
+  }> = [];
+
+  private lastPlayerX = 0;
+  private gateHintCooldown = 0;
+
+  // World dimensions (pixels)
+  static readonly WORLD_W = GAME_WIDTH * 6;   // 2880 px
+  static readonly WORLD_H = GAME_HEIGHT;      // 270 px
+
+  constructor() {
+    super({ key: SCENE.OVERWORLD });
+  }
+
+  create(): void {
+    this.controls = new InputHandler(this);
+
+    this.buildWorld();
+    this.spawnNamedNPCs();
+    this.spawnCrowd();
+    this.spawnVehicles();
+    this.spawnTram();
+    this.spawnBikers();
+    this.createPlayer();
+    this.setupCamera();
+    this.setupCollisions();
+    this.setupZoneTriggers();
+    this.createUI();
+
+    this.cameras.main.fadeIn(600, 0, 0, 0);
+    this.syncMusic();
+  }
+
+  update(_time: number, delta: number): void {
+    if (this.gateHintCooldown > 0) this.gateHintCooldown -= delta;
+
+    // Block movement while dialogue is open
+    if (this.dialogueSystem.isOpen) {
+      this.dialogueSystem.update(this.controls);
+      return;
+    }
+
+    this.player.update(this.controls, delta);
+    this.npcs.forEach(npc => npc.update(delta));
+    this.updateCrowd(delta);
+    this.updateTram(delta);
+    this.updateVehicles(delta);
+    this.updateBikers(delta);
+
+    // ── Zone gate check ────────────────────────────────────────────────────
+    const px = this.player.sprite.x;
+    if (px > this.lastPlayerX && this.gateHintCooldown <= 0) {
+      const block = GateSystem.checkTransition(this.lastPlayerX, px);
+      if (block) {
+        this.player.sprite.setX(this.lastPlayerX);   // push back
+        this.dialogueSystem.open(this._gateDialogueId(zoneForX(px)));
+        this.gateHintCooldown = 4000;
+      }
+    }
+    this.lastPlayerX = this.player.sprite.x;
+
+    // ── Interaction ────────────────────────────────────────────────────────
+    if (this.controls.actionJustPressed) {
+      const target = this.getNearbyNPC();
+      if (target) {
+        const dlgId = this.resolveDialogueId(target);
+        this.dialogueSystem.open(dlgId);
+      }
+    }
+
+    // ── Quest auto-check ───────────────────────────────────────────────────
+    const newDone = QuestSystem.checkAll();
+    if (newDone.length > 0) {
+      // TODO: show quest-complete toast via HUD
+    }
+
+    this.hud.update(stateManager.get().player);
+  }
+
+  // ── World ─────────────────────────────────────────────────────────────────
+
+  private buildWorld(): void {
+    const W = OverworldScene.WORLD_W;
+    const H = OverworldScene.WORLD_H;
+
+    const g = this.add.graphics();
+
+    // Sky gradient
+    g.fillGradientStyle(0x78AFE1, 0x78AFE1, 0xD4EBF5, 0xD4EBF5, 1);
+    g.fillRect(0, 0, W, H * 0.52);
+
+    // Asphalt road
+    g.fillStyle(0x484440);
+    g.fillRect(0, Math.floor(H * 0.55), W, Math.ceil(H * 0.45));
+
+    // Front sidewalk
+    g.fillStyle(0xB4AE9E);
+    g.fillRect(0, Math.floor(H * 0.52), W, Math.ceil(H * 0.04));
+
+    // Back sidewalk
+    g.fillStyle(0xB4AE9E);
+    g.fillRect(0, Math.floor(H * 0.77), W, Math.ceil(H * 0.04));
+
+    // Red bike lanes (fietstraten) — between sidewalks and tram/car zone
+    g.fillStyle(0xBB3030);
+    g.fillRect(0, Math.floor(H * 0.558), W, Math.ceil(H * 0.040));  // front lane
+    g.fillRect(0, Math.floor(H * 0.730), W, Math.ceil(H * 0.040));  // rear  lane
+
+    // Bike-lane white bicycle stencils (every 160px, centred in lane)
+    g.fillStyle(0xFFFFFF, 0.35);
+    const frontLaneY = Math.floor(H * 0.578);
+    const rearLaneY  = Math.floor(H * 0.750);
+    for (let x = 80; x < W; x += 160) {
+      // simple diamond stencil approximation
+      g.fillRect(x - 2, frontLaneY - 1, 4, 2);
+      g.fillRect(x - 1, frontLaneY + 1, 2, 2);
+      g.fillRect(x - 2, rearLaneY  - 1, 4, 2);
+      g.fillRect(x - 1, rearLaneY  + 1, 2, 2);
+    }
+
+    // Tram tracks — detailed: cross-ties + raised steel rails + highlights
+    const r1 = Math.floor(H * 0.615);   // north rail centre
+    const r2 = Math.floor(H * 0.685);   // south rail centre
+    // Cross-ties (traverse / wooden sleepers)
+    g.fillStyle(0x3A2A18);
+    for (let x = 0; x < W; x += 10) {
+      g.fillRect(x, r1 - 2, 7, 5);
+      g.fillRect(x, r2 - 2, 7, 5);
+    }
+    // Rail base (dark shadow)
+    g.fillStyle(0x606070);
+    g.fillRect(0, r1 - 1, W, 4);
+    g.fillRect(0, r2 - 1, W, 4);
+    // Rail top (steel highlight)
+    g.fillStyle(0xC8C8D8);
+    g.fillRect(0, r1 - 1, W, 2);
+    g.fillRect(0, r2 - 1, W, 2);
+    // Rail inner groove (recess for flanged wheels)
+    g.fillStyle(0x282830);
+    g.fillRect(0, r1,     W, 1);
+    g.fillRect(0, r2,     W, 1);
+
+    // White dashed dividers at bike-lane edges
+    g.fillStyle(0xFFFFFF, 0.50);
+    for (let x = 0; x < W; x += 28) {
+      g.fillRect(x, Math.floor(H * 0.556), 14, 1);
+      g.fillRect(x, Math.floor(H * 0.600), 14, 1);
+      g.fillRect(x, Math.floor(H * 0.728), 14, 1);
+      g.fillRect(x, Math.floor(H * 0.772), 14, 1);
+    }
+
+    // Building facade strip
+    this.placeBuildingFacades(W, H);
+
+    // Street trees — placed after road so they render on top of asphalt
+    this.placeStreetTrees(W, H);
+
+    // Zone boundary visual hints (subtle colour shift at gates)
+    this.drawZoneBoundaryMarkers(H);
+  }
+
+  /**
+   * Building tiles (generated from Streetdata.md, house-number order):
+   * Tile index map:
+   *  0=Indian Boutique#137  1=Patisserie Aladdin#170  2=Brasserie 't Center#180
+   *  3=Bakkerij Charif#189  4=Frituur de Tram#200      5=Theehuys Amal#215
+   *  6=Mimoun#239           7=Nacht Winkel#240          8=Hammam Borgerhout#260
+   *  9=Borger Hub#284       10=Apotheek Praats#317      11=Budget Market#326
+   *  12=Costermans#332      13=Basic-Fit#360            14=New Star Kebab#370
+   *  15=Carrefour Market    16=brick_a  17=brick_b  18=brick_c  19=vacant
+   */
+  private placeBuildingFacades(W: number, H: number): void {
+    const TW = 96;   // tile display width in Phaser game-units (2× the 48 game-px tile)
+    const buildingBottom = Math.floor(H * 0.52);
+
+    // Real house-number sequence approximation (west → east)
+    const streetLayout = [
+      16, 17,                          // brick (west edge)
+      0,                               // Indian Boutique #137
+      16,
+      1,                               // Patisserie Aladdin #170
+      2,                               // Brasserie 't Center #180
+      3,                               // Bakkerij Charif #189
+      16,
+      4,                               // Frituur de Tram #200
+      5,                               // Theehuys Amal #215
+      18,
+      6,                               // Mimoun #239
+      7,                               // Nacht Winkel #240
+      17,
+      8,                               // Hammam Borgerhout #260
+      16,
+      9,                               // Borger Hub #284
+      18,
+      10,                              // Apotheek Praats #317
+      11,                              // Budget Market #326
+      12,                              // Costermans Wielersport #332
+      17,
+      19,                              // Vacant
+      13,                              // Basic-Fit #360
+      14,                              // New Star Kebab #370
+      16,
+      15,                              // Carrefour Market
+      17, 18, 16,
+    ];
+
+    // All tiles: SCALE=8, plinth at game-y=104, show top 108 game-px of tile.
+    // Displayed at TW=96 (2× wide) and dH_display=130 (20% taller) for readability.
+    const PNG_W      = 384;   // PNG frame width  (SCALE=8, TW=48 → 384 px)
+    const dH_src     = 108;   // source game-px to show (108 × 8 = 864 PNG px)
+    const dH_display = 130;   // display height in Phaser game-units (20% taller)
+
+    let tileX = 0;
+    let idx   = 0;
+    while (tileX < W) {
+      const frame = streetLayout[idx % streetLayout.length];
+      this.add.image(tileX, buildingBottom, 'buildings', frame)
+        .setOrigin(0, 1)
+        .setCrop(0, 0, PNG_W, dH_src * 8)      // show top 108 game-px (864 PNG px)
+        .setDisplaySize(TW, dH_display)         // render at 96×130 Phaser units
+        .setDepth(1);
+      tileX += TW;
+      idx++;
+    }
+  }
+
+  /**
+   * Pixel-art city trees along both sides of the bike lanes.
+   * Placed every ~180 px with slight random offset, alternating front/rear.
+   * Each tree: trunk + round canopy, drawn with graphics (no texture needed).
+   */
+  private placeStreetTrees(W: number, H: number): void {
+    // Y positions: just outside each bike lane (between sidewalk and bike lane edge)
+    const frontTreeY = Math.floor(H * 0.552);   // just above front bike lane
+    const rearTreeY  = Math.floor(H * 0.776);   // just below rear  bike lane
+
+    const SPACING  = 180;   // px between trees on the same side
+    const TRUNK_W  = 4;
+    const TRUNK_H  = 10;
+    const CANOPY_W = 10;    // ellipse half-width  (game units)
+    const CANOPY_H = 30;    // ellipse half-height (3× taller)
+
+    // Two shades of green for natural variety
+    const canopyColors  = [0x2D7A2D, 0x3A9A3A, 0x256025, 0x4AAF4A];
+    const shadowColor   = 0x1A5C1A;
+    const trunkColor    = 0x6B4226;
+    const trunkDark     = 0x4A2C10;
+
+    // Draw one tree at (x, baseY) where baseY is the ground level of the trunk
+    const drawTree = (g: Phaser.GameObjects.Graphics, x: number, baseY: number, colorIdx: number) => {
+      const cy = baseY - TRUNK_H - CANOPY_H;  // canopy centre Y (bottom of ellipse at trunk top)
+
+      // Trunk
+      g.fillStyle(trunkColor);
+      g.fillRect(x - TRUNK_W / 2, baseY - TRUNK_H, TRUNK_W, TRUNK_H);
+      g.fillStyle(trunkDark);
+      g.fillRect(x - TRUNK_W / 2, baseY - TRUNK_H, 1, TRUNK_H);
+
+      // Canopy shadow (slightly offset down-right)
+      g.fillStyle(shadowColor);
+      g.fillEllipse(x + 2, cy + 2, CANOPY_W * 2, CANOPY_H * 2);
+
+      // Canopy main
+      g.fillStyle(canopyColors[colorIdx % canopyColors.length]);
+      g.fillEllipse(x, cy, CANOPY_W * 2, CANOPY_H * 2);
+
+      // Canopy highlight (top-left, smaller inner ellipse)
+      g.fillStyle(0x5FCC5F);
+      g.fillEllipse(x - 3, cy - Math.floor(CANOPY_H * 0.35), CANOPY_W * 0.9, CANOPY_H * 0.6);
+    };
+
+    const g = this.add.graphics().setDepth(2);
+
+    let seedOffset = 0;
+    for (let x = 60; x < W; x += SPACING) {
+      // Randomise position and side using a deterministic offset
+      const jitter     = ((seedOffset * 137) % 60) - 30;   // –30 to +30
+      const colorIdx   = seedOffset % canopyColors.length;
+      const frontOrRear = seedOffset % 3;   // 0,1 = front; 2 = rear
+
+      if (frontOrRear < 2) {
+        drawTree(g, x + jitter, frontTreeY, colorIdx);
+      } else {
+        drawTree(g, x + jitter, rearTreeY, colorIdx + 1);
+      }
+      seedOffset++;
+
+      // Occasionally place one on the opposite side too
+      if (seedOffset % 5 === 0) {
+        const jitter2  = ((seedOffset * 97) % 40) - 20;
+        drawTree(g, x + jitter2 + 90, rearTreeY, colorIdx + 2);
+      }
+    }
+  }
+
+  private drawZoneBoundaryMarkers(H: number): void {
+    const g = this.add.graphics().setDepth(2);
+    // Subtle vertical marker lines at each gate
+    for (const zone of [2, 3, 4, 5]) {
+      const x = ZONE_STARTS[zone];
+      g.fillStyle(0x888888, 0.3);
+      g.fillRect(x - 1, 0, 2, Math.floor(H * 0.52));
+    }
+  }
+
+  // ── Named NPCs ────────────────────────────────────────────────────────────
+
+  private spawnNamedNPCs(): void {
+    const H = OverworldScene.WORLD_H;
+    const sw = Math.floor(H * 0.54);   // front sidewalk y
+
+    // Named NPCs — each uses individual spritesheet from BootScene
+    // NPC x-positions aligned with their associated buildings (tile width = 96):
+    //   #137 Indian Boutique  → x≈210   #170 Patisserie Aladdin → x≈400
+    //   #189 Bakkerij Charif  → x≈590   #215 Theehuys Amal      → x≈880
+    //   #239 Mimoun           → x≈1060  #260 Hammam Borgerhout  → x≈1360
+    //   #284 Borger Hub       → x≈1550  #326 Budget Market      → x≈1840
+    //   #332 Costermans       → x≈1940
+    const seed: Array<{ id: string; texture: string; x: number; y: number; dialogue: string }> = [
+      { id: 'baert',    texture: 'npc_baert',   x:  210, y: sw,     dialogue: 'stunt_baert'       }, // Indian Boutique #137
+      { id: 'fatima',   texture: 'npc_fatima',  x:  400, y: sw,     dialogue: 'fatima_intro'      }, // Patisserie Aladdin #170
+      { id: 'hamza',    texture: 'npc_hamza',   x:  500, y: sw + 2, dialogue: 'hamza_marbles'     }, // between #170 and #189
+      { id: 'omar',     texture: 'npc_omar',    x:  590, y: sw - 2, dialogue: 'omar_bakker'       }, // Bakkerij Charif #189
+      { id: 'reza',     texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'        }, // Theehuys Amal #215
+      { id: 'aziz',     texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_signature'   }, // Mimoun #239
+      { id: 'tine',     texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_faction'      }, // Nacht Winkel #240
+      { id: 'el_osri',  texture: 'npc_el_osri', x: 1550, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284
+      { id: 'sofia',    texture: 'npc_sofia',   x: 1650, y: sw,     dialogue: 'reza_music'        }, // between #284 and #317
+      { id: 'yusuf',    texture: 'npc_yusuf',   x: 1840, y: sw,     dialogue: 'yusuf_delivery'    }, // Budget Market #326
+    ];
+
+    this.npcs = seed.map(d =>
+      new NPC(this, d.x, d.y, d.texture, 0, d.id, d.dialogue),
+    );
+  }
+
+  // ── Crowd NPCs (anonymous pedestrians + vehicles) ─────────────────────────
+
+  private crowdTimers:      number[] = [];
+  private crowdDirs:        number[] = [];
+  private crowdFrameBases:  number[] = [];  // first frame index for each crowd NPC's variant
+  private crowdStepTimers:  number[] = [];  // ms since last walk-frame toggle
+  private crowdStepFrames:  number[] = [];  // 0 or 1 → pose 1 or 2 within variant
+
+  // Vehicles: arcade static images so the player can collide with them individually
+  private vehicles: Array<{ sprite: Phaser.Physics.Arcade.Image; vx: number; baseVx: number }> = [];
+
+  // Tram: single eastbound De Lijn tram that cars must yield to
+  private tram: { sprite: Phaser.Physics.Arcade.Image; state: 'moving' | 'stopped'; stateTimer: number } | null = null;
+  private static readonly TRAM_SPEED = 44;   // px/s when moving
+
+  private spawnVehicles(): void {
+    const H = OverworldScene.WORLD_H;
+    const W = OverworldScene.WORLD_W;
+    const VW = 192;  // vehicle display width (game-px)  — 3× original 64
+    const VH = 60;   // vehicle display height (game-px) — 3× original 20
+
+    // Lane 1: eastbound  (moving right), y just above first tram track
+    const laneE = Math.floor(H * 0.625);
+    // Lane 2: westbound  (moving left),  y just below first tram track
+    const laneW = Math.floor(H * 0.665);
+
+    // [frame, speed px/s, display_w, display_h]
+    type VConf = [number, number, number, number];
+    const types: VConf[] = [
+      [0, 76, VW, VH],          // clio_blue
+      [1, 82, VW, VH],          // clio_red
+      [2, 62, VW + 8, VH],      // kangoo_white (longer van)
+      [3, 70, VW + 4, VH + 2],  // suv_silver
+      [4, 68, VW, VH],          // taxi_bluewhite
+      [5, 48, VW + 20, VH + 4], // bus_delijn (longer + taller)
+      [6, 94, VW - 20, VH - 4], // scooter (smaller + faster)
+    ];
+
+    // 6 eastbound vehicles spread across world
+    for (let i = 0; i < 6; i++) {
+      const cfg = types[i % types.length];
+      const x   = Math.floor((W / 6) * i + Phaser.Math.Between(20, 80));
+      const img = this.physics.add.staticImage(x, laneE, 'vehicles', cfg[0])
+        .setDisplaySize(cfg[2], cfg[3])
+        .setOrigin(0.5, 0.5)
+        .setDepth(laneE);   // Y-sort: player above lane → behind; below → in front
+      img.setBodySize(cfg[2] * 0.85, cfg[3] * 0.7);
+      img.refreshBody();
+      this.vehicles.push({ sprite: img, vx: cfg[1], baseVx: cfg[1] });
+    }
+
+    // 6 westbound vehicles spread across world (flipped)
+    for (let i = 0; i < 6; i++) {
+      const cfg = types[(i + 3) % types.length];
+      const x   = Math.floor((W / 6) * i + Phaser.Math.Between(20, 80));
+      const img = this.physics.add.staticImage(x, laneW, 'vehicles', cfg[0])
+        .setDisplaySize(cfg[2], cfg[3])
+        .setOrigin(0.5, 0.5)
+        .setFlipX(true)
+        .setDepth(laneW);
+      img.setBodySize(cfg[2] * 0.85, cfg[3] * 0.7);
+      img.refreshBody();
+      this.vehicles.push({ sprite: img, vx: -cfg[1], baseVx: -cfg[1] });
+    }
+  }
+
+  private updateVehicles(delta: number): void {
+    const W   = OverworldScene.WORLD_W;
+    const dt  = delta / 1000;
+    const tramX     = this.tram?.sprite.x ?? null;
+    const tramHalfW = 168;  // half the tram display width (game-px) — 3× original 56
+    const tramMoving = this.tram?.state === 'moving';
+
+    for (const v of this.vehicles) {
+      // Eastbound vehicles yield to tram
+      if (v.baseVx > 0 && tramX !== null) {
+        const gap = tramX - tramHalfW - v.sprite.x;   // space between front of car and tram rear
+        if (gap > 0 && gap < 90) {
+          // Within tram shadow — match tram speed or stop
+          v.vx = tramMoving ? Math.min(v.baseVx, OverworldScene.TRAM_SPEED * 0.9) : 0;
+        } else {
+          // Restore base speed (smoothly accelerate)
+          v.vx = Math.min(v.baseVx, v.vx + v.baseVx * dt * 1.5);
+        }
+      }
+
+      v.sprite.x += v.vx * dt;
+      if (v.baseVx > 0 && v.sprite.x > W + 80)  v.sprite.x = -80;
+      if (v.baseVx < 0 && v.sprite.x < -80)     v.sprite.x = W + 80;
+      (v.sprite.body as Phaser.Physics.Arcade.StaticBody).reset(v.sprite.x, v.sprite.y);
+    }
+  }
+
+  private spawnTram(): void {
+    const H  = OverworldScene.WORLD_H;
+    const tramY = Math.floor(H * 0.650);   // centre between the two tram rails
+    const img = this.physics.add.staticImage(-150, tramY, 'tram')
+      .setDisplaySize(336, 66)
+      .setOrigin(0.5, 0.5)
+      .setDepth(tramY);   // Y-sort depth
+    img.setBodySize(320, 50);
+    img.refreshBody();
+    this.tram = { sprite: img, state: 'moving', stateTimer: Phaser.Math.Between(10000, 16000) };
+  }
+
+  private updateTram(delta: number): void {
+    if (!this.tram) return;
+    const t = this.tram;
+    const W = OverworldScene.WORLD_W;
+    t.stateTimer -= delta;
+
+    if (t.state === 'moving') {
+      t.sprite.x += OverworldScene.TRAM_SPEED * (delta / 1000);
+      if (t.sprite.x > W + 200) t.sprite.x = -200;
+      (t.sprite.body as Phaser.Physics.Arcade.StaticBody).reset(t.sprite.x, t.sprite.y);
+      if (t.stateTimer <= 0) {
+        t.state = 'stopped';
+        t.stateTimer = Phaser.Math.Between(2500, 4500);  // halt at stop 2.5–4.5s
+      }
+    } else {
+      if (t.stateTimer <= 0) {
+        t.state = 'moving';
+        t.stateTimer = Phaser.Math.Between(8000, 15000); // drive 8–15s between stops
+      }
+    }
+  }
+
+  // Bikers: 16 types, two red bike lanes (front=eastbound, rear=westbound)
+  private bikers: Array<{ sprite: Phaser.GameObjects.Image; vx: number }> = [];
+
+  private spawnBikers(): void {
+    const H  = OverworldScene.WORLD_H;
+    const W  = OverworldScene.WORLD_W;
+    // Bikes are player-sized: FW=36, FH=30 game-px (SCALE=6)
+    const BW = 36;
+    const BH = 30;
+
+    const laneF = Math.floor(H * 0.578);   // front bike lane centre
+    const laneR = Math.floor(H * 0.750);   // rear  bike lane centre
+
+    // Per-frame speeds (px/s) reflecting each bike type's realistic pace
+    const bikerSpeeds: Record<number, number> = {
+      0:  95,  // racing_red    — very fast
+      1:  90,  // racing_blue   — very fast
+      2:  62,  // city_blue     — medium
+      3:  58,  // city_red      — medium
+      4:  74,  // ebike_gray    — medium-fast (electric assist)
+      5:  50,  // mountain_green — medium-slow (upright position)
+      6:  52,  // mountain_orange — medium-slow
+      7:  36,  // cargo_yellow  — slow (heavy load)
+      8:  30,  // cargo_child   — slow (child on back)
+      9:  34,  // delivery_green — slow (laden delivery)
+      10: 24,  // grandma_blue  — very slow
+      11: 55,  // hijab_teal    — medium
+      12: 53,  // hijab_purple  — medium
+      13: 84,  // fixie_black   — fast (no brakes, no mercy)
+      14: 28,  // dutch_beige   — slow (upright Dutch style)
+      15: 66,  // bmx_red       — medium-fast
+    };
+
+    // 20 bikers: 11 eastbound on front lane, 9 westbound on rear lane
+    for (let i = 0; i < 20; i++) {
+      const eastbound = i < 11;
+      const laneY     = eastbound ? laneF : laneR;
+      const frame     = i % 16;                  // one of 16 biker types
+      const speed     = bikerSpeeds[frame] ?? 50;
+      const x         = Math.floor((W / 20) * i + Phaser.Math.Between(10, 50));
+
+      const img = this.add.image(x, laneY, 'bikes', frame)
+        .setDisplaySize(BW, BH)
+        .setOrigin(0.5, 0.5)
+        .setFlipX(!eastbound)   // westbound riders face left
+        .setDepth(laneY);       // Y-sort depth matches lane position
+
+      this.bikers.push({ sprite: img, vx: eastbound ? speed : -speed });
+    }
+  }
+
+  private updateBikers(delta: number): void {
+    const W  = OverworldScene.WORLD_W;
+    const dt = delta / 1000;
+    for (const b of this.bikers) {
+      b.sprite.x += b.vx * dt;
+      if (b.vx > 0 && b.sprite.x > W + 30)  b.sprite.x = -30;
+      if (b.vx < 0 && b.sprite.x < -30)     b.sprite.x = W + 30;
+    }
+  }
+
+  private spawnCrowd(): void {
+    const H  = OverworldScene.WORLD_H;
+    const W  = OverworldScene.WORLD_W;
+    const sy = Math.floor(H * 0.54);   // front sidewalk y
+    const by = Math.floor(H * 0.79);   // back sidewalk y
+
+    // 90 crowd pedestrians (3× original) spread across the world on both sidewalks.
+    // Each of the 20 crowd variants has 3 frames: variantIdx*3+0 = idle,
+    // variantIdx*3+1 = walkA, variantIdx*3+2 = walkB.
+    for (let i = 0; i < 90; i++) {
+      const x       = Phaser.Math.Between(40, W - 40);
+      const y       = (i % 3 === 0) ? by : sy + Phaser.Math.Between(-2, 2);
+      const variant = i % 20;
+      const base    = variant * 3;    // first frame of this variant
+
+      const s = this.physics.add.sprite(x, y, 'crowd', base);  // start on idle frame
+      s.setOrigin(0.5, 1);
+      s.setDisplaySize(12, 28);
+      s.setDepth(y);
+      s.setImmovable(false);
+
+      this.crowdNPCs.push(s);
+      this.crowdTimers.push(Phaser.Math.Between(1000, 4000));
+      this.crowdDirs.push(Phaser.Math.Between(0, 1) === 0 ? -1 : 1);
+      this.crowdFrameBases.push(base);
+      this.crowdStepTimers.push(Phaser.Math.Between(0, 300));   // stagger phase
+      this.crowdStepFrames.push(0);
+    }
+  }
+
+  private updateCrowd(delta: number): void {
+    const SPEED    = 18;
+    const STEP_MS  = 240;   // ms per walk frame
+    const W        = OverworldScene.WORLD_W;
+
+    for (let i = 0; i < this.crowdNPCs.length; i++) {
+      const s   = this.crowdNPCs[i];
+      const dir = this.crowdDirs[i];
+
+      // ── Direction timer ──────────────────────────────────────────────────
+      this.crowdTimers[i] -= delta;
+      if (this.crowdTimers[i] <= 0) {
+        const prevDir = this.crowdDirs[i];
+        const r = Phaser.Math.Between(0, 3);
+        this.crowdDirs[i]   = r === 0 ? 0 : (r === 1 ? -1 : 1);
+        this.crowdTimers[i] = Phaser.Math.Between(800, 3500);
+        // On direction change, reset step to forward-foot-landing frame
+        if (this.crowdDirs[i] !== prevDir && this.crowdDirs[i] !== 0) {
+          this.crowdStepTimers[i] = 0;
+          this.crowdStepFrames[i] = 1;   // frame base+2 = forward foot landing
+        }
+      }
+
+      // ── Movement & animation ─────────────────────────────────────────────
+      if (dir !== 0) {
+        s.setVelocityX(dir * SPEED);
+        s.setFlipX(dir < 0);
+        if (s.x < 10)     s.setX(W - 10);
+        if (s.x > W - 10) s.setX(10);
+
+        // Cycle walk frames: base+1 and base+2
+        this.crowdStepTimers[i] += delta;
+        if (this.crowdStepTimers[i] >= STEP_MS) {
+          this.crowdStepTimers[i] = 0;
+          this.crowdStepFrames[i] = 1 - this.crowdStepFrames[i];   // 0 ↔ 1
+        }
+        const crowdWalkFrame = dir > 0
+          ? 1 + this.crowdStepFrames[i]    // right: frames +1, +2
+          : 2 - this.crowdStepFrames[i];   // left:  frames +2, +1 (phase-corrected)
+        s.setFrame(this.crowdFrameBases[i] + crowdWalkFrame);
+      } else {
+        s.setVelocityX(0);
+        s.setFrame(this.crowdFrameBases[i]);   // idle pose
+        this.crowdStepTimers[i] = 0;
+      }
+
+      s.setDepth(s.y);
+    }
+  }
+
+  // ── Camera & physics ──────────────────────────────────────────────────────
+
+  private createPlayer(): void {
+    const spawn = stateManager.get().spawnPoint;
+    this.player   = new Player(this, spawn.x, spawn.y);
+    this.lastPlayerX = spawn.x;
+  }
+
+  private setupCamera(): void {
+    this.cameras.main.setBounds(0, 0, OverworldScene.WORLD_W, OverworldScene.WORLD_H);
+    this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08);
+    this.cameras.main.setDeadzone(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.3);
+  }
+
+  private setupCollisions(): void {
+    const W = OverworldScene.WORLD_W;
+    const H = GAME_HEIGHT;
+
+    // Allow the player to roam the full sidewalk + road band (H*0.50 – H*0.82).
+    // Individual vehicles now act as physical obstacles via their static bodies.
+    this.physics.world.setBounds(0, H * 0.50, W, H * 0.32);
+    this.player.sprite.setCollideWorldBounds(true);
+
+    // Per-vehicle colliders — player is pushed aside by each car/tram individually
+    for (const v of this.vehicles) {
+      this.physics.add.collider(this.player.sprite, v.sprite);
+    }
+    if (this.tram) {
+      this.physics.add.collider(this.player.sprite, this.tram.sprite);
+    }
+  }
+
+  // ── Zone gate triggers ────────────────────────────────────────────────────
+
+  private setupZoneTriggers(): void {
+    const H = OverworldScene.WORLD_H;
+    for (const zone of [2, 3, 4, 5]) {
+      const x = ZONE_STARTS[zone];
+      const rect = this.add.zone(x, 0, 4, H).setOrigin(0, 0);
+      this.physics.world.enable(rect);
+      this.gateTriggers.push({ zone, rect });
+    }
+  }
+
+  // ── UI ────────────────────────────────────────────────────────────────────
+
+  private createUI(): void {
+    this.hud            = new HUD(this);
+    this.dialogueBox    = new DialogueBox(this);
+    this.dialogueSystem = new DialogueSystem(this.dialogueBox);
+    this.dialogueSystem.onClose = () => this.syncMusic();
+  }
+
+  // ── Music ─────────────────────────────────────────────────────────────────
+
+  private syncMusic(): void {
+    const deliveryActive =
+      stateManager.getFlag('met_yusuf') === true &&
+      stateManager.getFlag('q_starter_delivery_done') !== true;
+
+    const wantKey  = deliveryActive ? 'bgm_delivery' : 'bgm_lofi';
+    const stopKey  = deliveryActive ? 'bgm_lofi'     : 'bgm_delivery';
+
+    const current = this.sound.get(wantKey);
+    if (current?.isPlaying) return;   // already on the right track
+
+    // Fade out the current track, fade in the new one
+    const outSound = this.sound.get(stopKey) as Phaser.Sound.WebAudioSound | null;
+    if (outSound?.isPlaying) {
+      this.tweens.add({
+        targets: outSound,
+        volume:  0,
+        duration: 800,
+        onComplete: () => outSound.stop(),
+      });
+    }
+
+    this.time.delayedCall(outSound?.isPlaying ? 600 : 0, () => {
+      if (!this.sound.get(wantKey)?.isPlaying) {
+        this.sound.play(wantKey, { loop: true, volume: 0, });
+        const inSound = this.sound.get(wantKey) as Phaser.Sound.WebAudioSound;
+        this.tweens.add({ targets: inSound, volume: 0.35, duration: 800 });
+      }
+    });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  private getNearbyNPC(): NPC | undefined {
+    return this.npcs.find(npc =>
+      Phaser.Math.Distance.Between(
+        this.player.sprite.x, this.player.sprite.y,
+        npc.sprite.x, npc.sprite.y,
+      ) < 22,
+    );
+  }
+
+  /**
+   * Resolve the correct dialogue ID for an NPC based on current quest state.
+   * NPCs have different dialogue depending on what the player has already done.
+   */
+  private resolveDialogueId(npc: NPC): string {
+    const flags = stateManager.get().questFlags;
+
+    switch (npc.id) {
+      case 'fatima':
+        if (flags['stunt_quest_active'] && !flags['stunt_quest_done'] && stateManager.hasItem('fabric_bolt'))
+          return 'fatima_after_fabric';
+        if (flags['has_community_trust'] && !flags['fatima_convinced'] && flags['met_mayor'])
+          return 'fatima_faction';
+        if (flags['has_community_trust'])
+          return 'fatima_post_trust';
+        if (flags['met_fatima'] && flags['fabric_quest_accepted'])
+          return 'fatima_intro';   // repeat
+        return 'fatima_intro';
+
+      case 'omar':
+        if (flags['has_flour'] && !flags['omar_flour_done'])
+          return 'omar_flour_done';
+        if (flags['met_fatima'] && !flags['omar_flour_asked'])
+          return 'omar_flour_request';
+        if (flags['sig_omar'])
+          return 'omar_bakker';
+        if (flags['has_community_trust'] && !flags['sig_omar'])
+          return 'omar_signature';
+        return 'omar_bakker';
+
+      case 'baert':
+        if (flags['knows_stunt_location'] && !flags['stunt_quest_active'])
+          return 'stunt_baert_fabric';
+        if (flags['has_community_trust'] && !flags['sig_baert'])
+          return 'stunt_baert_signature';
+        if (flags['met_mayor'] && !flags['baert_faction_convinced'])
+          return 'stunt_baert_faction';
+        return 'stunt_baert';
+
+      case 'reza':
+        if (flags['oud_quest_accepted'] && stateManager.hasItem('oud_string'))
+          return 'reza_oud_found';
+        if (flags['has_community_trust'] && !flags['sig_reza'])
+          return 'reza_signature';
+        return 'reza_music';
+
+      case 'yusuf':
+        if (flags['delivery_accepted'] && flags['delivery_packages_received'])
+          return 'yusuf_delivery_done';
+        return 'yusuf_delivery';
+
+      case 'aziz':
+        if (!flags['sig_aziz'])
+          return 'aziz_signature';
+        return 'reuzenpoort_legend';
+
+      case 'hamza':
+        if (flags['met_mayor'] && !flags['school_faction_convinced'])
+          return 'hamza_school_faction';
+        return 'hamza_marbles';
+
+      case 'el_osri':
+        return 'district_mayor';
+
+      case 'tine':
+        if (flags['met_mayor'] && !flags['tine_faction_convinced'])
+          return 'tine_faction';
+        return 'fatima_intro';   // fallback
+
+      default:
+        return npc.dialogueId;
+    }
+  }
+
+  private _gateDialogueId(targetZone: number): string {
+    switch (targetZone) {
+      case 2: return 'reuzenpoort_blocked';
+      case 3: return 'de_roma_blocked';
+      case 4: return 'deurne_blocked';
+      default: return 'reuzenpoort_blocked';
+    }
+  }
+}

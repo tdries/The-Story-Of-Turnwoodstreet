@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="320" height="120" shape-rendering="crispEdges">
+  <!--
+    ITEMS SPRITE SHEET — TURNHOUTSEBAAN RPG
+    All collectibles and quest items, 4x scale
+  -->
+
+  <!-- ── EURO COIN (x=0, 10×10 game pixels) ── -->
+  <rect x="4"  y="12" width="32" height="32" rx="16" fill="#C09000"/>
+  <rect x="8"  y="16" width="24" height="24" rx="12" fill="#FFD700"/>
+  <rect x="12" y="20" width="16" height="16" rx="8"  fill="#E8B800"/>
+  <!-- € symbol -->
+  <text x="10" y="40" font-size="14" fill="#C09000" font-family="Arial" font-weight="bold">€</text>
+  <!-- Shine -->
+  <rect x="10" y="14" width="8"  height="4"  fill="rgba(255,255,255,0.6)"/>
+  <text x="2"  y="58" font-size="6" fill="#888" font-family="monospace">COIN €50</text>
+
+  <!-- ── SMOSKE SANDWICH (x=48, 14×8 game pixels) ── -->
+  <rect x="56" y="16" width="52" height="28" fill="#F5DEB3"/><!-- bread top -->
+  <rect x="56" y="28" width="52" height="8"  fill="#8B4513"/><!-- filling -->
+  <rect x="56" y="36" width="52" height="8"  fill="#F5DEB3"/><!-- bread bottom -->
+  <!-- Crust -->
+  <rect x="56" y="16" width="4"  height="28" fill="#D4A850"/>
+  <rect x="104" y="16" width="4" height="28" fill="#D4A850"/>
+  <rect x="56" y="14" width="52" height="4"  fill="#D4A850"/>
+  <rect x="56" y="44" width="52" height="4"  fill="#D4A850"/>
+  <!-- Filling detail (lettuce, sauces) -->
+  <rect x="60" y="28" width="8"  height="8"  fill="#27AE60"/>
+  <rect x="72" y="28" width="8"  height="8"  fill="#C0392B"/>
+  <rect x="84" y="28" width="8"  height="8"  fill="#F5F5DC"/>
+  <text x="54" y="60" font-size="6" fill="#888" font-family="monospace">SMOSKE</text>
+
+  <!-- ── PARAPLU (x=128, 16×20 game pixels) ── -->
+  <!-- Canopy (arc approximated) -->
+  <rect x="128" y="16" width="64" height="4"  fill="#1E5FA0"/><!-- top -->
+  <rect x="124" y="20" width="72" height="4"  fill="#1E5FA0"/><!-- wider -->
+  <rect x="124" y="24" width="72" height="4"  fill="#1E5FA0"/><!-- main canopy -->
+  <rect x="124" y="28" width="12" height="4"  fill="#1E5FA0"/>
+  <rect x="148" y="28" width="8"  height="4"  fill="#1E5FA0"/>
+  <rect x="180" y="28" width="12" height="4"  fill="#1E5FA0"/>
+  <!-- Canopy ribs -->
+  <rect x="156" y="16" width="4"  height="16" fill="#1848A0"/>
+  <rect x="136" y="20" width="4"  height="12" fill="#1848A0"/>
+  <rect x="176" y="20" width="4"  height="12" fill="#1848A0"/>
+  <!-- Handle -->
+  <rect x="156" y="32" width="4"  height="36" fill="#8B4513"/><!-- shaft -->
+  <rect x="148" y="68" width="12" height="4"  fill="#6B3010"/><!-- hook -->
+  <rect x="148" y="68" width="4"  height="8"  fill="#6B3010"/>
+  <!-- Tip -->
+  <rect x="157" y="12" width="2"  height="4"  fill="#888"/>
+  <text x="126" y="88" font-size="6" fill="#888" font-family="monospace">PARAPLU</text>
+
+  <!-- ── PERMIT DOCUMENT (x=208, 14×16 game pixels) ── -->
+  <rect x="208" y="12" width="56" height="64" fill="#F5F5DC"/><!-- paper -->
+  <rect x="208" y="12" width="4"  height="64" fill="#DDD8C0"/><!-- left shadow -->
+  <rect x="208" y="12" width="56" height="2"  fill="#EEE9D0"/><!-- top fold -->
+  <!-- Red official seal -->
+  <rect x="220" y="20" width="20" height="20" rx="10" fill="#CC2B1A"/>
+  <rect x="224" y="24" width="12" height="12" rx="6"  fill="#AA1A0A"/>
+  <!-- Text lines -->
+  <rect x="212" y="44" width="48" height="3"  fill="#888"/>
+  <rect x="212" y="50" width="40" height="3"  fill="#888"/>
+  <rect x="212" y="56" width="44" height="3"  fill="#888"/>
+  <rect x="212" y="62" width="36" height="3"  fill="#888"/>
+  <!-- Stamp -->
+  <rect x="230" y="62" width="24" height="10" fill="#1E5FA0"/>
+  <text x="231" y="71" font-size="6" fill="white" font-family="monospace">GOEDGEKEURD</text>
+  <!-- Fold corner -->
+  <rect x="252" y="12" width="12" height="12" fill="#DDD8C0"/>
+  <rect x="252" y="12" width="12" height="2"  fill="#C8C0A0"/>
+  <text x="206" y="90" font-size="6" fill="#888" font-family="monospace">VERGUNNING</text>
+
+  <!-- ── KEBAB SIGN (x=280, 16×20 game pixels) ── -->
+  <rect x="280" y="8"  width="32" height="56" fill="#8B4513"/><!-- board -->
+  <rect x="280" y="8"  width="32" height="4"  fill="#6B3010"/><!-- top -->
+  <rect x="280" y="8"  width="4"  height="56" fill="#6B3010"/><!-- left -->
+  <!-- Kebab illustration on sign -->
+  <rect x="288" y="14" width="4"  height="28" fill="#D4A850"/><!-- spit -->
+  <rect x="284" y="18" width="12" height="8"  fill="#C0392B"/><!-- meat layer 1 -->
+  <rect x="285" y="26" width="10" height="8"  fill="#E07050"/><!-- meat layer 2 -->
+  <rect x="284" y="34" width="12" height="6"  fill="#C0392B"/><!-- meat layer 3 -->
+  <!-- Sign border -->
+  <rect x="280" y="8"  width="32" height="2"  fill="#FFD700"/>
+  <rect x="280" y="62" width="32" height="2"  fill="#FFD700"/>
+  <!-- Hanging chain -->
+  <rect x="284" y="4"  width="4"  height="4"  fill="#888"/>
+  <rect x="304" y="4"  width="4"  height="4"  fill="#888"/>
+  <text x="278" y="80" font-size="6" fill="#888" font-family="monospace">KEBAB SIGN</text>
+
+  <!-- Scooter obstacle (x=0, y=90) -->
+  <rect x="0"   y="92" width="96"  height="20" fill="#27AE60"/><!-- body -->
+  <rect x="0"   y="108" width="24" height="12" fill="#111"/><!-- rear wheel -->
+  <rect x="72"  y="108" width="24" height="12" fill="#111"/><!-- front wheel -->
+  <rect x="0"   y="92"  width="96" height="4"  fill="#1A6A30"/><!-- top panel -->
+  <rect x="40"  y="84"  width="16" height="8"  fill="#555"/><!-- handlebar -->
+  <rect x="46"  y="84"  width="4"  height="4"  fill="#222"/>
+  <text x="0"   y="118" font-size="6" fill="#888" font-family="monospace">SCOOTER OBSTACLE</text>
+
+  <!-- Grid dividers -->
+  <line x1="48"  y1="0" x2="48"  y2="88" stroke="#222" stroke-width="1"/>
+  <line x1="124" y1="0" x2="124" y2="88" stroke="#222" stroke-width="1"/>
+  <line x1="204" y1="0" x2="204" y2="88" stroke="#222" stroke-width="1"/>
+  <line x1="276" y1="0" x2="276" y2="88" stroke="#222" stroke-width="1"/>
+  <line x1="0"   y1="88" x2="320" y2="88" stroke="#222" stroke-width="1"/>
+
+  <text x="2" y="8" font-size="6" fill="#555" font-family="monospace">ITEMS — Turnhoutsebaan RPG — 4x scale</text>
+</svg>

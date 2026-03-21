@@ -1,0 +1,54 @@
+{
+  "solidarity_shout": {
+    "id":          "solidarity_shout",
+    "name":        "Solidariteitsroep",
+    "description": "Roep de buurt om hulp. Verdubbelt aanvalskracht voor 1 beurt.",
+    "cost":        50,
+    "mpCost":      0,
+    "effect":      "damage_2x",
+    "unlockFlag":  "met_fatima"
+  },
+  "samen_aan_tafel": {
+    "id":          "samen_aan_tafel",
+    "name":        "Samen Aan Tafel",
+    "description": "Deel eten met een vijand. Kans om conflict te vermijden.",
+    "cost":        80,
+    "mpCost":      0,
+    "effect":      "pacify",
+    "unlockFlag":  "knows_samen_tafel"
+  },
+  "tram_dash": {
+    "id":          "tram_dash",
+    "name":        "Tramvlucht",
+    "description": "Sprint zo snel als tram 10. Ontsnap altijd succesvol.",
+    "cost":        60,
+    "mpCost":      0,
+    "effect":      "guaranteed_escape"
+  },
+  "bakfiets_charge": {
+    "id":          "bakfiets_charge",
+    "name":        "Bakfiets-aanval",
+    "description": "Rijd met volle snelheid in de vijand. Hoog fysiek schade.",
+    "cost":        100,
+    "mpCost":      0,
+    "effect":      "damage_3x"
+  },
+  "bureaucratic_shield": {
+    "id":          "bureaucratic_shield",
+    "name":        "Vergunningsschild",
+    "description": "Gebruik de Vergunning als schild. Halveert ontvangen schade 2 beurten.",
+    "cost":        90,
+    "mpCost":      0,
+    "effect":      "def_half_damage_2_turns",
+    "unlockFlag":  "has_permit_doc"
+  },
+  "music_of_the_street": {
+    "id":          "music_of_the_street",
+    "name":        "Muziek van de Straat",
+    "description": "Speel oud-muziek. Alle vijanden gedemoraliseerd — verlaagt hun ATK.",
+    "cost":        120,
+    "mpCost":      0,
+    "effect":      "debuff_atk",
+    "unlockFlag":  "reza_quest_done"
+  }
+}

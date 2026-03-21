@@ -1,0 +1,95 @@
+{
+  "mint_tea": {
+    "id":          "mint_tea",
+    "name":        "Muntthee",
+    "description": "Verse Marokkaanse muntthee. Geeft wat HP terug.",
+    "type":        "consumable",
+    "effect":      { "stat": "hp", "amount": 5 },
+    "value":       3,
+    "stackable":   true
+  },
+  "smoske": {
+    "id":          "smoske",
+    "name":        "Smoske",
+    "description": "Een belegd broodje van Boulangerie Karimi. +8 HP.",
+    "type":        "consumable",
+    "effect":      { "stat": "hp", "amount": 8 },
+    "value":       5,
+    "stackable":   true
+  },
+  "friet": {
+    "id":          "friet",
+    "name":        "Friet met Andalous",
+    "description": "Knapperig en goed. +12 HP.",
+    "type":        "consumable",
+    "effect":      { "stat": "hp", "amount": 12 },
+    "value":       6,
+    "stackable":   true
+  },
+  "baklava": {
+    "id":          "baklava",
+    "name":        "Baklava",
+    "description": "Zoete honinggebak van de Marokkaanse bakker. +6 HP.",
+    "type":        "consumable",
+    "effect":      { "stat": "hp", "amount": 6 },
+    "value":       4,
+    "stackable":   true
+  },
+  "harira": {
+    "id":          "harira",
+    "name":        "Harira",
+    "description": "Traditionele Marokkaanse soep. +15 HP.",
+    "type":        "consumable",
+    "effect":      { "stat": "hp", "amount": 15 },
+    "value":       8,
+    "stackable":   false
+  },
+  "permit_doc": {
+    "id":          "permit_doc",
+    "name":        "Vergunning",
+    "description": "Een officieel document van het gemeentehuis. Nodig voor bepaalde quests.",
+    "type":        "key",
+    "value":       0,
+    "stackable":   false
+  },
+  "reuzenpoort_key": {
+    "id":          "reuzenpoort_key",
+    "name":        "Reuzenpoort Sleutel",
+    "description": "Opent de historische Reuzenpoort aan Turnhoutsebaan 110.",
+    "type":        "key",
+    "value":       0,
+    "stackable":   false
+  },
+  "tram_ticket": {
+    "id":          "tram_ticket",
+    "name":        "Tramticket",
+    "description": "Een geldig ticket voor De Lijn tram 10. Reizen naar Deurne of Wijnegem.",
+    "type":        "key",
+    "value":       2,
+    "stackable":   true
+  },
+  "fabric_bolt": {
+    "id":          "fabric_bolt",
+    "name":        "Stoflap (Stunt)",
+    "description": "Een restje stof van Stunt Solderie, Turnhoutsebaan 74. Voor Fatima's jurk.",
+    "type":        "misc",
+    "value":       4,
+    "stackable":   false
+  },
+  "oud_string": {
+    "id":          "oud_string",
+    "name":        "Oud-snaar",
+    "description": "Een reservesnaar voor Reza's oud. Breekbaar.",
+    "type":        "misc",
+    "value":       3,
+    "stackable":   false
+  },
+  "samen_flyer": {
+    "id":          "samen_flyer",
+    "name":        "Samen Aan Tafel Flyer",
+    "description": "Flyer voor het grote iftarevenement op de Turnhoutsebaan. 7000 stoelen.",
+    "type":        "misc",
+    "value":       0,
+    "stackable":   false
+  }
+}

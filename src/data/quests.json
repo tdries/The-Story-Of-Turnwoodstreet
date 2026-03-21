@@ -1,0 +1,451 @@
+{
+  "q_starter_delivery": {
+    "id":           "q_starter_delivery",
+    "title":        "De Eerste Levering",
+    "description":  "Yusuf de koerier heeft een lekke band. Help hem drie pakjes te leveren.",
+    "zone":         1,
+    "requiredFlags": [],
+    "objectives": [
+      {
+        "id":          "talk_yusuf",
+        "description": "Spreek met Yusuf de koerier",
+        "checkFlag":   "met_yusuf",
+        "checkValue":  true
+      },
+      {
+        "id":          "deliver_done",
+        "description": "Help Yusuf met de leveringen",
+        "checkFlag":   "delivery_done",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "delivery_done": true },
+      "items":  ["tram_ticket"],
+      "coins":  10,
+      "xp":     20,
+      "skills": []
+    },
+    "completionFlag": "q_starter_delivery_done"
+  },
+
+  "q_fabric_quest": {
+    "id":           "q_fabric_quest",
+    "title":        "De Stof voor Nora",
+    "description":  "Fatima's nicht Nora trouwt volgende maand. Ze heeft mooie stof nodig van Stunt Solderie.",
+    "zone":         1,
+    "requiredFlags": ["met_fatima"],
+    "objectives": [
+      {
+        "id":          "get_fabric",
+        "description": "Haal de stof op bij Mevrouw Baert (Indian Boutique, nr.137)",
+        "checkFlag":   "stunt_quest_active",
+        "checkValue":  true
+      },
+      {
+        "id":          "deliver_fabric",
+        "description": "Breng de stof naar Fatima",
+        "checkFlag":   "stunt_quest_done",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "has_community_trust": true, "stunt_quest_done": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     40,
+      "skills": ["solidarity_shout"]
+    },
+    "completionFlag": "q_fabric_quest_done"
+  },
+
+  "q_flour_shortage": {
+    "id":           "q_flour_shortage",
+    "title":        "Bakker Zonder Meel",
+    "description":  "Omar heeft geen meel meer voor de ochtendshift. Haal bloem bij Budget Market.",
+    "zone":         1,
+    "requiredFlags": ["met_fatima"],
+    "objectives": [
+      {
+        "id":          "buy_flour",
+        "description": "Koop bloem bij Budget Market (nr.326)",
+        "checkFlag":   "has_flour",
+        "checkValue":  true
+      },
+      {
+        "id":          "deliver_flour",
+        "description": "Breng de bloem naar Omar",
+        "checkFlag":   "omar_flour_done",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "omar_flour_done": true, "knows_samen_tafel": true },
+      "items":  ["harira", "baklava"],
+      "coins":  5,
+      "xp":     25,
+      "skills": ["samen_aan_tafel"]
+    },
+    "completionFlag": "q_flour_shortage_done"
+  },
+
+  "q_oud_string": {
+    "id":           "q_oud_string",
+    "title":        "Reza's Gebroken Snaar",
+    "description":  "Reza's oud heeft een gebroken snaar. Hij kan niet spelen tot je er een vindt bij Oxfam Wereldwinkel.",
+    "zone":         2,
+    "requiredFlags": ["has_community_trust"],
+    "objectives": [
+      {
+        "id":          "find_string",
+        "description": "Vind een oud-snaar bij Mimoun (nr.239)",
+        "checkFlag":   "has_oud_string_item",
+        "checkValue":  true
+      },
+      {
+        "id":          "give_reza",
+        "description": "Geef de snaar aan Reza",
+        "checkFlag":   "reza_quest_done",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "reza_quest_done": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     50,
+      "skills": ["music_of_the_street"]
+    },
+    "completionFlag": "q_oud_string_done"
+  },
+
+  "q_signatures": {
+    "id":           "q_signatures",
+    "title":        "Handtekeningen Tegen Uitzetting",
+    "description":  "De vastgoedspeculant dreigt drie panden te kopen en bewoners te zetten. Verzamel 5 handtekeningen voor de petitie.",
+    "zone":         2,
+    "requiredFlags": ["has_community_trust"],
+    "objectives": [
+      {
+        "id":          "sig_fatima",
+        "description": "Handtekening van Fatima",
+        "checkFlag":   "sig_fatima",
+        "checkValue":  true
+      },
+      {
+        "id":          "sig_omar",
+        "description": "Handtekening van Omar",
+        "checkFlag":   "sig_omar",
+        "checkValue":  true
+      },
+      {
+        "id":          "sig_reza",
+        "description": "Handtekening van Reza",
+        "checkFlag":   "sig_reza",
+        "checkValue":  true
+      },
+      {
+        "id":          "sig_baert",
+        "description": "Handtekening van Mevrouw Baert",
+        "checkFlag":   "sig_baert",
+        "checkValue":  true
+      },
+      {
+        "id":          "sig_aziz",
+        "description": "Handtekening van Aziz (ouderling)",
+        "checkFlag":   "sig_aziz",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "speculator_threatened": true },
+      "items":  ["samen_flyer"],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_signatures_done"
+  },
+
+  "q_beno_repair": {
+    "id":           "q_beno_repair",
+    "title":        "Bakfiets Kapot",
+    "description":  "Je bakfiets heeft schade. Ben bij Costermans Wielersport (nr.332) kan hem repareren.",
+    "zone":         2,
+    "requiredFlags": ["has_community_trust"],
+    "objectives": [
+      {
+        "id":          "visit_beno",
+        "description": "Ga naar Costermans Wielersport (nr.332)",
+        "checkFlag":   "met_beno",
+        "checkValue":  true
+      },
+      {
+        "id":          "repair_done",
+        "description": "Betaal voor de reparatie (20 munten)",
+        "checkFlag":   "bakfiets_repaired",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "bakfiets_repaired": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     15,
+      "skills": ["bakfiets_charge"]
+    },
+    "completionFlag": "q_beno_repair_done"
+  },
+
+  "q_bulldozer_fight": {
+    "id":           "q_bulldozer_fight",
+    "title":        "De Bulldozer-Bureaucraat",
+    "description":  "De vastgoedspeculant staat voor de drie panden. Met de petitie en de steun van de buurt kun je hem confronteren.",
+    "zone":         3,
+    "requiredFlags": ["reza_quest_done", "speculator_threatened"],
+    "objectives": [
+      {
+        "id":          "enter_zone3",
+        "description": "Ga naar Borger Hub (nr.284)",
+        "checkFlag":   "visited_de_roma",
+        "checkValue":  true
+      },
+      {
+        "id":          "defeat_bulldozer",
+        "description": "Versla de Bureau-Bulldozer",
+        "checkFlag":   "has_permit_doc",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "has_permit_doc": true },
+      "items":  ["permit_doc"],
+      "coins":  30,
+      "xp":     80,
+      "skills": ["bureaucratic_shield"]
+    },
+    "completionFlag": "q_bulldozer_done"
+  },
+
+  "q_geest_88": {
+    "id":           "q_geest_88",
+    "title":        "De Geest van '88",
+    "description":  "Een duistere geest uit de jaren '80 verschijnt op de Turnhoutsebaan. Hij kan niet worden verslagen door kracht — alleen door tafel te delen.",
+    "zone":         3,
+    "requiredFlags": ["has_permit_doc", "knows_samen_tafel"],
+    "objectives": [
+      {
+        "id":          "find_geest",
+        "description": "Vind de Geest van '88",
+        "checkFlag":   "geest_encountered",
+        "checkValue":  true
+      },
+      {
+        "id":          "pacify_geest",
+        "description": "Versla de Geest met 'Samen Aan Tafel' (niet met aanvallen)",
+        "checkFlag":   "kracht_van_gemeenschap",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "kracht_van_gemeenschap": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     100,
+      "skills": []
+    },
+    "completionFlag": "q_geest_88_done"
+  },
+
+  "q_mayor_meeting": {
+    "id":           "q_mayor_meeting",
+    "title":        "Districtsvoorzitter El Osri",
+    "description":  "Mariam El Osri wil je spreken over een groot plan voor de Turnhoutsebaan.",
+    "zone":         3,
+    "requiredFlags": ["visited_de_roma"],
+    "objectives": [
+      {
+        "id":          "meet_mayor",
+        "description": "Spreek met Districtsvoorzitter El Osri",
+        "checkFlag":   "met_mayor",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "act4_started": true },
+      "items":  ["samen_flyer"],
+      "coins":  0,
+      "xp":     20,
+      "skills": []
+    },
+    "completionFlag": "q_mayor_meeting_done"
+  },
+
+  "q_faction_moroccan": {
+    "id":           "q_faction_moroccan",
+    "title":        "De Marokkaanse Vereniging",
+    "description":  "De Marokkaanse gemeenschapsvereniging twijfelt nog. Fatima kan hen overtuigen — maar jij moet haar eerst overtuigen.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor", "met_fatima"],
+    "objectives": [
+      {
+        "id":          "convince_fatima_faction",
+        "description": "Overtuig Fatima om de vereniging te contacteren",
+        "checkFlag":   "fatima_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_1": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_moroccan_done"
+  },
+
+  "q_faction_turkish": {
+    "id":           "q_faction_turkish",
+    "title":        "De Turkse Sociale Club",
+    "description":  "Tine kent de voorzitter van de Turkse sociale club. Ze zegt ja als jij haar aanspreekt in de juiste geest.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor"],
+    "objectives": [
+      {
+        "id":          "talk_tine_faction",
+        "description": "Spreek met Tine over de Turkse sociale club",
+        "checkFlag":   "tine_faction_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_2": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_turkish_done"
+  },
+
+  "q_faction_flemish": {
+    "id":           "q_faction_flemish",
+    "title":        "Bar Leon op Krugerplein",
+    "description":  "De Vlaamse stamgasten van Bar Leon zijn sceptisch. Mevrouw Baert is de sleutel — zij wordt gerespecteerd door beiden.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor", "stunt_quest_done"],
+    "objectives": [
+      {
+        "id":          "talk_baert_faction",
+        "description": "Vraag Mevrouw Baert om Bar Leon te overtuigen",
+        "checkFlag":   "baert_faction_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_3": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_flemish_done"
+  },
+
+  "q_faction_art": {
+    "id":           "q_faction_art",
+    "title":        "Borgerhub Kunstenaarscollectief",
+    "description":  "De kunstenaars in Borgerhub willen deelnemen — maar alleen als De Roma ook meedoet.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor", "visited_de_roma"],
+    "objectives": [
+      {
+        "id":          "link_roma_borgerhub",
+        "description": "Koppel De Roma-geest aan Borgerhub",
+        "checkFlag":   "art_faction_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_4": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_art_done"
+  },
+
+  "q_faction_school": {
+    "id":           "q_faction_school",
+    "title":        "De Buurtschool",
+    "description":  "Hamza's school wil deelnemen maar de directeur is bezorgd over orde. Hamza kan hem overtuigen.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor"],
+    "objectives": [
+      {
+        "id":          "talk_hamza_school",
+        "description": "Spreek met Hamza over zijn school",
+        "checkFlag":   "school_faction_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_5": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_school_done"
+  },
+
+  "q_faction_mosque": {
+    "id":           "q_faction_mosque",
+    "title":        "De-Koepel Moskee",
+    "description":  "De imam van de De-Koepel Moskee wil dat de tafel ook een iftar-moment wordt. Hij zegt ja na jouw belofte.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor", "kracht_van_gemeenschap"],
+    "objectives": [
+      {
+        "id":          "talk_imam",
+        "description": "Spreek met de imam van De-Koepel Moskee (Stenenbrug 11)",
+        "checkFlag":   "mosque_faction_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_6": true },
+      "items":  [],
+      "coins":  0,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_mosque_done"
+  },
+
+  "q_faction_frituur": {
+    "id":           "q_faction_frituur",
+    "title":        "Frituur de Tram",
+    "description":  "Frituur de Tram wil 7000 zakjes friet bakken. Ze hebben jouw hulp nodig om genoeg aardappelen te bestellen.",
+    "zone":         4,
+    "requiredFlags": ["met_mayor", "delivery_done"],
+    "objectives": [
+      {
+        "id":          "order_fries",
+        "description": "Help Frituur de Tram met de grootorde",
+        "checkFlag":   "frituur_faction_convinced",
+        "checkValue":  true
+      }
+    ],
+    "reward": {
+      "flags":  { "samen_tafel_faction_7": true },
+      "items":  ["friet"],
+      "coins":  5,
+      "xp":     30,
+      "skills": []
+    },
+    "completionFlag": "q_faction_frituur_done"
+  }
+}

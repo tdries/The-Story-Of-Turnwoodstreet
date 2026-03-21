@@ -1,0 +1,75 @@
+{
+  "straatvechter": {
+    "id":     "straatvechter",
+    "name":   "Straatvechter",
+    "hp":     12,
+    "atk":    4,
+    "def":    1,
+    "spd":    3,
+    "xp":     20,
+    "coins":  2,
+    "loot":   [],
+    "taunt":  ["Wat wil je?", "Stap op!", "Dit is mijn hoek."]
+  },
+  "pickpocket": {
+    "id":     "pickpocket",
+    "name":   "Zakkenroller",
+    "hp":     8,
+    "atk":    2,
+    "def":    0,
+    "spd":    6,
+    "xp":     15,
+    "coins":  5,
+    "loot":   ["tram_ticket"],
+    "taunt":  ["Je merkt het toch niet…", "Snel en weg!"]
+  },
+  "bulldozer_bureau": {
+    "id":     "bulldozer_bureau",
+    "name":   "Bureau-Buldozer",
+    "hp":     25,
+    "atk":    6,
+    "def":    3,
+    "spd":    2,
+    "xp":     50,
+    "coins":  10,
+    "loot":   ["permit_doc"],
+    "taunt":  ["Formulier C, sectie 4!", "Geen handtekening, geen toestemming.", "Dit project gaat DOOR."]
+  },
+  "speculant": {
+    "id":     "speculant",
+    "name":   "Vastgoedspeculant",
+    "hp":     30,
+    "atk":    7,
+    "def":    4,
+    "spd":    2,
+    "xp":     80,
+    "coins":  20,
+    "loot":   [],
+    "taunt":  ["Dit pand is mijn eigendom!", "Rendement, rendement!", "Weg met jullie buurt."]
+  },
+  "tram_geest": {
+    "id":     "tram_geest",
+    "name":   "Geest van Tram 10",
+    "hp":     40,
+    "atk":    9,
+    "def":    5,
+    "spd":    8,
+    "xp":     120,
+    "coins":  0,
+    "loot":   ["reuzenpoort_key"],
+    "taunt":  ["Volgende halte: NERGENS.", "Dit spoor rijdt eeuwig.", "Zegel! Astrid! Centraal!"]
+  },
+  "vlok_geest": {
+    "id":     "vlok_geest",
+    "name":   "Geest van '88",
+    "hp":     18,
+    "atk":    5,
+    "def":    2,
+    "spd":    4,
+    "xp":     40,
+    "coins":  0,
+    "loot":   [],
+    "taunt":  ["Borgerokko!", "Ga terug!", "Dit is ONZE straat."],
+    "_note":  "Represents the Vlaams Blok era of Borgerhout. Defeated by community solidarity."
+  }
+}
