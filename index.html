@@ -44,6 +44,56 @@
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
+    /* ── Mobile layout (≤ 640px) ─────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr auto;
+        grid-template-areas:
+          "game game"
+          "left right";
+        height: 100svh;
+      }
+      #game-container {
+        grid-area: game;
+        width: 100%;
+        height: auto;
+      }
+      #left-panel {
+        grid-area: left;
+        width: auto;
+        min-width: unset;
+        height: auto;
+        justify-content: flex-end;
+        padding: 8px 8px 14px;
+      }
+      #right-panel {
+        grid-area: right;
+        width: auto;
+        min-width: unset;
+        height: auto;
+        justify-content: flex-end;
+        padding: 8px 8px 14px;
+      }
+      /* Hide non-essential elements — keep only controls */
+      #left-panel .panel-top,
+      #right-panel .panel-top,
+      #news-ticker { display: none !important; }
+
+      /* Larger D-pad for touch */
+      #dpad {
+        grid-template-columns: 62px 62px 62px;
+        grid-template-rows:    62px 62px 62px;
+        gap: 3px;
+      }
+      .dpad-btn { font-size: 28px; border-radius: 12px; }
+
+      /* Compact action buttons in a column */
+      #action-btns { gap: 6px; width: auto; }
+      .action-btn  { height: 52px; min-width: 72px; font-size: 7px; padding: 0 8px; }
+      .action-btn .sub { display: none; }
+    }
   </style>
   <style>
     /* ── Feedback button & modal ─────────────────────────────────────────── */
