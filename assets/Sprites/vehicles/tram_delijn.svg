@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 120" width="352" height="120" shape-rendering="crispEdges">
+  <!-- DE LIJN TRAM — 88 game pixels wide × 20 tall, 4x scale = 352×80 SVG px -->
+  <!-- Based on De Lijn type 7000/7900 — white body, blue/yellow stripe -->
+
+  <!-- ─── FRAME 1: Moving (y=0) ─── -->
+
+  <!-- Body — white/cream -->
+  <rect x="0"   y="0"  width="352" height="72" fill="#F2F2F2"/>
+
+  <!-- Roof panel (slight grey) -->
+  <rect x="0"   y="0"  width="352" height="12" fill="#CCCCCC"/>
+
+  <!-- De Lijn blue accent stripe (mid-body) -->
+  <rect x="0"   y="24" width="352" height="16" fill="#1E5FA0"/>
+
+  <!-- Yellow destination band above stripe -->
+  <rect x="0"   y="20" width="352" height="4"  fill="#F0C000"/>
+
+  <!-- Front cab face (left end) -->
+  <rect x="0"   y="0"  width="20"  height="72" fill="#DDDDDD"/>
+  <rect x="4"   y="4"  width="12"  height="12" fill="#A8C8EA"/><!-- headlight/glass -->
+  <rect x="4"   y="18" width="12"  height="4"  fill="#F0C000"/><!-- front stripe -->
+
+  <!-- Rear cab face (right end) -->
+  <rect x="332" y="0"  width="20"  height="72" fill="#DDDDDD"/>
+  <rect x="336" y="4"  width="12"  height="12" fill="#A8C8EA"/>
+  <rect x="336" y="18" width="12"  height="4"  fill="#F0C000"/>
+
+  <!-- Window series (passenger) — left to right -->
+  <!-- Each window: 32×24 with 4px frame -->
+  <rect x="24"  y="4"  width="32"  height="24" fill="#1A1A1A"/><!-- frame -->
+  <rect x="28"  y="8"  width="24"  height="16" fill="#A8C8EA"/><!-- glass -->
+  <rect x="28"  y="8"  width="2"   height="16" fill="rgba(255,255,255,0.4)"/><!-- reflect -->
+
+  <rect x="64"  y="4"  width="32"  height="24" fill="#1A1A1A"/>
+  <rect x="68"  y="8"  width="24"  height="16" fill="#A8C8EA"/>
+  <rect x="68"  y="8"  width="2"   height="16" fill="rgba(255,255,255,0.4)"/>
+
+  <!-- Centre door pair -->
+  <rect x="104" y="4"  width="44"  height="68" fill="#1A1A1A"/>
+  <rect x="108" y="8"  width="36"  height="60" fill="#888"/>
+  <rect x="108" y="8"  width="16"  height="60" fill="#999"/><!-- left door panel -->
+  <rect x="128" y="8"  width="16"  height="60" fill="#999"/><!-- right door panel -->
+  <rect x="122" y="28" width="4"   height="12" fill="#666"/><!-- door gap -->
+
+  <rect x="156" y="4"  width="32"  height="24" fill="#1A1A1A"/>
+  <rect x="160" y="8"  width="24"  height="16" fill="#A8C8EA"/>
+  <rect x="160" y="8"  width="2"   height="16" fill="rgba(255,255,255,0.4)"/>
+
+  <rect x="196" y="4"  width="32"  height="24" fill="#1A1A1A"/>
+  <rect x="200" y="8"  width="24"  height="16" fill="#A8C8EA"/>
+  <rect x="200" y="8"  width="2"   height="16" fill="rgba(255,255,255,0.4)"/>
+
+  <!-- Second door pair -->
+  <rect x="236" y="4"  width="44"  height="68" fill="#1A1A1A"/>
+  <rect x="240" y="8"  width="36"  height="60" fill="#888"/>
+  <rect x="240" y="8"  width="16"  height="60" fill="#999"/>
+  <rect x="260" y="8"  width="16"  height="60" fill="#999"/>
+  <rect x="254" y="28" width="4"   height="12" fill="#666"/>
+
+  <rect x="288" y="4"  width="32"  height="24" fill="#1A1A1A"/>
+  <rect x="292" y="8"  width="24"  height="16" fill="#A8C8EA"/>
+  <rect x="292" y="8"  width="2"   height="16" fill="rgba(255,255,255,0.4)"/>
+
+  <!-- Destination display (top front) -->
+  <rect x="20"  y="0"  width="80"  height="12" fill="#111"/>
+  <text x="22" y="10" font-size="8" fill="#F0C000" font-family="monospace" font-weight="bold">10 Wijnegem</text>
+
+  <!-- De Lijn logo area (side panel) -->
+  <rect x="152" y="44" width="52"  height="16" fill="#1E5FA0"/>
+  <text x="155" y="56" font-size="10" fill="white" font-family="Arial, sans-serif" font-weight="bold">De Lijn</text>
+
+  <!-- Bottom body panel -->
+  <rect x="0"   y="60" width="352" height="12" fill="#CCCCCC"/>
+
+  <!-- Wheels + bogies -->
+  <rect x="12"  y="68" width="40"  height="16" fill="#333"/>
+  <rect x="16"  y="72" width="32"  height="8"  fill="#555"/>
+  <rect x="300" y="68" width="40"  height="16" fill="#333"/>
+  <rect x="304" y="72" width="32"  height="8"  fill="#555"/>
+  <!-- Axle detail -->
+  <rect x="8"   y="72" width="48"  height="4"  fill="#222"/>
+  <rect x="296" y="72" width="48"  height="4"  fill="#222"/>
+
+  <!-- Pantograph (overhead current collector) -->
+  <rect x="168" y="0"  width="8"   height="24" fill="none" stroke="#888" stroke-width="2"/>
+  <rect x="144" y="0"  width="56"  height="4"  fill="#999"/>
+  <!-- Pantograph detail -->
+  <rect x="164" y="0"  width="4"   height="4"  fill="#AAA"/>
+  <rect x="176" y="0"  width="4"   height="4"  fill="#AAA"/>
+
+  <!-- ─── FRAME 2: Doors Open (y=92 in this sheet) ─── -->
+  <rect x="0"   y="92" width="352" height="28" fill="#1A1A1A"/>
+  <text x="4"   y="110" font-size="8" fill="#888" font-family="monospace">DOOR OPEN FRAME — same body, doors slid open 8px outward</text>
+
+  <!-- Caption -->
+  <text x="0" y="116" font-size="7" fill="#666" font-family="monospace">De Lijn type 7000 — 88×20px game sprite — 4x scale = 352×80 SVG</text>
+</svg>

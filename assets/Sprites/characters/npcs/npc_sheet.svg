@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" shape-rendering="crispEdges">
+  <!--
+    NPC SPRITE SHEET — TURNHOUTSEBAAN
+    4 NPCs × 2 frames each (idle + stride), 4x scale
+    Based on real Borgerhout resident archetypes
+  -->
+
+  <!-- ── COLUMN LABELS ── -->
+  <text x="14"  y="12" font-size="7" fill="#666" font-family="monospace">OUMA</text>
+  <text x="90"  y="12" font-size="7" fill="#666" font-family="monospace">HIPSTER</text>
+  <text x="170" y="12" font-size="7" fill="#666" font-family="monospace">YOUTH</text>
+  <text x="245" y="12" font-size="7" fill="#666" font-family="monospace">SHOPKEEPER</text>
+
+  <!-- ════ OUMA (x=0) — older lady, warm coat, shopping cart ════ -->
+  <!-- HEAD -->
+  <rect x="10" y="16" width="24" height="20" fill="#FDBBB4"/><!-- face -->
+  <rect x="10" y="16" width="24" height="4"  fill="#888"/><!-- grey hair -->
+  <rect x="8"  y="20" width="28" height="4"  fill="#777"/><!-- hair sides -->
+  <rect x="22" y="24" width="4"  height="4"  fill="#111"/><!-- eye -->
+  <!-- BODY — warm purple coat -->
+  <rect x="6"  y="36" width="36" height="32" fill="#9B59B6"/>
+  <!-- Coat collar -->
+  <rect x="14" y="36" width="8"  height="8"  fill="#7D3C98"/>
+  <rect x="22" y="36" width="8"  height="8"  fill="#7D3C98"/>
+  <!-- Arms -->
+  <rect x="0"  y="36" width="8"  height="24" fill="#9B59B6"/><!-- left arm -->
+  <rect x="40" y="36" width="8"  height="24" fill="#9B59B6"/><!-- right arm (holds cart) -->
+  <!-- Hands -->
+  <rect x="0"  y="60" width="8"  height="8"  fill="#FDBBB4"/>
+  <rect x="40" y="60" width="8"  height="8"  fill="#FDBBB4"/>
+  <!-- Skirt/Pants -->
+  <rect x="8"  y="68" width="32" height="20" fill="#5D6D7E"/>
+  <!-- Shoes -->
+  <rect x="8"  y="88" width="12" height="8"  fill="#333"/>
+  <rect x="28" y="88" width="12" height="8"  fill="#333"/>
+  <!-- Shopping cart -->
+  <rect x="44" y="52" width="24" height="20" fill="#AAA"/><!-- basket -->
+  <rect x="44" y="52" width="24" height="4"  fill="#888"/><!-- rim -->
+  <rect x="48" y="72" width="4"  height="8"  fill="#888"/><!-- left wheel -->
+  <rect x="60" y="72" width="4"  height="8"  fill="#888"/><!-- right wheel -->
+  <!-- Cart handle -->
+  <rect x="40" y="48" width="4"  height="12" fill="#888"/>
+
+  <!-- OUMA STRIDE FRAME (y+80) -->
+  <rect x="10" y="96" width="24" height="20" fill="#FDBBB4"/>
+  <rect x="10" y="96" width="24" height="4"  fill="#888"/>
+  <rect x="22" y="104" width="4" height="4"  fill="#111"/>
+  <rect x="6"  y="116" width="36" height="32" fill="#9B59B6"/>
+  <rect x="0"  y="116" width="8"  height="24" fill="#9B59B6"/>
+  <rect x="40" y="116" width="8"  height="24" fill="#9B59B6"/>
+  <!-- Legs striding (very small steps — she's slow) -->
+  <rect x="8"  y="148" width="12" height="20" fill="#5D6D7E"/>
+  <rect x="24" y="152" width="12" height="20" fill="#5D6D7E"/>
+  <rect x="8"  y="168" width="12" height="8"  fill="#333"/>
+  <rect x="24" y="172" width="12" height="8"  fill="#333"/>
+  <!-- Cart follows -->
+  <rect x="44" y="132" width="24" height="20" fill="#AAA"/>
+  <rect x="44" y="132" width="24" height="4"  fill="#888"/>
+  <rect x="48" y="152" width="4"  height="8"  fill="#888"/>
+  <rect x="60" y="152" width="4"  height="8"  fill="#888"/>
+
+  <!-- ════ HIPSTER (x=80) — beanie, green jacket, coffee ════ -->
+  <!-- Beanie -->
+  <rect x="88" y="16" width="24" height="8"  fill="#E67E22"/>
+  <rect x="86" y="22" width="28" height="4"  fill="#D35400"/><!-- brim -->
+  <!-- Head -->
+  <rect x="88" y="26" width="24" height="16" fill="#FDBBB4"/>
+  <rect x="96" y="30" width="4"  height="4"  fill="#111"/><!-- eye -->
+  <rect x="88" y="38" width="8"  height="4"  fill="#555"/><!-- beard hint -->
+  <!-- Body — oversized green jacket -->
+  <rect x="84" y="42" width="32" height="36" fill="#2ECC71"/>
+  <!-- Jacket lapels -->
+  <rect x="96" y="42" width="4"  height="12" fill="#27AE60"/>
+  <rect x="100" y="42" width="4" height="12" fill="#27AE60"/>
+  <!-- Arms -->
+  <rect x="78" y="42" width="8"  height="24" fill="#2ECC71"/><!-- left arm -->
+  <rect x="114" y="42" width="8" height="20" fill="#2ECC71"/><!-- right arm (holds coffee) -->
+  <!-- Coffee cup -->
+  <rect x="120" y="54" width="12" height="16" fill="#F5DEB3"/>
+  <rect x="120" y="50" width="12" height="4"  fill="#8B4513"/><!-- lid -->
+  <!-- Pants — dark slim -->
+  <rect x="88" y="78" width="12" height="28" fill="#1A252F"/>
+  <rect x="100" y="78" width="12" height="28" fill="#1A252F"/>
+  <!-- Sneakers -->
+  <rect x="86" y="106" width="14" height="6" fill="#FFF"/>
+  <rect x="100" y="106" width="14" height="6" fill="#FFF"/>
+  <rect x="86" y="110" width="14" height="4" fill="#CCC"/>
+  <rect x="100" y="110" width="14" height="4" fill="#CCC"/>
+
+  <!-- HIPSTER STRIDE (y+80) -->
+  <rect x="88" y="96" width="24" height="8"  fill="#E67E22"/>
+  <rect x="86" y="102" width="28" height="4" fill="#D35400"/>
+  <rect x="88" y="106" width="24" height="16" fill="#FDBBB4"/>
+  <rect x="96" y="110" width="4"  height="4"  fill="#111"/>
+  <rect x="84" y="122" width="32" height="36" fill="#2ECC71"/>
+  <rect x="76" y="118" width="8"  height="24" fill="#2ECC71"/>
+  <rect x="114" y="126" width="8" height="16" fill="#2ECC71"/>
+  <rect x="120" y="130" width="12" height="16" fill="#F5DEB3"/>
+  <rect x="120" y="126" width="12" height="4"  fill="#8B4513"/>
+  <!-- Striding legs -->
+  <rect x="86" y="158" width="12" height="28" fill="#1A252F"/>
+  <rect x="102" y="162" width="12" height="28" fill="#1A252F"/>
+  <rect x="84" y="186" width="14" height="6"  fill="#FFF"/>
+  <rect x="100" y="190" width="14" height="6" fill="#FFF"/>
+
+  <!-- ════ YOUTH (x=160) — tracksuit, fresh sneakers ════ -->
+  <!-- Head -->
+  <rect x="166" y="16" width="24" height="20" fill="#FDBBB4"/>
+  <rect x="166" y="16" width="24" height="4"  fill="#2C1810"/>
+  <rect x="178" y="24" width="4"  height="4"  fill="#111"/>
+  <!-- Tracksuit top — blue -->
+  <rect x="162" y="36" width="32" height="32" fill="#3498DB"/>
+  <!-- Stripes on arms -->
+  <rect x="156" y="36" width="8"  height="28" fill="#3498DB"/>
+  <rect x="156" y="40" width="8"  height="4"  fill="#FFF"/>
+  <rect x="156" y="48" width="8"  height="4"  fill="#FFF"/>
+  <rect x="192" y="36" width="8"  height="28" fill="#3498DB"/>
+  <rect x="192" y="40" width="8"  height="4"  fill="#FFF"/>
+  <rect x="192" y="48" width="8"  height="4"  fill="#FFF"/>
+  <!-- Tracksuit pants -->
+  <rect x="164" y="68" width="12" height="32" fill="#1F618D"/>
+  <rect x="180" y="68" width="12" height="32" fill="#1F618D"/>
+  <!-- White stripe on pants -->
+  <rect x="166" y="68" width="4"  height="32" fill="#2060A0"/>
+  <rect x="182" y="68" width="4"  height="32" fill="#2060A0"/>
+  <!-- Fresh white sneakers -->
+  <rect x="162" y="100" width="16" height="8" fill="#FFF"/>
+  <rect x="178" y="100" width="16" height="8" fill="#FFF"/>
+  <rect x="162" y="104" width="16" height="4" fill="#DDD"/>
+  <rect x="178" y="104" width="16" height="4" fill="#DDD"/>
+  <!-- Phone in hand -->
+  <rect x="198" y="52" width="8"  height="12" fill="#111"/>
+  <rect x="199" y="53" width="6"  height="10" fill="#A8C8EA"/>
+
+  <!-- YOUTH STRIDE (y+80) -->
+  <rect x="166" y="96" width="24" height="20" fill="#FDBBB4"/>
+  <rect x="166" y="96" width="24" height="4"  fill="#2C1810"/>
+  <rect x="178" y="104" width="4" height="4"  fill="#111"/>
+  <rect x="162" y="116" width="32" height="32" fill="#3498DB"/>
+  <rect x="154" y="112" width="8"  height="24" fill="#3498DB"/>
+  <rect x="192" y="120" width="8"  height="20" fill="#3498DB"/>
+  <rect x="160" y="148" width="12" height="32" fill="#1F618D"/>
+  <rect x="180" y="152" width="12" height="32" fill="#1F618D"/>
+  <rect x="158" y="180" width="16" height="8"  fill="#FFF"/>
+  <rect x="178" y="184" width="16" height="8"  fill="#FFF"/>
+
+  <!-- ════ SHOPKEEPER (x=240) — apron, broom ════ -->
+  <!-- Head -->
+  <rect x="246" y="16" width="24" height="20" fill="#FDBBB4"/>
+  <rect x="246" y="16" width="24" height="4"  fill="#2C1810"/>
+  <rect x="258" y="24" width="4"  height="4"  fill="#111"/>
+  <!-- White shirt -->
+  <rect x="242" y="36" width="32" height="32" fill="#FAFAFA"/>
+  <!-- Orange apron over shirt -->
+  <rect x="248" y="36" width="20" height="32" fill="#E67E22"/>
+  <!-- Apron strings -->
+  <rect x="242" y="40" width="8"  height="4"  fill="#E67E22"/>
+  <rect x="266" y="40" width="8"  height="4"  fill="#E67E22"/>
+  <!-- Arms -->
+  <rect x="236" y="36" width="8"  height="24" fill="#FAFAFA"/>
+  <rect x="272" y="36" width="8"  height="24" fill="#FAFAFA"/>
+  <!-- Broom -->
+  <rect x="278" y="20" width="4"  height="48" fill="#8B4513"/><!-- handle -->
+  <rect x="274" y="64" width="16" height="8"  fill="#D4A850"/><!-- brush head -->
+  <!-- Pants — dark -->
+  <rect x="246" y="68" width="12" height="28" fill="#503010"/>
+  <rect x="258" y="68" width="12" height="28" fill="#503010"/>
+  <!-- Shoes -->
+  <rect x="244" y="96" width="14" height="8"  fill="#333"/>
+  <rect x="258" y="96" width="14" height="8"  fill="#333"/>
+
+  <!-- SHOPKEEPER STRIDE (y+80) — just waving -->
+  <rect x="246" y="96"  width="24" height="20" fill="#FDBBB4"/>
+  <rect x="246" y="96"  width="24" height="4"  fill="#2C1810"/>
+  <rect x="258" y="104" width="4"  height="4"  fill="#111"/>
+  <rect x="242" y="116" width="32" height="32" fill="#FAFAFA"/>
+  <rect x="248" y="116" width="20" height="32" fill="#E67E22"/>
+  <!-- Waving arm up -->
+  <rect x="236" y="108" width="8"  height="20" fill="#FAFAFA"/>
+  <rect x="272" y="116" width="8"  height="24" fill="#FAFAFA"/>
+  <rect x="234" y="104" width="8"  height="8"  fill="#FDBBB4"/><!-- waving hand -->
+  <rect x="246" y="148" width="12" height="28" fill="#503010"/>
+  <rect x="258" y="148" width="12" height="28" fill="#503010"/>
+  <rect x="244" y="176" width="14" height="8"  fill="#333"/>
+  <rect x="258" y="176" width="14" height="8"  fill="#333"/>
+
+  <!-- Grid lines for reference -->
+  <line x1="80"  y1="0" x2="80"  y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="160" y1="0" x2="160" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="240" y1="0" x2="240" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="0"   y1="80" x2="320" y2="80" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <text x="2" y="196" font-size="6" fill="#555" font-family="monospace">NPC SHEET — 4 types × 2 frames — Borgerhout, Antwerpen — 4x scale</text>
+</svg>
