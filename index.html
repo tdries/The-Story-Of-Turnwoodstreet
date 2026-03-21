@@ -95,6 +95,24 @@
       outline: none;
     }
     #feedback-text:focus { border-color: #FFD700; }
+    #feedback-category {
+      background: #151520;
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 6px;
+      color: #F0EAD6;
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      padding: 8px 10px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23FFD700'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+    #feedback-category:focus { border-color: #FFD700; }
     #feedback-modal .btn-row {
       display: flex;
       gap: 10px;
@@ -228,6 +246,12 @@
     <div id="feedback-modal">
       <h2>STUUR FEEDBACK</h2>
       <p>Bug gevonden? Idee? Vertel het ons.</p>
+      <select id="feedback-category">
+        <option value="Story logic">A) Story logic</option>
+        <option value="Visual input">B) Visual input</option>
+        <option value="Gameplay">C) Gameplay</option>
+        <option value="Other">D) Other</option>
+      </select>
       <textarea id="feedback-text" placeholder="Schrijf hier..."></textarea>
       <div id="feedback-status"></div>
       <div class="btn-row">
@@ -317,10 +341,11 @@
     const GH_REPO  = 'tdries/The-Story-Of-Turnwoodstreet';
     const TOKEN_SET = GH_TOKEN && GH_TOKEN !== '%VITE_GITHUB_TOKEN%';
 
-    const overlay  = document.getElementById('feedback-overlay');
-    const textarea = document.getElementById('feedback-text');
-    const status   = document.getElementById('feedback-status');
-    const sendBtn  = document.getElementById('btn-send-feedback');
+    const overlay   = document.getElementById('feedback-overlay');
+    const textarea  = document.getElementById('feedback-text');
+    const category  = document.getElementById('feedback-category');
+    const status    = document.getElementById('feedback-status');
+    const sendBtn   = document.getElementById('btn-send-feedback');
 
     document.getElementById('feedback-btn').addEventListener('click', () => {
       overlay.classList.add('open');
@@ -355,9 +380,9 @@
       status.textContent = 'Verzenden...';
       status.style.color = '#FFD700';
 
-      // First line of feedback becomes the issue title (max 72 chars)
-      const title = 'Speler feedback: ' + msg.split('\n')[0].slice(0, 55);
-      const body  = `${msg}\n\n---\n*Ingediend via het spel op ${new Date().toISOString()}*`;
+      const cat   = category.value;
+      const title = `[${cat}] ${msg.split('\n')[0].slice(0, 55)}`;
+      const body  = `**Categorie:** ${cat}\n\n${msg}\n\n---\n*Ingediend via het spel op ${new Date().toISOString()}*`;
 
       try {
         const res = await fetch(`https://api.github.com/repos/${GH_REPO}/issues`, {
