@@ -11,14 +11,31 @@
     body {
       background: #0A0A12;
       display: flex;
+      flex-direction: row;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Side panels ─────────────────────────────────────────────────────── */
+    #left-panel, #right-panel {
+      width: 160px;
+      min-width: 160px;
+      display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      gap: 8px;
+    }
+    .panel-top { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+    .panel-bottom { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+    /* ── Game center ─────────────────────────────────────────────────────── */
+    #game-container {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding-bottom: 180px;   /* room for controls below canvas */
-      overflow-x: hidden;
-    }
-    #game-container {
+      height: 100vh;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
@@ -27,69 +44,34 @@
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       box-shadow: 0 0 80px rgba(255, 160, 40, 0.18);
+      max-width: 100%;
+      max-height: 100vh;
     }
   </style>
   <style>
     /* ── Feedback button & modal ─────────────────────────────────────────── */
-    #feedback-btn {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      z-index: 1000;
+    #feedback-btn, #radio-btn, #hint-btn {
       background: rgba(10,10,18,0.82);
-      border: 1px solid rgba(255,215,0,0.4);
       border-radius: 8px;
-      color: #FFD700;
       font-family: "Press Start 2P", monospace;
       font-size: 6px;
-      padding: 7px 10px;
+      padding: 8px 10px;
       cursor: pointer;
       letter-spacing: 0.5px;
       -webkit-tap-highlight-color: transparent;
-    }
-    #feedback-btn:hover { background: rgba(255,215,0,0.15); }
-
-    #radio-btn {
-      position: fixed;
-      top: 76px;
-      right: 12px;
-      z-index: 1000;
-      background: rgba(10,10,18,0.82);
-      border: 1px solid rgba(80,220,120,0.4);
-      border-radius: 8px;
-      color: #50DC78;
-      font-family: "Press Start 2P", monospace;
-      font-size: 6px;
-      padding: 7px 10px;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      -webkit-tap-highlight-color: transparent;
-      line-height: 1.8;
+      width: 100%;
       text-align: center;
+      line-height: 1.8;
     }
+    #feedback-btn { border: 1px solid rgba(255,215,0,0.4);   color: #FFD700; }
+    #feedback-btn:hover { background: rgba(255,215,0,0.15); }
+    #radio-btn    { border: 1px solid rgba(80,220,120,0.4);  color: #50DC78; }
     #radio-btn:hover { background: rgba(80,220,120,0.12); }
     #radio-btn.playing {
       border-color: rgba(80,220,120,0.9);
-      color: #50DC78;
       background: rgba(80,220,120,0.15);
     }
-
-    #hint-btn {
-      position: fixed;
-      top: 110px;
-      right: 12px;
-      z-index: 1000;
-      background: rgba(10,10,18,0.82);
-      border: 1px solid rgba(100,200,255,0.4);
-      border-radius: 8px;
-      color: #64C8FF;
-      font-family: "Press Start 2P", monospace;
-      font-size: 6px;
-      padding: 7px 10px;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      -webkit-tap-highlight-color: transparent;
-    }
+    #hint-btn     { border: 1px solid rgba(100,200,255,0.4); color: #64C8FF; }
     #hint-btn:hover { background: rgba(100,200,255,0.12); }
 
     #hint-overlay {
@@ -138,14 +120,11 @@
 
     /* ── Auth / Scoreboard ───────────────────────────────────────────────── */
     #auth-panel {
-      position: fixed;
-      top: 12px;
-      left: 12px;
-      z-index: 1000;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      align-items: flex-start;
+      align-items: center;
+      width: 100%;
     }
     .auth-btn {
       background: rgba(10,10,18,0.82);
@@ -445,20 +424,6 @@
     }
 
     /* ── Touch controls ───────────────────────────────────────────────────── */
-    #touch-controls {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: none;           /* shown only on touch devices via JS */
-      justify-content: space-between;
-      align-items: flex-end;
-      padding: 12px 24px 20px;
-      pointer-events: none;
-      z-index: 999;
-      gap: 16px;
-    }
-    #touch-controls.active { display: flex; }
 
     /* D-pad */
     #dpad {
@@ -501,7 +466,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      pointer-events: all;
+      width: 100%;
     }
     .action-btn {
       background: rgba(255,255,255,0.12);
@@ -543,23 +508,51 @@
     <div id="login-gate-error"></div>
   </div>
 
-  <div id="game-container"></div>
-
-  <!-- Auth panel (top-left) — only shown after login -->
-  <div id="auth-panel">
-    <!-- Shown when logged in -->
-    <div id="auth-user">
-      <img id="auth-avatar" src="" alt="avatar" />
-      <div>
-        <div id="auth-name"></div>
-        <button id="btn-logout">uitloggen</button>
+  <!-- Left panel -->
+  <div id="left-panel">
+    <div class="panel-top">
+      <div id="auth-panel">
+        <div id="auth-user">
+          <img id="auth-avatar" src="" alt="avatar" />
+          <div>
+            <div id="auth-name"></div>
+            <button id="btn-logout">uitloggen</button>
+          </div>
+        </div>
+        <button class="auth-btn" id="btn-scores">🏆 SCORES</button>
+        <div id="auth-error" style="display:none;font-family:'Press Start 2P',monospace;font-size:4px;color:#ff6633;line-height:1.8;"></div>
       </div>
     </div>
-    <button class="auth-btn" id="btn-scores">🏆 SCORES</button>
-    <div id="auth-error" style="display:none;font-family:'Press Start 2P',monospace;font-size:4px;color:#ff6633;max-width:120px;line-height:1.8;"></div>
+    <div class="panel-bottom">
+      <div id="dpad">
+        <button class="dpad-btn" id="btn-up">↑</button>
+        <button class="dpad-btn" id="btn-left">←</button>
+        <button class="dpad-btn" id="btn-right">→</button>
+        <button class="dpad-btn" id="btn-down">↓</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Scoreboard modal -->
+  <!-- Game center -->
+  <div id="game-container"></div>
+
+  <!-- Right panel -->
+  <div id="right-panel">
+    <div class="panel-top">
+      <button id="feedback-btn">FEEDBACK</button>
+      <button id="radio-btn">📻 MINERVA</button>
+      <button id="hint-btn">HINT</button>
+    </div>
+    <div class="panel-bottom">
+      <div id="action-btns">
+        <button class="action-btn" id="btn-save">SAVEN<span class="sub">opslaan</span></button>
+        <button class="action-btn" id="btn-talk">PRAAT<span class="sub">spatiebalk</span></button>
+        <button class="action-btn" id="btn-ok">OK<span class="sub">enter</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
   <div id="scores-overlay">
     <div id="scores-modal">
       <h2>SPEELTIJD TOP 10</h2>
@@ -568,12 +561,6 @@
     </div>
   </div>
 
-  <!-- Feedback button -->
-  <button id="feedback-btn">FEEDBACK</button>
-  <button id="radio-btn">📻<br>MINERVA</button>
-  <button id="hint-btn">HINT</button>
-
-  <!-- Hint modal -->
   <div id="hint-overlay">
     <div id="hint-modal">
       <h2>VOLGENDE STAP</h2>
@@ -582,7 +569,6 @@
     </div>
   </div>
 
-  <!-- Feedback modal -->
   <div id="feedback-overlay">
     <div id="feedback-modal">
       <h2>STUUR FEEDBACK</h2>
@@ -602,30 +588,12 @@
     </div>
   </div>
 
-  <!-- Touch controls — shown only on touch-capable devices -->
-  <div id="touch-controls">
-    <div id="dpad">
-      <button class="dpad-btn" id="btn-up">↑</button>
-      <button class="dpad-btn" id="btn-left">←</button>
-      <button class="dpad-btn" id="btn-right">→</button>
-      <button class="dpad-btn" id="btn-down">↓</button>
-    </div>
-    <div id="action-btns">
-      <button class="action-btn" id="btn-save">SAVEN<span class="sub">opslaan</span></button>
-      <button class="action-btn" id="btn-talk">PRAAT<span class="sub">spatiebalk</span></button>
-      <button class="action-btn" id="btn-ok">OK<span class="sub">enter</span></button>
-    </div>
-  </div>
-
   <script>
     // ── Global touch state (read by InputHandler) ──────────────────────────
     window.__touch = {
       left: false, right: false, up: false, down: false,
       action: false, enter: false,
     };
-
-    // Always show controls
-    document.getElementById('touch-controls').classList.add('active');
 
     function bindBtn(id, flag) {
       const el = document.getElementById(id);
