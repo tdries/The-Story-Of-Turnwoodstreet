@@ -26,7 +26,7 @@ const game = new Phaser.Game(config);
 // Expose music mute/unmute for the radio button
 (window as any).__setGameMusic = (enabled: boolean) => {
   game.scene.getScenes(true).forEach(scene => {
-    scene.sound.getAll().forEach((s: Phaser.Sound.BaseSound) => {
+    (scene.sound as any).getAll().forEach((s: any) => {
       (s as any).setVolume(enabled ? 0.35 : 0);
     });
   });
