@@ -497,6 +497,79 @@
       background: rgba(255,215,0,0.30);
     }
 
+    /* ── Subscription modal ─────────────────────────────────────────────── */
+    #sub-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+    }
+    #sub-overlay.open { display: flex; }
+    #sub-modal {
+      background: #0A0A12;
+      border: 2px solid #52C41A;
+      border-radius: 14px;
+      padding: 28px 24px 22px;
+      width: min(92vw, 360px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: sub-pop 0.18s ease-out;
+    }
+    @keyframes sub-pop {
+      from { transform: scale(0.88); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    #sub-modal .sub-icon {
+      font-size: 28px;
+      text-align: center;
+    }
+    #sub-modal h2 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 7px;
+      color: #52C41A;
+      line-height: 1.7;
+      text-align: center;
+    }
+    #sub-modal p {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: rgba(240,234,214,0.75);
+      line-height: 1.9;
+      text-align: center;
+    }
+    #sub-modal .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    #btn-sub-yes {
+      background: #52C41A;
+      color: #0A0A12;
+      border: 1px solid #52C41A;
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 9px 16px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    #btn-sub-no {
+      background: transparent;
+      color: rgba(240,234,214,0.5);
+      border: 1px solid rgba(255,255,255,0.15);
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 9px 16px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    #btn-sub-yes:hover { background: #3da614; }
+    #btn-sub-no:hover  { color: rgba(240,234,214,0.8); }
+
     /* ── News ticker ─────────────────────────────────────────────────────── */
     #news-ticker {
       position: fixed;
@@ -991,12 +1064,14 @@
           status.textContent = (_t.feedback_success || function(n){ return 'Bedankt! Issue #'+n+' aangemaakt.'; })(issue.number);
           status.style.color = '#44ff88';
           textarea.value = '';
-          setTimeout(() => {
+          setTimeout(async () => {
             overlay.classList.remove('open');
             status.textContent = '';
             status.style.color = '';
             sendBtn.disabled = false;
             if (window.__setGameKeyboard) window.__setGameKeyboard(true);
+            // Show subscription prompt after first feedback (once per user)
+            await maybeShowSubscription();
           }, 2200);
         } else {
           throw new Error(`HTTP ${res.status}`);
@@ -1007,6 +1082,60 @@
         console.error('Feedback error:', err);
         sendBtn.disabled = false;
       }
+    });
+  </script>
+
+  <script>
+    // ── Subscription opt-in ────────────────────────────────────────────────
+    const subOverlay = document.getElementById('sub-overlay');
+
+    async function maybeShowSubscription() {
+      // Client-side guard: only show once per browser session
+      if (sessionStorage.getItem('tbaan_sub_shown')) return;
+
+      // DB-side guard: only show if email_optin is still NULL (not yet asked)
+      if (window.__getSubscriptionStatus) {
+        const status = await window.__getSubscriptionStatus();
+        if (status !== null) return; // already answered (true or false)
+      }
+
+      sessionStorage.setItem('tbaan_sub_shown', '1');
+
+      // Apply locale to modal text
+      const _t = window.__htmlT || {};
+      const title = document.getElementById('sub-title');
+      const desc  = document.getElementById('sub-desc');
+      const yesBtn = document.getElementById('btn-sub-yes');
+      const noBtn  = document.getElementById('btn-sub-no');
+
+      const translations = {
+        nl: { title: 'BLIJF OP DE HOOGTE', desc: 'Wil je updates ontvangen over\nnieuwe Turnhoutsebaan RPG features?', yes: 'JA, GRAAG!', no: 'NEE, DANK JE' },
+        en: { title: 'STAY UPDATED',       desc: 'Want to receive updates about\nnew Turnhoutsebaan RPG features?',  yes: 'YES PLEASE!', no: 'NO THANKS' },
+        fr: { title: 'RESTEZ INFORM\u00C9', desc: 'Voulez-vous recevoir des mises \u00E0 jour\nsur les nouvelles fonctionnalit\u00E9s?', yes: 'OUI, AVEC PLAISIR!', no: 'NON MERCI' },
+        ar: { title: '\u0627\u0628\u0642\u064E \u0639\u0644\u0649 \u0627\u0637\u0644\u0627\u0639', desc: '\u0647\u0644 \u062A\u0631\u064A\u062F \u062A\u0644\u0642\u064A \u062A\u062D\u062F\u064A\u062B\u0627\u062A\n\u062D\u0648\u0644 \u0645\u064A\u0632\u0627\u062A \u0627\u0644\u0644\u0639\u0628\u0629 \u0627\u0644\u062C\u062F\u064A\u062F\u0629\u061F', yes: '\u0646\u0639\u0645\u060C \u0645\u0646 \u0641\u0636\u0644\u0643!', no: '\u0644\u0627\u060C \u0634\u0643\u0631\u064B\u0627' },
+      };
+      const loc = window.__htmlLocale || 'nl';
+      const tx  = translations[loc] || translations.nl;
+
+      if (title)  title.textContent  = tx.title;
+      if (desc)   desc.innerHTML     = tx.desc.replace('\n', '<br>');
+      if (yesBtn) yesBtn.textContent = tx.yes;
+      if (noBtn)  noBtn.textContent  = tx.no;
+
+      subOverlay.classList.add('open');
+      if (window.__setGameKeyboard) window.__setGameKeyboard(false);
+    }
+
+    async function handleSub(optin) {
+      subOverlay.classList.remove('open');
+      if (window.__setGameKeyboard) window.__setGameKeyboard(true);
+      if (window.__saveSubscription) await window.__saveSubscription(optin);
+    }
+
+    document.getElementById('btn-sub-yes').addEventListener('click', () => handleSub(true));
+    document.getElementById('btn-sub-no').addEventListener('click',  () => handleSub(false));
+    subOverlay.addEventListener('click', (e) => {
+      if (e.target === subOverlay) handleSub(false);
     });
   </script>
 
@@ -1239,6 +1368,19 @@
       if (e.target === scoresOverlay) document.getElementById('scores-close').click();
     });
   </script>
+
+  <!-- Subscription opt-in modal (shown after first feedback) -->
+  <div id="sub-overlay">
+    <div id="sub-modal">
+      <div class="sub-icon">📬</div>
+      <h2 id="sub-title">BLIJF OP DE HOOGTE</h2>
+      <p id="sub-desc">Wil je updates ontvangen over<br>nieuwe Turnhoutsebaan RPG features?</p>
+      <div class="btn-row">
+        <button id="btn-sub-yes">JA, GRAAG!</button>
+        <button id="btn-sub-no">NEE, DANK JE</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Breaking news ticker -->
   <div id="news-ticker">

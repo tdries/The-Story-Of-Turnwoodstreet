@@ -67,6 +67,28 @@ const game = new Phaser.Game(config);
   await supabase.rpc('increment_feedback_count', { uid: user.id });
 };
 
+/** Returns current email_optin value for the logged-in player, or undefined if not logged in. */
+(window as any).__getSubscriptionStatus = async (): Promise<boolean | null | undefined> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return undefined;
+  const { data } = await supabase
+    .from('players')
+    .select('email_optin')
+    .eq('user_id', user.id)
+    .single();
+  return data?.email_optin ?? null; // null = not yet asked
+};
+
+/** Save the player's subscription opt-in choice (true = subscribed, false = declined). */
+(window as any).__saveSubscription = async (optin: boolean): Promise<void> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from('players').upsert(
+    { user_id: user.id, email_optin: optin, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id' },
+  );
+};
+
 // On page load: restore session and notify UI
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session) {
