@@ -9,6 +9,7 @@ import { DialogueBox }    from '@ui/DialogueBox';
 import { DialogueSystem } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS, zoneForX } from '@systems/GateSystem';
 import { QuestSystem }    from '@systems/QuestSystem';
+import { playtimeTracker } from '@core/PlaytimeTracker';
 
 /**
  * OverworldScene — the main exploration scene.
@@ -34,6 +35,7 @@ export class OverworldScene extends Phaser.Scene {
 
   private lastPlayerX = 0;
   private gateHintCooldown = 0;
+  private playtimeSyncTimer = 0;
 
   // World dimensions (pixels)
   static readonly WORLD_W = GAME_WIDTH * 6;   // 2880 px
@@ -72,6 +74,17 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     this.player.update(this.controls, delta);
+
+    // Track active playtime (only counts frames where player is moving)
+    const isMoving = this.controls.left || this.controls.right
+                  || this.controls.up   || this.controls.down;
+    playtimeTracker.tick(delta, isMoving);
+    this.playtimeSyncTimer += delta;
+    if (this.playtimeSyncTimer >= 60_000) {
+      this.playtimeSyncTimer = 0;
+      playtimeTracker.sync();
+    }
+
     this.npcs.forEach(npc => npc.update(delta));
     this.updateCrowd(delta);
     this.updateTram(delta);

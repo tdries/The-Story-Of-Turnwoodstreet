@@ -9,6 +9,7 @@
     "start": "serve dist -l $PORT"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.99.3",
     "phaser": "^3.87.0",
     "serve": "^14.2.6"
   },

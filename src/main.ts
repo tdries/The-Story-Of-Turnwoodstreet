@@ -5,6 +5,9 @@ import { MainMenuScene }  from '@scenes/MainMenuScene';
 import { OverworldScene } from '@scenes/OverworldScene';
 import { BattleScene }    from '@scenes/BattleScene';
 import { stateManager }   from '@core/StateManager';
+import { supabase }       from '@core/SupabaseClient';
+import { playtimeTracker } from '@core/PlaytimeTracker';
+import { PlaytimeTracker } from '@core/PlaytimeTracker';
 
 const config: Phaser.Types.Core.GameConfig = {
   ...GAME_CONFIG,
@@ -31,3 +34,35 @@ const game = new Phaser.Game(config);
     });
   });
 };
+
+// ── Auth / Scoreboard (Supabase) ────────────────────────────────────────────
+(window as any).__loginWith = async (provider: 'google' | 'discord') => {
+  await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.origin },
+  });
+};
+
+(window as any).__logout = async () => {
+  await playtimeTracker.sync();
+  await supabase.auth.signOut();
+  (window as any).__onAuthChange?.(null);
+};
+
+(window as any).__getScoreboard = () => PlaytimeTracker.getScoreboard();
+
+// On page load: restore session and notify UI
+supabase.auth.getSession().then(async ({ data: { session } }) => {
+  if (session) {
+    await playtimeTracker.loadFromDB();
+    (window as any).__onAuthChange?.(session.user);
+  }
+});
+
+// Keep UI in sync with auth state changes
+supabase.auth.onAuthStateChange(async (_event, session) => {
+  if (session) {
+    await playtimeTracker.loadFromDB();
+  }
+  (window as any).__onAuthChange?.(session?.user ?? null);
+});

@@ -136,6 +136,153 @@
       align-self: flex-end;
     }
 
+    /* ── Auth / Scoreboard ───────────────────────────────────────────────── */
+    #auth-panel {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .auth-btn {
+      background: rgba(10,10,18,0.82);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: #F0EAD6;
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      padding: 7px 10px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #btn-login-discord { border-color: rgba(114,137,218,0.6); color: #7289DA; }
+    #btn-login-discord:hover { background: rgba(114,137,218,0.12); }
+    #btn-login-google  { border-color: rgba(234,67,53,0.5);   color: #EA4335; }
+    #btn-login-google:hover  { background: rgba(234,67,53,0.10); }
+    #btn-scores {
+      border-color: rgba(255,215,0,0.4);
+      color: #FFD700;
+    }
+    #btn-scores:hover { background: rgba(255,215,0,0.12); }
+    #auth-user {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    #auth-user.visible { display: flex; }
+    #auth-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,215,0,0.5);
+      object-fit: cover;
+    }
+    #auth-name {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #FFD700;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #btn-logout {
+      font-family: "Press Start 2P", monospace;
+      font-size: 4px;
+      color: rgba(240,234,214,0.5);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    /* Scoreboard modal */
+    #scores-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 1001;
+      align-items: center;
+      justify-content: center;
+    }
+    #scores-overlay.open { display: flex; }
+    #scores-modal {
+      background: #0A0A12;
+      border: 2px solid #FFD700;
+      border-radius: 12px;
+      padding: 24px;
+      width: min(92vw, 400px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #scores-modal h2 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 8px;
+      color: #FFD700;
+    }
+    #scores-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.04);
+    }
+    .score-row.me { background: rgba(255,215,0,0.10); border: 1px solid rgba(255,215,0,0.3); }
+    .score-rank {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: rgba(255,215,0,0.5);
+      width: 16px;
+      text-align: right;
+    }
+    .score-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #1a1a2e;
+    }
+    .score-name {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #F0EAD6;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .score-time {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #FFD700;
+    }
+    #scores-close {
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(255,215,0,0.4);
+      background: #FFD700;
+      color: #0A0A12;
+      align-self: flex-end;
+    }
+
     #feedback-overlay {
       display: none;
       position: fixed;
@@ -324,6 +471,31 @@
 </head>
 <body>
   <div id="game-container"></div>
+
+  <!-- Auth panel (top-left) -->
+  <div id="auth-panel">
+    <!-- Shown when logged out -->
+    <button class="auth-btn" id="btn-login-discord">Discord</button>
+    <button class="auth-btn" id="btn-login-google">Google</button>
+    <!-- Shown when logged in -->
+    <div id="auth-user">
+      <img id="auth-avatar" src="" alt="avatar" />
+      <div>
+        <div id="auth-name"></div>
+        <button id="btn-logout">uitloggen</button>
+      </div>
+    </div>
+    <button class="auth-btn" id="btn-scores">🏆 SCORES</button>
+  </div>
+
+  <!-- Scoreboard modal -->
+  <div id="scores-overlay">
+    <div id="scores-modal">
+      <h2>SPEELTIJD TOP 10</h2>
+      <div id="scores-list"><div style="font-family:sans-serif;font-size:12px;color:#888">Laden...</div></div>
+      <button id="scores-close">SLUITEN</button>
+    </div>
+  </div>
 
   <!-- Feedback button -->
   <button id="feedback-btn">FEEDBACK</button>
@@ -556,6 +728,93 @@
           radioBtn.innerHTML = '📻<br>MINERVA';
         });
       }
+    });
+  </script>
+
+  <script>
+    // ── Auth UI ────────────────────────────────────────────────────────────
+    const loginBtns  = [document.getElementById('btn-login-discord'),
+                        document.getElementById('btn-login-google')];
+    const authUser   = document.getElementById('auth-user');
+    const authAvatar = document.getElementById('auth-avatar');
+    const authName   = document.getElementById('auth-name');
+
+    function fmtTime(secs) {
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      if (h > 0) return `${h}u ${m}m`;
+      return `${m}m`;
+    }
+
+    // Called by main.ts when auth state changes
+    window.__onAuthChange = (user) => {
+      if (user) {
+        loginBtns.forEach(b => b.style.display = 'none');
+        authUser.classList.add('visible');
+        authName.textContent = user.user_metadata?.full_name
+                            || user.user_metadata?.name
+                            || user.user_metadata?.user_name
+                            || 'Speler';
+        const av = user.user_metadata?.avatar_url;
+        authAvatar.src = av || '';
+        authAvatar.style.display = av ? 'block' : 'none';
+      } else {
+        loginBtns.forEach(b => b.style.display = '');
+        authUser.classList.remove('visible');
+      }
+    };
+
+    document.getElementById('btn-login-discord').addEventListener('click', () => {
+      if (window.__loginWith) window.__loginWith('discord');
+    });
+    document.getElementById('btn-login-google').addEventListener('click', () => {
+      if (window.__loginWith) window.__loginWith('google');
+    });
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (window.__logout) window.__logout();
+    });
+
+    // ── Scoreboard ─────────────────────────────────────────────────────────
+    const scoresOverlay = document.getElementById('scores-overlay');
+    const scoresList    = document.getElementById('scores-list');
+    let currentUserId   = null;
+
+    window.__onAuthChange = ((orig) => (user) => {
+      orig?.(user);
+      currentUserId = user?.id ?? null;
+    })(window.__onAuthChange);
+
+    document.getElementById('btn-scores').addEventListener('click', async () => {
+      scoresOverlay.classList.add('open');
+      if (window.__setGameKeyboard) window.__setGameKeyboard(false);
+      scoresList.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">Laden...</div>';
+
+      const rows = window.__getScoreboard
+        ? await window.__getScoreboard()
+        : [];
+
+      if (!rows.length) {
+        scoresList.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">Nog geen scores.</div>';
+        return;
+      }
+
+      scoresList.innerHTML = rows.map((r, i) => `
+        <div class="score-row${r.user_id === currentUserId ? ' me' : ''}">
+          <span class="score-rank">${i + 1}</span>
+          ${r.avatar_url
+            ? `<img class="score-avatar" src="${r.avatar_url}" alt="" />`
+            : `<div class="score-avatar"></div>`}
+          <span class="score-name">${r.display_name ?? 'Speler'}</span>
+          <span class="score-time">${fmtTime(r.playtime_seconds ?? 0)}</span>
+        </div>`).join('');
+    });
+
+    document.getElementById('scores-close').addEventListener('click', () => {
+      scoresOverlay.classList.remove('open');
+      if (window.__setGameKeyboard) window.__setGameKeyboard(true);
+    });
+    scoresOverlay.addEventListener('click', (e) => {
+      if (e.target === scoresOverlay) document.getElementById('scores-close').click();
     });
   </script>
 
