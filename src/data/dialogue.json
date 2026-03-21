@@ -128,7 +128,7 @@
   },
 
   "budget_market_flour": {
-    "npc": "yusuf", "priority": 80,
+    "npc": "yusuf", "priority": 110,
     "conditions": { "flags": { "flour_quest_accepted": true, "has_flour": false, "omar_flour_done": false } },
     "lines": [
       { "speaker": "Budget Market", "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.", "flag": "has_flour", "flagVal": true, "item": "flour" },
@@ -222,7 +222,7 @@
 
   "reza_signature": {
     "npc": "reza", "priority": 60,
-    "conditions": { "flags": { "has_community_trust": true, "sig_reza": false } },
+    "conditions": { "flags": { "has_community_trust": true, "reza_quest_done": true, "sig_reza": false } },
     "lines": [
       { "speaker": "Reza", "text": "Die speculant? Ik ken hem. Hij wil ook mijn studio kopen. Hier is mijn handtekening, en die van mijn twee buren erbij.", "flag": "sig_reza", "flagVal": true }
     ]
@@ -230,7 +230,7 @@
 
   "reza_done": {
     "npc": "reza", "priority": 100,
-    "conditions": { "flags": { "reza_quest_done": true } },
+    "conditions": { "flags": { "reza_quest_done": true, "sig_reza": true } },
     "lines": [
       { "speaker": "Reza", "text": "Hoor je dat? Dat is de snaar die jij gevonden hebt. Elke noot is een bedankje." },
       { "speaker": "Reza", "text": "Vanavond De Roma — het nieuwe nummer. Je bent uitgenodigd. Geen excuses." }
