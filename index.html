@@ -390,6 +390,14 @@
       justify-content: center;
       gap: 20px;
       transition: opacity 0.6s;
+      overflow: hidden;
+    }
+    #login-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
     }
     #login-gate.hidden { opacity: 0; pointer-events: none; }
     #login-gate h1 {
@@ -520,6 +528,7 @@
 <body>
   <!-- Login gate — covers everything until authenticated -->
   <div id="login-gate">
+    <canvas id="login-canvas"></canvas>
     <h1>TURNHOUTSEBAAN<br>RPG</h1>
     <p>Borgerhout · Antwerpen · 2140</p>
     <button id="btn-gate-google">Log in met Google</button>
@@ -753,6 +762,104 @@
         sendBtn.disabled = false;
       }
     });
+  </script>
+
+  <script>
+    // ── Login screen player animation ─────────────────────────────────────
+    (function () {
+      const canvas  = document.getElementById('login-canvas');
+      const ctx     = canvas.getContext('2d');
+      const sheet   = new Image();
+      sheet.src     = 'assets/Sprites/characters/player/player_sheet.png';
+
+      const FRAME_W = 320;   // px per frame in the spritesheet
+      const FRAME_H = 320;
+      const DISPLAY = 80;    // px on screen (scaled down)
+      const SPEED   = 90;    // px/s across screen
+      const Y_ROAD  = 0.78;  // vertical position as fraction of canvas height
+
+      let x = 60, dir = 1;
+      let pedalFrame = 1;    // 1 or 2
+      let frameTimer = 0;
+      let last = 0;
+
+      // Multiple riders at staggered positions
+      const riders = [
+        { x: 80,  dir:  1, frame: 1, timer: 0, speed: 90,  scale: 1.0 },
+        { x: 420, dir: -1, frame: 2, timer: 0, speed: 70,  scale: 0.85 },
+        { x: 200, dir:  1, frame: 1, timer: 0, speed: 110, scale: 0.75 },
+      ];
+
+      function resize() {
+        canvas.width  = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function drawRoad() {
+        const W = canvas.width, H = canvas.height;
+        const y = H * Y_ROAD + DISPLAY * 0.6;
+        ctx.strokeStyle = 'rgba(255,215,0,0.12)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+        // Road surface
+        ctx.fillStyle = 'rgba(30,25,45,0.6)';
+        ctx.fillRect(0, y, W, DISPLAY * 0.25);
+      }
+
+      function drawRider(r) {
+        if (!sheet.complete) return;
+        const W = canvas.width, H = canvas.height;
+        const displaySize = DISPLAY * r.scale;
+        const sx = r.frame * FRAME_W;
+        const dy = H * Y_ROAD - displaySize * 0.5;
+
+        ctx.save();
+        if (r.dir < 0) {
+          ctx.translate(r.x + displaySize, dy);
+          ctx.scale(-1, 1);
+          ctx.drawImage(sheet, sx, 0, FRAME_W, FRAME_H, 0, 0, displaySize, displaySize);
+        } else {
+          ctx.drawImage(sheet, sx, 0, FRAME_W, FRAME_H, r.x, dy, displaySize, displaySize);
+        }
+        ctx.restore();
+      }
+
+      function tick(ts) {
+        if (!last) last = ts;
+        const dt = Math.min((ts - last) / 1000, 0.1);
+        last = ts;
+
+        const W = canvas.width;
+        ctx.clearRect(0, 0, W, canvas.height);
+        drawRoad();
+
+        for (const r of riders) {
+          r.x += r.dir * r.speed * dt;
+          r.timer += dt;
+          if (r.timer > 0.18) {
+            r.frame = r.frame === 1 ? 2 : 1;
+            r.timer = 0;
+          }
+          // Bounce at edges
+          const sz = DISPLAY * r.scale;
+          if (r.x > W + sz)  r.x = -sz;
+          if (r.x < -sz)     r.x = W + sz;
+
+          drawRider(r);
+        }
+
+        if (document.getElementById('login-gate').style.display !== 'none') {
+          requestAnimationFrame(tick);
+        }
+      }
+
+      sheet.onload = () => requestAnimationFrame(tick);
+    })();
   </script>
 
   <script>
