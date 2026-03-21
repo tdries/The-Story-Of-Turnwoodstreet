@@ -2,7 +2,7 @@
 
 > A 2D pixel-art RPG set on the real Turnhoutsebaan in Borgerhout, Antwerp — one of Belgium's most vibrant, densely populated, and culturally layered urban streets.
 
-**Play it live:** [turnhoutsebaan.be](#) *(coming soon via Railway)*
+**Play it live:** [the-story-of-turnwoodstreet-production.up.railway.app](https://the-story-of-turnwoodstreet-production.up.railway.app/)
 
 ---
 
