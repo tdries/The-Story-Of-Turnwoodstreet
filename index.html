@@ -531,6 +531,7 @@
         radioPlaying = false;
         radioBtn.classList.remove('playing');
         radioBtn.innerHTML = '📻<br>MINERVA';
+        if (window.__setGameMusic) window.__setGameMusic(true);
       } else {
         // Reload src each time to force fresh connection to the live stream
         radioAudio.src = 'https://streaming.radiominerva.be/minerva';
@@ -538,6 +539,7 @@
           radioPlaying = true;
           radioBtn.classList.add('playing');
           radioBtn.innerHTML = '⏹<br>STOP';
+          if (window.__setGameMusic) window.__setGameMusic(false);
         }).catch(() => {
           // HTTPS stream may not be available — fall back to HTTP via iframe trick
           radioBtn.innerHTML = '📻<br>MINERVA';
