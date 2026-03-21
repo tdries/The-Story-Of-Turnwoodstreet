@@ -350,7 +350,7 @@
         <option value="Gameplay">C) Gameplay</option>
         <option value="Other">D) Other</option>
       </select>
-      <textarea id="feedback-text" placeholder="Schrijf hier..."></textarea>
+      <textarea id="feedback-text" placeholder="Schrijf hier..." maxlength="1000"></textarea>
       <div id="feedback-status"></div>
       <div class="btn-row">
         <button class="modal-btn" id="btn-cancel-feedback">ANNULEER</button>
@@ -444,6 +444,8 @@
     const category  = document.getElementById('feedback-category');
     const status    = document.getElementById('feedback-status');
     const sendBtn   = document.getElementById('btn-send-feedback');
+    let lastSentAt  = 0;
+    const COOLDOWN  = 30_000; // ms between submissions
 
     document.getElementById('feedback-btn').addEventListener('click', () => {
       overlay.classList.add('open');
@@ -474,6 +476,14 @@
         return;
       }
 
+      const now = Date.now();
+      if (now - lastSentAt < COOLDOWN) {
+        const secs = Math.ceil((COOLDOWN - (now - lastSentAt)) / 1000);
+        status.textContent = `Wacht nog ${secs}s voor je opnieuw verstuurt.`;
+        status.style.color = '#ff6633';
+        return;
+      }
+
       sendBtn.disabled = true;
       status.textContent = 'Verzenden...';
       status.style.color = '#FFD700';
@@ -495,6 +505,7 @@
 
         if (res.ok) {
           const issue = await res.json();
+          lastSentAt = Date.now();
           status.textContent = `Bedankt! Issue #${issue.number} aangemaakt.`;
           status.style.color = '#44ff88';
           textarea.value = '';
