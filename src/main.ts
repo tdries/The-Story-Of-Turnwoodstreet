@@ -59,6 +59,7 @@ const game = new Phaser.Game(config);
 };
 
 (window as any).__getScoreboard = () => PlaytimeTracker.getScoreboard();
+(window as any).__debugPlaytime = () => playtimeTracker.debug();
 
 (window as any).__logFeedback = async () => {
   const { data: { user } } = await supabase.auth.getUser();

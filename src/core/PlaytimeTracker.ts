@@ -62,7 +62,7 @@ class PlaytimeTracker {
 
     this.syncing = true;
     try {
-      await supabase.from('players').upsert({
+      const { error } = await supabase.from('players').upsert({
         user_id:          user.id,
         display_name:     user.user_metadata?.full_name
                        ?? user.user_metadata?.name
@@ -75,9 +75,15 @@ class PlaytimeTracker {
         playtime_seconds: this.totalSeconds,
         updated_at:       new Date().toISOString(),
       }, { onConflict: 'user_id' });
+      if (error) console.error('[PlaytimeTracker] sync error:', error);
+      else console.log('[PlaytimeTracker] synced', this.totalSeconds, 's');
     } finally {
       this.syncing = false;
     }
+  }
+
+  debug(): void {
+    console.log('[PlaytimeTracker] base:', this.baseSeconds, 's | session:', Math.floor(this.sessionMs / 1000), 's | total:', this.totalSeconds, 's');
   }
 
   /** Fetch top-10 scoreboard rows. */

@@ -80,7 +80,7 @@ export class OverworldScene extends Phaser.Scene {
                   || this.controls.up   || this.controls.down;
     playtimeTracker.tick(delta, isMoving);
     this.playtimeSyncTimer += delta;
-    if (this.playtimeSyncTimer >= 60_000) {
+    if (this.playtimeSyncTimer >= 10_000) {
       this.playtimeSyncTimer = 0;
       playtimeTracker.sync();
     }
