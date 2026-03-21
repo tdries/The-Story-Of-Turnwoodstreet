@@ -335,11 +335,11 @@
     saveBtn.addEventListener('mousedown',  doSave);
   </script>
 
-  <script>
+  <script type="module">
     // ── Feedback → GitHub Issues ──────────────────────────────────────────
-    const GH_TOKEN = '%VITE_GITHUB_TOKEN%';
+    const GH_TOKEN = import.meta.env.VITE_GITHUB_TOKEN ?? '';
     const GH_REPO  = 'tdries/The-Story-Of-Turnwoodstreet';
-    const TOKEN_SET = GH_TOKEN && GH_TOKEN !== '%VITE_GITHUB_TOKEN%';
+    const TOKEN_SET = !!GH_TOKEN;
 
     const overlay   = document.getElementById('feedback-overlay');
     const textarea  = document.getElementById('feedback-text');
