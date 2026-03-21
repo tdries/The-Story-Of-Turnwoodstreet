@@ -634,6 +634,79 @@
     }
   ],
 
+  "fatima_all_done": [
+    {
+      "speaker": "Fatima",
+      "text": "Kijk hoe ver we al gekomen zijn. De tafel staat er bijna. Dankzij mensen als jij."
+    },
+    {
+      "speaker": "Fatima",
+      "text": "Nora is zo blij met de stof. Ze vraagt of jij op de bruiloft komt. Ik heb ja gezegd."
+    }
+  ],
+
+  "reza_done": [
+    {
+      "speaker": "Reza",
+      "text": "Hoor je dat? Dat is de snaar die jij gevonden hebt. Elke noot is een bedankje."
+    },
+    {
+      "speaker": "Reza",
+      "text": "Vanavond De Roma — het nieuwe nummer. Je bent uitgenodigd. Geen excuses."
+    }
+  ],
+
+  "yusuf_done": [
+    {
+      "speaker": "Yusuf",
+      "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou."
+    },
+    {
+      "speaker": "Yusuf",
+      "text": "Als je ooit iets wil laten bezorgen op de Turnhoutsebaan — zeg het maar. Voor vrienden: gratis."
+    }
+  ],
+
+  "mayor_post_brief": [
+    {
+      "speaker": "El Osri",
+      "text": "Hoe gaat het met de facties? We hebben ze alle zeven nodig voor de grote tafel."
+    },
+    {
+      "speaker": "El Osri",
+      "text": "Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee, Frituur de Tram. Vooruit!"
+    }
+  ],
+
+  "tine_intro": [
+    {
+      "speaker": "Tine",
+      "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts."
+    },
+    {
+      "speaker": "Tine",
+      "text": "Chocolade, aspirine, een luisterend oor — ik heb het allemaal. Welkom op de Turnhoutsebaan."
+    }
+  ],
+
+  "tine_done": [
+    {
+      "speaker": "Tine",
+      "text": "De voorzitter van de Turkse club is erbij. Bel El Osri maar — het is geregeld."
+    }
+  ],
+
+  "baert_done": [
+    {
+      "speaker": "Mevrouw Baert",
+      "text": "Bar Leon is overtuigd. Het kostte me een fles Duvel en een half uur uitleg, maar ze doen mee."
+    },
+    {
+      "speaker": "Mevrouw Baert",
+      "text": "Zestig jaar Borgerhout, en dit is het mooiste wat ik heb meegemaakt."
+    }
+  ],
+
   "geest_van_88_encounter": [
     {
       "speaker": "Geest van '88",

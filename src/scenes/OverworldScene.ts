@@ -89,6 +89,12 @@ export class OverworldScene extends Phaser.Scene {
 
     this.cameras.main.fadeIn(600, 0, 0, 0);
     this.syncMusic();
+
+    // Auto-start Radio Minerva — user has already clicked Play so the browser
+    // autoplay gesture requirement is satisfied.
+    this.time.delayedCall(800, () => {
+      (window as any).__startRadioMinerva?.();
+    });
   }
 
   update(_time: number, delta: number): void {
@@ -1043,53 +1049,85 @@ export class OverworldScene extends Phaser.Scene {
 
     switch (npc.id) {
       case 'fatima':
-        if (flags['stunt_quest_active'] && !flags['stunt_quest_done'] && stateManager.hasItem('fabric_bolt'))
+        // Holding fabric → deliver it now
+        if (stateManager.hasItem('fabric_bolt') && !flags['stunt_quest_done'])
           return 'fatima_after_fabric';
-        if (flags['has_community_trust'] && !flags['fatima_convinced'] && flags['met_mayor'])
+        // Quest accepted but fabric not yet picked up → remind where to go
+        if (flags['fabric_quest_accepted'] && !flags['stunt_quest_active'])
+          return 'fatima_fabric_accept';
+        // All done, convince Moroccan faction
+        if (flags['has_community_trust'] && flags['met_mayor'] && !flags['fatima_convinced'])
           return 'fatima_faction';
+        // Fully done
+        if (flags['fatima_convinced'])
+          return 'fatima_all_done';
+        // Earned trust, hint at speculator + Omar
         if (flags['has_community_trust'])
           return 'fatima_post_trust';
-        if (flags['met_fatima'] && flags['fabric_quest_accepted'])
-          return 'fatima_intro';   // repeat
         return 'fatima_intro';
 
       case 'omar':
+        // Flour in inventory → deliver
         if (flags['has_flour'] && !flags['omar_flour_done'])
           return 'omar_flour_done';
+        // Not yet asked about flour → offer
         if (flags['met_fatima'] && !flags['omar_flour_asked'])
           return 'omar_flour_request';
-        if (flags['sig_omar'])
-          return 'omar_bakker';
+        // Quest accepted, player hasn't gone to Budget Market yet → remind
+        if (flags['flour_quest_accepted'] && !flags['omar_flour_done'])
+          return 'omar_flour_thanks';
+        // Has trust, not yet signed
         if (flags['has_community_trust'] && !flags['sig_omar'])
           return 'omar_signature';
         return 'omar_bakker';
 
       case 'baert':
+        // Quest accepted, fabric not yet given
         if (flags['knows_stunt_location'] && !flags['stunt_quest_active'])
           return 'stunt_baert_fabric';
+        // Has trust, not yet signed
         if (flags['has_community_trust'] && !flags['sig_baert'])
           return 'stunt_baert_signature';
+        // Mayor met, Bar Leon not yet convinced
         if (flags['met_mayor'] && !flags['baert_faction_convinced'])
           return 'stunt_baert_faction';
+        // Bar Leon convinced → post-done
+        if (flags['baert_faction_convinced'])
+          return 'baert_done';
         return 'stunt_baert';
 
       case 'reza':
+        // Quest fully done → post-quest state
+        if (flags['reza_quest_done'])
+          return 'reza_done';
+        // Has the string → hand it over
         if (flags['oud_quest_accepted'] && stateManager.hasItem('oud_string'))
           return 'reza_oud_found';
+        // Quest accepted, no string yet → remind where to look
+        if (flags['oud_quest_accepted'])
+          return 'reza_oud_accept';
+        // Has trust, not yet signed
         if (flags['has_community_trust'] && !flags['sig_reza'])
           return 'reza_signature';
         return 'reza_music';
 
       case 'yusuf':
-        if (flags['flour_quest_accepted'] && !flags['has_flour'])
+        // Delivery fully done
+        if (flags['delivery_done'])
+          return 'yusuf_done';
+        // At Budget Market for flour (not already delivered to Omar)
+        if (flags['flour_quest_accepted'] && !flags['has_flour'] && !flags['omar_flour_done'])
           return 'budget_market_flour';
+        // Packages received, ready to report back
         if (flags['delivery_accepted'] && flags['delivery_packages_received'])
           return 'yusuf_delivery_done';
         return 'yusuf_delivery';
 
       case 'aziz':
+        // Quest accepted, string not yet given
         if (flags['oud_quest_accepted'] && !flags['has_oud_string_item'])
           return 'aziz_oud_string';
+        // Not yet signed
         if (!flags['sig_aziz'])
           return 'aziz_signature';
         return 'reuzenpoort_legend';
@@ -1100,12 +1138,17 @@ export class OverworldScene extends Phaser.Scene {
         return 'hamza_marbles';
 
       case 'el_osri':
+        // Already briefed → progress check
+        if (flags['act4_started'])
+          return 'mayor_post_brief';
         return 'district_mayor';
 
       case 'tine':
         if (flags['met_mayor'] && !flags['tine_faction_convinced'])
           return 'tine_faction';
-        return 'fatima_intro';   // fallback
+        if (flags['tine_faction_convinced'])
+          return 'tine_done';
+        return 'tine_intro';
 
       default:
         return npc.dialogueId;

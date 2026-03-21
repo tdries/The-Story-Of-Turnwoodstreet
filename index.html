@@ -1006,6 +1006,7 @@
       <button id="radio-btn">📻 MINERVA</button>
       <button id="hint-btn">HINT</button>
       <button id="guestbook-btn" style="background:rgba(10,10,18,0.82);border-radius:8px;font-family:'Press Start 2P',monospace;font-size:6px;padding:8px 10px;cursor:pointer;letter-spacing:0.5px;width:100%;text-align:center;line-height:1.8;">GASTENBOEK</button>
+      <button id="share-fb-btn" style="background:rgba(10,10,18,0.82);border:1px solid rgba(66,103,178,0.5);border-radius:8px;font-family:'Press Start 2P',monospace;font-size:6px;padding:8px 10px;cursor:pointer;letter-spacing:0.5px;width:100%;text-align:center;line-height:1.8;color:#6B8FD6;">📤 SHARE</button>
       <a id="coffee-btn" href="https://www.paypal.com/donate?business=info%40premiumbrick.com&currency_code=EUR" target="_blank" rel="noopener noreferrer" class="feedback-btn">☕ KOFFIE</a>
       <div id="lang-selector">
         <button class="lang-btn" data-loc="nl">NL</button>
@@ -1373,27 +1374,46 @@
     radioAudio.crossOrigin = 'anonymous';
     let radioPlaying  = false;
 
-    radioBtn.addEventListener('click', () => {
-      if (radioPlaying) {
-        radioAudio.pause();
-        radioAudio.src = '';
-        radioPlaying = false;
-        radioBtn.classList.remove('playing');
+    function startRadioMinerva() {
+      if (radioPlaying) return;
+      radioAudio.src = 'https://streaming.radiominerva.be/minerva';
+      radioAudio.play().then(() => {
+        radioPlaying = true;
+        radioBtn.classList.add('playing');
+        radioBtn.innerHTML = '⏹<br>STOP';
+        if (window.__setGameMusic) window.__setGameMusic(false);
+      }).catch(() => {
+        // Stream unavailable or blocked — show default label
         radioBtn.innerHTML = '📻<br>MINERVA';
-        if (window.__setGameMusic) window.__setGameMusic(true);
-      } else {
-        // Reload src each time to force fresh connection to the live stream
-        radioAudio.src = 'https://streaming.radiominerva.be/minerva';
-        radioAudio.play().then(() => {
-          radioPlaying = true;
-          radioBtn.classList.add('playing');
-          radioBtn.innerHTML = '⏹<br>STOP';
-          if (window.__setGameMusic) window.__setGameMusic(false);
-        }).catch(() => {
-          // HTTPS stream may not be available — fall back to HTTP via iframe trick
-          radioBtn.innerHTML = '📻<br>MINERVA';
-        });
-      }
+      });
+    }
+
+    function stopRadioMinerva() {
+      radioAudio.pause();
+      radioAudio.src = '';
+      radioPlaying = false;
+      radioBtn.classList.remove('playing');
+      radioBtn.innerHTML = '📻<br>MINERVA';
+      if (window.__setGameMusic) window.__setGameMusic(true);
+    }
+
+    // Expose so OverworldScene can trigger auto-start after first user gesture
+    window.__startRadioMinerva = startRadioMinerva;
+
+    radioBtn.addEventListener('click', () => {
+      if (radioPlaying) stopRadioMinerva(); else startRadioMinerva();
+    });
+
+    // ── Facebook Share ────────────────────────────────────────────────────
+    const shareFbBtn = document.getElementById('share-fb-btn');
+    shareFbBtn.addEventListener('click', () => {
+      const url   = encodeURIComponent(window.location.href);
+      const quote = encodeURIComponent('Ik speel The Story of Turnhoutsebaan — een RPG over de mooiste straat van Antwerpen. Probeer het zelf!');
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${quote}`,
+        '_blank',
+        'width=600,height=400,noopener,noreferrer',
+      );
     });
   </script>
 

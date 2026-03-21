@@ -124,6 +124,33 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
     tine_faction: [
       { text: "Ah, Samen Aan Tafel! I've known the chairman of the Turkish social club for 20 years. If you ask and I support it — he'll say yes." },
     ],
+    fatima_all_done: [
+      { text: "Look how far we've come. The table is almost ready. Thanks to people like you." },
+      { text: "Nora is so happy with the fabric. She's asking if you'll come to the wedding. I said yes." },
+    ],
+    reza_done: [
+      { text: "Do you hear that? That's the string you found. Every note is a thank you." },
+      { text: "Tonight at De Roma — the new song. You're invited. No excuses." },
+    ],
+    yusuf_done: [
+      { text: "Bike is fixed! Back on the road. All parcels on time — thanks to you." },
+      { text: "If you ever want something delivered on Turnhoutsebaan — just say the word. For friends: free." },
+    ],
+    mayor_post_brief: [
+      { text: "How are the factions coming along? We need all seven for the big table." },
+      { text: "Moroccan association, Turkish club, Bar Leon, Borgerhub, the school, the mosque, Frituur de Tram. Let's go!" },
+    ],
+    tine_intro: [
+      { text: "Hi! I've been running this night shop for fifteen years. You always need someone at three in the morning." },
+      { text: "Chocolate, aspirin, a listening ear — I have it all. Welcome to Turnhoutsebaan." },
+    ],
+    tine_done: [
+      { text: "The chair of the Turkish club is in. Call El Osri — it's arranged." },
+    ],
+    baert_done: [
+      { text: "Bar Leon is convinced. It cost me a bottle of Duvel and half an hour of explaining, but they're in." },
+      { text: "Sixty years in Borgerhout, and this is the most beautiful thing I've ever witnessed." },
+    ],
     kid_marbles: [
       { text: "Yo! Want to play marbles? I always win but it's boring if there's no one to play against." },
       { text: "My grandma says the police used to patrol here all the time. Now there's a café. Better, right?" },
@@ -312,6 +339,33 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
     tine_faction: [
       { text: "Ah, Samen Aan Tafel! Je connais le président du club social turc depuis 20 ans. Si tu demandes et que je soutiens — il dit oui." },
     ],
+    fatima_all_done: [
+      { text: "Regarde jusqu'où on est arrivés. La table est presque prête. Grâce à des gens comme toi." },
+      { text: "Nora est tellement heureuse avec le tissu. Elle te demande de venir au mariage. J'ai dit oui." },
+    ],
+    reza_done: [
+      { text: "Tu entends ça? C'est la corde que tu as trouvée. Chaque note est un remerciement." },
+      { text: "Ce soir De Roma — le nouveau morceau. Tu es invité. Pas d'excuses." },
+    ],
+    yusuf_done: [
+      { text: "Le vélo est réparé! De retour sur la route. Tous les colis à l'heure — grâce à toi." },
+      { text: "Si tu veux faire livrer quelque chose sur la Turnhoutsebaan — dis-le moi. Pour les amis: gratuit." },
+    ],
+    mayor_post_brief: [
+      { text: "Comment avancent les factions? Il nous faut les sept pour la grande table." },
+      { text: "Association marocaine, club turc, Bar Leon, Borgerhub, l'école, la mosquée, Frituur de Tram. En avant!" },
+    ],
+    tine_intro: [
+      { text: "Bonjour! Je gère ce magasin de nuit depuis quinze ans. On a toujours besoin de quelqu'un à trois heures du matin." },
+      { text: "Chocolat, aspirine, une oreille attentive — j'ai tout. Bienvenue sur la Turnhoutsebaan." },
+    ],
+    tine_done: [
+      { text: "Le président du club turc est partant. Appelle El Osri — c'est arrangé." },
+    ],
+    baert_done: [
+      { text: "Bar Leon est convaincu. Ça m'a coûté une bouteille de Duvel et une demi-heure d'explications, mais ils sont partants." },
+      { text: "Soixante ans à Borgerhout, et c'est la plus belle chose que j'aie vécue." },
+    ],
     kid_marbles: [
       { text: "Yo! Tu veux jouer aux billes? Je gagne toujours mais c'est ennuyeux s'il n'y a personne contre qui jouer." },
       { text: "Ma grand-mère dit que la police patrouillait toujours ici avant. Maintenant il y a un café. Mieux, non?" },
@@ -499,6 +553,33 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
     ],
     tine_faction: [
       { text: "آه، ساميناان تافيل! أعرف رئيس النادي الاجتماعي التركي منذ 20 سنة. إذا طلبت أنت وأنا دعمت — سيقول نعم." },
+    ],
+    fatima_all_done: [
+      { text: "انظر كم وصلنا. الطاولة على وشك الاكتمال. بفضل أشخاص مثلك." },
+      { text: "نورة سعيدة جدًا بالقماش. تسأل إن كنت ستأتي للزفاف. قلت نعم." },
+    ],
+    reza_done: [
+      { text: "تسمع ذلك؟ هذا الوتر الذي وجدته. كل نغمة هي شكر لك." },
+      { text: "الليلة في De Roma — الأغنية الجديدة. أنت مدعو. لا أعذار." },
+    ],
+    yusuf_done: [
+      { text: "الدراجة مصلّحة! عدت للعمل. كل الطرود في وقتها — بفضلك." },
+      { text: "إذا أردت توصيل أي شيء في تورنهاوتسيبان — قل فقط. للأصدقاء: مجانًا." },
+    ],
+    mayor_post_brief: [
+      { text: "كيف حال الفصائل؟ نحتاج السبعة جميعًا للطاولة الكبيرة." },
+      { text: "الجمعية المغربية، النادي التركي، Bar Leon، Borgerhub، المدرسة، المسجد، Frituur de Tram. إلى الأمام!" },
+    ],
+    tine_intro: [
+      { text: "مرحبا! أدير هذه الدكان الليلية منذ خمس عشرة سنة. تحتاج دائمًا شخصًا في الثالثة صباحًا." },
+      { text: "شوكولاتة، أسبرين، أذن مصغية — عندي كل شيء. أهلًا في تورنهاوتسيبان." },
+    ],
+    tine_done: [
+      { text: "رئيس النادي التركي موافق. اتصل بـ El Osri — الأمر مرتّب." },
+    ],
+    baert_done: [
+      { text: "Bar Leon مقتنعون. كلّفني زجاجة Duvel ونصف ساعة شرح، لكنهم معنا." },
+      { text: "ستون سنة في Borgerhout، وهذا أجمل شيء عشته." },
     ],
     kid_marbles: [
       { text: "يو! تريد لعب كرات الرخام؟ أنا دائمًا أفوز لكن الأمر ممل إن لم يكن هناك أحد للعب ضده." },
