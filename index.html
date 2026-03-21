@@ -49,6 +49,68 @@
     }
     #feedback-btn:hover { background: rgba(255,215,0,0.15); }
 
+    #hint-btn {
+      position: fixed;
+      top: 44px;
+      right: 12px;
+      z-index: 1000;
+      background: rgba(10,10,18,0.82);
+      border: 1px solid rgba(100,200,255,0.4);
+      border-radius: 8px;
+      color: #64C8FF;
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 7px 10px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #hint-btn:hover { background: rgba(100,200,255,0.12); }
+
+    #hint-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 1001;
+      align-items: center;
+      justify-content: center;
+    }
+    #hint-overlay.open { display: flex; }
+    #hint-modal {
+      background: #0A0A12;
+      border: 2px solid #64C8FF;
+      border-radius: 12px;
+      padding: 24px;
+      width: min(92vw, 380px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #hint-modal h2 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 8px;
+      color: #64C8FF;
+      line-height: 1.6;
+    }
+    #hint-text {
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      color: #F0EAD6;
+      line-height: 2;
+    }
+    #hint-close {
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(100,200,255,0.4);
+      background: #64C8FF;
+      color: #0A0A12;
+      align-self: flex-end;
+    }
+
     #feedback-overlay {
       display: none;
       position: fixed;
@@ -240,6 +302,16 @@
 
   <!-- Feedback button -->
   <button id="feedback-btn">FEEDBACK</button>
+  <button id="hint-btn">HINT</button>
+
+  <!-- Hint modal -->
+  <div id="hint-overlay">
+    <div id="hint-modal">
+      <h2>VOLGENDE STAP</h2>
+      <div id="hint-text"></div>
+      <button id="hint-close">OK</button>
+    </div>
+  </div>
 
   <!-- Feedback modal -->
   <div id="feedback-overlay">
@@ -420,5 +492,102 @@
   </script>
 
   <script type="module" src="/src/main.ts"></script>
+
+  <script>
+    // ── Hint system ───────────────────────────────────────────────────────
+    function getQuestHint() {
+      let flags = {};
+      try {
+        const raw = localStorage.getItem('tbaan_save');
+        if (raw) flags = JSON.parse(raw).questFlags ?? {};
+      } catch (_) {}
+
+      // Zone 1 — no gate
+      if (!flags.met_yusuf)
+        return 'Zoek Yusuf de koerier aan het begin van de Turnhoutsebaan. Hij heeft hulp nodig!';
+      if (!flags.delivery_done)
+        return 'Help Yusuf met zijn leveringen. Loop langs de adressen die hij noemt.';
+      if (!flags.met_fatima)
+        return 'Yusuf is geholpen! Zoek nu Fatima, ze staat verderop op straat.';
+      if (!flags.stunt_quest_active)
+        return "Fatima's nicht Nora trouwt binnenkort. Vraag Fatima wat je voor haar kunt doen.";
+      if (!flags.stunt_quest_done)
+        return 'Haal de trouwstof op bij Mevrouw Baert (Indian Boutique, nr.137) en breng ze naar Fatima.';
+
+      // Gate → Zone 2
+      if (!flags.has_community_trust)
+        return 'Lever de stof af bij Fatima om het vertrouwen van de buurt te verdienen.';
+
+      // Zone 2
+      if (!flags.has_oud_string_item)
+        return 'Zoek Mimoun (nr.239) — hij heeft een oud-snaar voor Reza. Die snaar opent de volgende wijk.';
+      if (!flags.reza_quest_done)
+        return 'Je hebt de snaar! Breng hem nu naar Reza zodat hij weer kan spelen.';
+
+      // Signatures (needed for zone 3 boss)
+      if (!flags.speculator_threatened) {
+        const missing = ['sig_fatima','sig_omar','sig_reza','sig_baert','sig_aziz']
+          .filter(f => !flags[f]);
+        if (missing.length > 0)
+          return `Verzamel handtekeningen voor de petitie — nog ${missing.length} nodig (Fatima, Omar, Reza, Mevrouw Baert, Aziz).`;
+      }
+
+      // Gate → Zone 3
+      if (!flags.visited_de_roma)
+        return 'Reza speelt weer! Ga nu naar Borger Hub (nr.284) in de volgende wijk.';
+      if (!flags.has_permit_doc)
+        return 'Versla de Bureau-Bulldozer bij Borger Hub om de vergunning te bemachtigen.';
+
+      // Zone 3
+      if (!flags.kracht_van_gemeenschap) {
+        if (!flags.geest_encountered)
+          return "Er waart een Geest van '88 op straat. Vind hem — maar gebruik geen geweld!";
+        return "Gebruik de vaardigheid 'Samen Aan Tafel' om de Geest van '88 te verslaan.";
+      }
+      if (!flags.met_mayor)
+        return 'Zoek Districtsvoorzitter El Osri — zij wil je spreken over een groot plan.';
+
+      // Gate → Zone 4
+      if (!flags.has_permit_doc)
+        return 'Je hebt de vergunning nodig om Deurne te betreden. Versla eerst de Bulldozer-bureaucraat.';
+
+      // Zone 4 — faction quests
+      const factionDone = [
+        'q_faction_moroccan_done','q_faction_turkish_done','q_faction_flemish_done',
+        'q_faction_art_done','q_faction_school_done','q_faction_mosque_done','q_faction_frituur_done',
+      ].filter(f => flags[f]).length;
+
+      if (factionDone < 7) {
+        const next = [];
+        if (!flags.q_faction_moroccan_done && flags.met_fatima)   next.push('overtuig Fatima voor de Marokkaanse vereniging');
+        if (!flags.q_faction_turkish_done)                          next.push('praat met Tine over de Turkse sociale club');
+        if (!flags.q_faction_flemish_done && flags.stunt_quest_done) next.push('vraag Mevrouw Baert om Bar Leon te overtuigen');
+        if (!flags.q_faction_art_done && flags.visited_de_roma)    next.push('koppel De Roma aan het Borgerhub kunstenaarscollectief');
+        if (!flags.q_faction_school_done)                           next.push('spreek met Hamza over zijn school');
+        if (!flags.q_faction_mosque_done && flags.kracht_van_gemeenschap) next.push('bezoek de imam van De-Koepel Moskee (Stenenbrug 11)');
+        if (!flags.q_faction_frituur_done && flags.delivery_done)  next.push('help Frituur de Tram met de grootorde');
+        const tip = next.length > 0 ? next[0] : 'zoek de overige facties op de Turnhoutsebaan';
+        return `Je hebt ${factionDone}/7 facties overtuigd. Volgende stap: ${tip}.`;
+      }
+
+      return 'Alle 7 facties zijn overtuigd! Ga naar de Grote 2km Tafel voor het finale!';
+    }
+
+    const hintOverlay = document.getElementById('hint-overlay');
+    const hintText    = document.getElementById('hint-text');
+
+    document.getElementById('hint-btn').addEventListener('click', () => {
+      hintText.textContent = getQuestHint();
+      hintOverlay.classList.add('open');
+      if (window.__setGameKeyboard) window.__setGameKeyboard(false);
+    });
+    document.getElementById('hint-close').addEventListener('click', () => {
+      hintOverlay.classList.remove('open');
+      if (window.__setGameKeyboard) window.__setGameKeyboard(true);
+    });
+    hintOverlay.addEventListener('click', (e) => {
+      if (e.target === hintOverlay) document.getElementById('hint-close').click();
+    });
+  </script>
 </body>
 </html>
