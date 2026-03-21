@@ -61,10 +61,19 @@ const game = new Phaser.Game(config);
 (window as any).__getScoreboard = () => PlaytimeTracker.getScoreboard();
 (window as any).__debugPlaytime = () => playtimeTracker.debug();
 
-(window as any).__logFeedback = async () => {
+(window as any).__logFeedbackIssue = async (
+  githubIssueNumber: number,
+  category: string,
+  message: string,
+): Promise<void> => {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-  await supabase.rpc('increment_feedback_count', { uid: user.id });
+  await supabase.from('feedback_submissions').insert({
+    user_id:             user?.id   ?? null,
+    email:               user?.email ?? null,
+    github_issue_number: githubIssueNumber,
+    category,
+    message,
+  });
 };
 
 /** Returns current email_optin value for the logged-in player, or undefined if not logged in. */

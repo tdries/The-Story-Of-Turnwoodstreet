@@ -1125,7 +1125,7 @@
         if (res.ok) {
           const issue = await res.json();
           lastSentAt = Date.now();
-          if (window.__logFeedback) window.__logFeedback();
+          if (window.__logFeedbackIssue) window.__logFeedbackIssue(issue.number, cat, msg);
           status.textContent = (_t.feedback_success || function(n){ return 'Bedankt! Issue #'+n+' aangemaakt.'; })(issue.number);
           status.style.color = '#44ff88';
           textarea.value = '';
