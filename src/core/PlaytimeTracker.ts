@@ -25,19 +25,36 @@ class PlaytimeTracker {
     return this.baseSeconds + Math.floor(this.sessionMs / 1000);
   }
 
-  /** Load existing playtime from DB after login. */
+  /** Called on login: load prior playtime and immediately write profile. */
   async loadFromDB(): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Load existing playtime so session adds on top
     const { data } = await supabase
       .from('players')
       .select('playtime_seconds')
       .eq('user_id', user.id)
       .single();
     if (data) this.baseSeconds = data.playtime_seconds ?? 0;
+
+    // Immediately write profile info (name, email, avatar)
+    await supabase.from('players').upsert({
+      user_id:          user.id,
+      display_name:     user.user_metadata?.full_name
+                     ?? user.user_metadata?.name
+                     ?? user.user_metadata?.user_name
+                     ?? 'Anon',
+      email:            user.email ?? null,
+      avatar_url:       user.user_metadata?.avatar_url
+                     ?? user.user_metadata?.picture
+                     ?? null,
+      playtime_seconds: this.baseSeconds,
+      updated_at:       new Date().toISOString(),
+    }, { onConflict: 'user_id' });
   }
 
-  /** Upsert current total to DB. */
+  /** Upsert current playtime + profile to DB. */
   async sync(): Promise<void> {
     if (this.syncing) return;
     const { data: { user } } = await supabase.auth.getUser();
@@ -46,14 +63,17 @@ class PlaytimeTracker {
     this.syncing = true;
     try {
       await supabase.from('players').upsert({
-        user_id:         user.id,
-        display_name:    user.user_metadata?.full_name
-                      ?? user.user_metadata?.name
-                      ?? user.user_metadata?.user_name
-                      ?? 'Anon',
-        avatar_url:      user.user_metadata?.avatar_url ?? null,
+        user_id:          user.id,
+        display_name:     user.user_metadata?.full_name
+                       ?? user.user_metadata?.name
+                       ?? user.user_metadata?.user_name
+                       ?? 'Anon',
+        email:            user.email ?? null,
+        avatar_url:       user.user_metadata?.avatar_url
+                       ?? user.user_metadata?.picture
+                       ?? null,
         playtime_seconds: this.totalSeconds,
-        updated_at:      new Date().toISOString(),
+        updated_at:       new Date().toISOString(),
       }, { onConflict: 'user_id' });
     } finally {
       this.syncing = false;
