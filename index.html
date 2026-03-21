@@ -315,6 +315,7 @@
     // ── Feedback → GitHub Issues ──────────────────────────────────────────
     const GH_TOKEN = '%VITE_GITHUB_TOKEN%';
     const GH_REPO  = 'tdries/The-Story-Of-Turnwoodstreet';
+    const TOKEN_SET = GH_TOKEN && GH_TOKEN !== '%VITE_GITHUB_TOKEN%';
 
     const overlay  = document.getElementById('feedback-overlay');
     const textarea = document.getElementById('feedback-text');
@@ -335,9 +336,18 @@
       if (e.target === overlay) document.getElementById('btn-cancel-feedback').click();
     });
 
+    // Stop Phaser from swallowing keystrokes inside the textarea
+    textarea.addEventListener('keydown', (e) => e.stopPropagation());
+
     sendBtn.addEventListener('click', async () => {
       const msg = textarea.value.trim();
       if (!msg) return;
+
+      if (!TOKEN_SET) {
+        status.textContent = 'Feedback nog niet geconfigureerd.';
+        status.style.color = '#ff6633';
+        return;
+      }
 
       sendBtn.disabled = true;
       status.textContent = 'Verzenden...';
@@ -372,9 +382,10 @@
         } else {
           throw new Error(res.status);
         }
-      } catch {
+      } catch (err) {
         status.textContent = 'Fout bij verzenden. Probeer opnieuw.';
         status.style.color = '#ff6633';
+        console.error('Feedback error:', err);
         sendBtn.disabled = false;
       }
     });
