@@ -398,6 +398,14 @@
       width: 100%;
       height: 100%;
       image-rendering: pixelated;
+      pointer-events: none;
+    }
+    #login-gate h1,
+    #login-gate p,
+    #btn-gate-google,
+    #login-gate-error {
+      position: relative;
+      z-index: 1;
     }
     #login-gate.hidden { opacity: 0; pointer-events: none; }
     #login-gate h1 {
