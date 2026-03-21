@@ -60,6 +60,12 @@ const game = new Phaser.Game(config);
 
 (window as any).__getScoreboard = () => PlaytimeTracker.getScoreboard();
 
+(window as any).__logFeedback = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.rpc('increment_feedback_count', { uid: user.id });
+};
+
 // On page load: restore session and notify UI
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session) {
