@@ -26,6 +26,12 @@ export class TimeManager {
     return `${String(this.hours).padStart(2, '0')}:${String(this.minutes).padStart(2, '0')}`;
   }
 
+  get timeStringAMPM(): string {
+    const h12 = this.hours % 12 || 12;
+    const ampm = this.hours < 12 ? 'AM' : 'PM';
+    return `${String(h12).padStart(2, '0')}:${String(this.minutes).padStart(2, '0')} ${ampm}`;
+  }
+
   // ── Time-of-day flags ──────────────────────────────────────────────────────
 
   get isNight(): boolean {

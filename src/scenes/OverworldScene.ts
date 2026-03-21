@@ -1157,7 +1157,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     // Clock — top-centre, screen-space
-    this.clockText = this.add.text(GAME_WIDTH / 2, 4, '09:00', {
+    this.clockText = this.add.text(GAME_WIDTH / 2, 4, '09:00 AM', {
       fontFamily:      '"Press Start 2P"',
       fontSize:        '6px',
       color:           '#FFFFFF',
@@ -1249,7 +1249,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     // Clock
-    this.clockText.setText(this._clock.timeString);
+    this.clockText.setText(this._clock.timeStringAMPM);
 
     // Night props (bars/smokers visible 20:00–04:00)
     const showProps = this._clock.isNightlife;

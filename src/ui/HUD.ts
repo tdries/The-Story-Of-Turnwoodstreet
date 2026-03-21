@@ -102,12 +102,6 @@ export class HUD {
       this.scene.time.delayedCall(1200, () => saveLabel.setText(localeManager.t('save')));
     });
 
-    // Black border frame around the entire game viewport
-    const border = this.scene.add.graphics();
-    border.lineStyle(16, 0x000000, 1);
-    border.strokeRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    border.setScrollFactor(0).setDepth(300);
-
   }
 
   update(player: PlayerState): void {

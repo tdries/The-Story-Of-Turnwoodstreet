@@ -290,7 +290,7 @@ app.use(express.static(path.join(__dirname, 'dist'), {
 
 app.get('/api/news', async (req, res) => {
   const [headlines, guestbook] = await Promise.all([getNews(), fetchGuestbookEntries()]);
-  res.json({ headlines: [...headlines, ...guestbook], fetchedAt: cache.fetchedAt });
+  res.json({ headlines: [...guestbook, ...headlines], fetchedAt: cache.fetchedAt });
 });
 
 // GitHub webhook — must use express.raw to preserve body for HMAC verification
