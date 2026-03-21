@@ -43,30 +43,30 @@ export class DialogueBox {
     const w = GAME_WIDTH;
 
     this.border = this.scene.add.rectangle(1, y - 1, w - 2, this.BOX_H + 2, 0xFFD700)
-      .setOrigin(0, 0).setScrollFactor(0).setDepth(200);
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(1000);
 
     this.panel = this.scene.add.rectangle(2, y, w - 4, this.BOX_H, 0x0A0A12)
-      .setOrigin(0, 0).setScrollFactor(0).setDepth(201);
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(1001);
 
     this.speakerText = this.scene.add.text(this.PAD + 2, y + this.PAD, '', {
       fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#FFD700',
-    }).setScrollFactor(0).setDepth(202).setResolution(2);
+    }).setScrollFactor(0).setDepth(1002).setResolution(2);
 
     this.bodyText = this.scene.add.text(this.PAD + 2, y + this.PAD + 18, '', {
       fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#F0EAD6',
       wordWrap:   { width: w - this.PAD * 4 },
-    }).setScrollFactor(0).setDepth(202).setResolution(2);
+    }).setScrollFactor(0).setDepth(1002).setResolution(2);
 
     this.promptText = this.scene.add.text(w - this.PAD - 2, y + this.BOX_H - this.PAD - 2, '▼', {
       fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#FFD700',
-    }).setOrigin(1, 1).setScrollFactor(0).setDepth(202).setResolution(2);
+    }).setOrigin(1, 1).setScrollFactor(0).setDepth(1002).setResolution(2);
 
     // Pre-build choice text objects (hidden until needed)
     for (let i = 0; i < this.MAX_CHOICES; i++) {
       const ct = this.scene.add.text(
         this.PAD + 8, y + this.PAD + 18 + i * 20, '',
         { fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#F0EAD6' },
-      ).setScrollFactor(0).setDepth(202).setResolution(2).setVisible(false);
+      ).setScrollFactor(0).setDepth(1002).setResolution(2).setVisible(false);
       this.choiceTexts.push(ct);
     }
 
