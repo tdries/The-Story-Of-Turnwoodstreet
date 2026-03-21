@@ -49,9 +49,34 @@
     }
     #feedback-btn:hover { background: rgba(255,215,0,0.15); }
 
+    #radio-btn {
+      position: fixed;
+      top: 76px;
+      right: 12px;
+      z-index: 1000;
+      background: rgba(10,10,18,0.82);
+      border: 1px solid rgba(80,220,120,0.4);
+      border-radius: 8px;
+      color: #50DC78;
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 7px 10px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1.8;
+      text-align: center;
+    }
+    #radio-btn:hover { background: rgba(80,220,120,0.12); }
+    #radio-btn.playing {
+      border-color: rgba(80,220,120,0.9);
+      color: #50DC78;
+      background: rgba(80,220,120,0.15);
+    }
+
     #hint-btn {
       position: fixed;
-      top: 44px;
+      top: 110px;
       right: 12px;
       z-index: 1000;
       background: rgba(10,10,18,0.82);
@@ -302,6 +327,7 @@
 
   <!-- Feedback button -->
   <button id="feedback-btn">FEEDBACK</button>
+  <button id="radio-btn">📻<br>MINERVA</button>
   <button id="hint-btn">HINT</button>
 
   <!-- Hint modal -->
@@ -487,6 +513,35 @@
         status.style.color = '#ff6633';
         console.error('Feedback error:', err);
         sendBtn.disabled = false;
+      }
+    });
+  </script>
+
+  <script>
+    // ── Radio Minerva ─────────────────────────────────────────────────────
+    const radioBtn    = document.getElementById('radio-btn');
+    const radioAudio  = new Audio();
+    radioAudio.crossOrigin = 'anonymous';
+    let radioPlaying  = false;
+
+    radioBtn.addEventListener('click', () => {
+      if (radioPlaying) {
+        radioAudio.pause();
+        radioAudio.src = '';
+        radioPlaying = false;
+        radioBtn.classList.remove('playing');
+        radioBtn.innerHTML = '📻<br>MINERVA';
+      } else {
+        // Reload src each time to force fresh connection to the live stream
+        radioAudio.src = 'https://streaming.radiominerva.be/minerva';
+        radioAudio.play().then(() => {
+          radioPlaying = true;
+          radioBtn.classList.add('playing');
+          radioBtn.innerHTML = '⏹<br>STOP';
+        }).catch(() => {
+          // HTTPS stream may not be available — fall back to HTTP via iframe trick
+          radioBtn.innerHTML = '📻<br>MINERVA';
+        });
       }
     });
   </script>
