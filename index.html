@@ -129,6 +129,7 @@
       <button class="dpad-btn" id="btn-down">↓</button>
     </div>
     <div id="action-btns">
+      <button class="action-btn" id="btn-save">SAVEN<span class="sub">opslaan</span></button>
       <button class="action-btn" id="btn-talk">PRAAT<span class="sub">spatiebalk</span></button>
       <button class="action-btn" id="btn-ok">OK<span class="sub">enter</span></button>
     </div>
@@ -164,6 +165,17 @@
     bindBtn('btn-down',  'down');
     bindBtn('btn-talk',  'action');
     bindBtn('btn-ok',    'enter');
+
+    // Save button — calls stateManager directly, no held-state needed
+    const saveBtn = document.getElementById('btn-save');
+    function doSave(e) {
+      e.preventDefault();
+      saveBtn.classList.add('pressed');
+      if (window.__saveGame) window.__saveGame();
+      setTimeout(() => saveBtn.classList.remove('pressed'), 300);
+    }
+    saveBtn.addEventListener('touchstart', doSave, { passive: false });
+    saveBtn.addEventListener('mousedown',  doSave);
   </script>
 
   <script type="module" src="/src/main.ts"></script>
