@@ -32,20 +32,17 @@
     /* ── Game center ─────────────────────────────────────────────────────── */
     #game-container {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       height: 100vh;
+      overflow: hidden;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
     canvas {
       display: block;
+      width: 100% !important;
+      height: 100% !important;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      box-shadow: 0 0 80px rgba(255, 160, 40, 0.18);
-      max-width: 100%;
-      max-height: 100vh;
     }
   </style>
   <style>
