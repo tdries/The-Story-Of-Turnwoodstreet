@@ -1,735 +1,520 @@
 {
-  "fatima_intro": [
-    {
-      "speaker": "Fatima",
-      "text": "Salam! Ben je nieuw op de Turnhoutsebaan? Welkom in de mooiste straat van Antwerpen.",
-      "flag":    "met_fatima",
-      "flagVal": true
-    },
-    {
-      "speaker": "Fatima",
-      "text": "Ik woon hier al 22 jaar. Mijn vader kwam als gastarbeider in '72. Hij werkte in de textielfabriek."
-    },
-    {
-      "speaker": "Fatima",
-      "text": "Nu runt mijn nicht Nora een hamamschool verderop. Ze trouwt volgende maand — maar ze heeft nog stof nodig voor haar jurk.",
-      "choice": [
-        {
-          "label":    "Ik kan die stof voor je halen.",
-          "flag":     "fabric_quest_accepted",
-          "flagVal":  true,
-          "next":     "fatima_fabric_accept"
-        },
-        {
-          "label":    "Waar kan ik stof vinden?",
-          "next":     "fatima_fabric_hint"
-        }
-      ]
-    }
-  ],
+  "fatima_intro": {
+    "npc": "fatima", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Fatima", "text": "Salam! Ben je nieuw op de Turnhoutsebaan? Welkom in de mooiste straat van Antwerpen.", "flag": "met_fatima", "flagVal": true },
+      { "speaker": "Fatima", "text": "Ik woon hier al 22 jaar. Mijn vader kwam als gastarbeider in '72. Hij werkte in de textielfabriek." },
+      { "speaker": "Fatima", "text": "Nu runt mijn nicht Nora een hamamschool verderop. Ze trouwt volgende maand — maar ze heeft nog stof nodig voor haar jurk.",
+        "choice": [
+          { "label": "Ik kan die stof voor je halen.", "flag": "fabric_quest_accepted", "flagVal": true, "next": "fatima_fabric_accept" },
+          { "label": "Waar kan ik stof vinden?", "next": "fatima_fabric_hint" }
+        ]
+      }
+    ]
+  },
 
-  "fatima_fabric_accept": [
-    {
-      "speaker": "Fatima",
-      "text": "Dat zou geweldig zijn! Mevrouw Baert bij de Indian Boutique — nr.137 — heeft altijd mooie restjes. Zeg dat ik je stuur.",
-      "flag":    "knows_stunt_location",
-      "flagVal": true
-    }
-  ],
+  "fatima_fabric_accept": {
+    "npc": "fatima", "priority": 50,
+    "conditions": { "flags": { "fabric_quest_accepted": true, "stunt_quest_active": false } },
+    "lines": [
+      { "speaker": "Fatima", "text": "Dat zou geweldig zijn! Mevrouw Baert bij de Indian Boutique — nr.137 — heeft altijd mooie restjes. Zeg dat ik je stuur.", "flag": "knows_stunt_location", "flagVal": true }
+    ]
+  },
 
-  "fatima_fabric_hint": [
-    {
-      "speaker": "Fatima",
-      "text": "Indian Boutique! Nummer 137. Al open sinds 1985. Mevrouw Baert kent elke stof. Ze is Vlaams, maar haar beste klanten zijn Marokkaans — ze begrijpt ons.",
-      "flag":    "knows_stunt_location",
-      "flagVal": true
-    }
-  ],
+  "fatima_fabric_hint": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Fatima", "text": "Indian Boutique! Nummer 137. Al open sinds 1985. Mevrouw Baert kent elke stof. Ze is Vlaams, maar haar beste klanten zijn Marokkaans — ze begrijpt ons.", "flag": "knows_stunt_location", "flagVal": true }
+    ]
+  },
 
-  "fatima_after_fabric": [
-    {
-      "speaker": "Fatima",
-      "text": "De stof! Shukran, shukran! Nora zal zo blij zijn.",
-      "flag":       "stunt_quest_done",
-      "flagVal":    true,
-      "removeItem": "fabric_bolt"
-    },
-    {
-      "speaker": "Fatima",
-      "text": "Je bent een goed mens. De buurt heeft mensen als jij nodig. Als je ooit ergens hulp mee nodig hebt — ik ben hier.",
-      "flag":    "has_community_trust",
-      "flagVal": true
-    }
-  ],
+  "fatima_after_fabric": {
+    "npc": "fatima", "priority": 100,
+    "conditions": { "flags": { "stunt_quest_done": false }, "items": ["fabric_bolt"] },
+    "lines": [
+      { "speaker": "Fatima", "text": "De stof! Shukran, shukran! Nora zal zo blij zijn.", "flag": "stunt_quest_done", "flagVal": true, "removeItem": "fabric_bolt" },
+      { "speaker": "Fatima", "text": "Je bent een goed mens. De buurt heeft mensen als jij nodig. Als je ooit ergens hulp mee nodig hebt — ik ben hier.", "flag": "has_community_trust", "flagVal": true }
+    ]
+  },
 
-  "fatima_post_trust": [
-    {
-      "speaker": "Fatima",
-      "text": "Heb je al gehoord dat er een speculator drie panden wil kopen? Iedereen is ongerust."
-    },
-    {
-      "speaker": "Fatima",
-      "text": "Omar de bakker heeft trouwens ook problemen — hij heeft geen meel meer voor morgenochtend. Misschien kun je helpen?"
-    }
-  ],
+  "fatima_signature": {
+    "npc": "fatima", "priority": 60,
+    "conditions": { "flags": { "has_community_trust": true, "sig_fatima": false } },
+    "lines": [
+      { "speaker": "Fatima", "text": "Een petitie! Eindelijk. Geef hier. Naam, adres en datum — klaar. Ga nu naar Omar, Reza, Mevrouw Baert en Aziz.", "flag": "sig_fatima", "flagVal": true }
+    ]
+  },
 
-  "fatima_faction": [
-    {
-      "speaker": "Fatima",
-      "text": "De Samen Aan Tafel... ja. Als iedereen meedoet, dan ja. Ik zal de Marokkaanse vereniging bellen.",
-      "flag":    "fatima_convinced",
-      "flagVal": true
-    }
-  ],
+  "fatima_post_trust": {
+    "npc": "fatima", "priority": 30,
+    "conditions": { "flags": { "has_community_trust": true } },
+    "lines": [
+      { "speaker": "Fatima", "text": "Heb je al gehoord dat er een speculator drie panden wil kopen? Iedereen is ongerust." },
+      { "speaker": "Fatima", "text": "Omar de bakker heeft trouwens ook problemen — hij heeft geen meel meer voor morgenochtend. Misschien kun je helpen?" }
+    ]
+  },
 
-  "omar_bakker": [
-    {
-      "speaker": "Omar",
-      "text": "Khobz? Msemmen? Vers van vanmorgen vijf uur! Mijn oven staat nooit stil op de Turnhoutsebaan."
-    },
-    {
-      "speaker": "Omar",
-      "text": "Tijdens de Ramadan bak ik soms tot middernacht. Dan staat de hele buurt voor mijn deur."
-    },
-    {
-      "speaker": "Omar",
-      "text": "Heb je al gehoord van de 2-kilometer tafel? Wij hebben er brood voor 7000 mensen gebakken.",
-      "flag":    "knows_samen_tafel",
-      "flagVal": true
-    }
-  ],
+  "fatima_faction": {
+    "npc": "fatima", "priority": 80,
+    "conditions": { "flags": { "has_community_trust": true, "met_mayor": true, "fatima_convinced": false } },
+    "lines": [
+      { "speaker": "Fatima", "text": "De Samen Aan Tafel... ja. Als iedereen meedoet, dan ja. Ik zal de Marokkaanse vereniging bellen.", "flag": "fatima_convinced", "flagVal": true }
+    ]
+  },
 
-  "omar_flour_request": [
-    {
-      "speaker": "Omar",
-      "text": "Aiwa, groot probleem! Mijn leverancier is ziek. Geen meel voor morgen. Budget Market heeft het — maar ik kan de winkel niet verlaten.",
-      "flag":    "omar_flour_asked",
-      "flagVal": true,
-      "choice": [
-        {
-          "label":   "Ik haal het voor je.",
-          "flag":    "flour_quest_accepted",
-          "flagVal": true,
-          "next":    "omar_flour_thanks"
-        },
-        {
-          "label":   "Hoeveel bloem?",
-          "next":    "omar_flour_detail"
-        }
-      ]
-    }
-  ],
+  "fatima_all_done": {
+    "npc": "fatima", "priority": 70,
+    "conditions": { "flags": { "fatima_convinced": true } },
+    "lines": [
+      { "speaker": "Fatima", "text": "Kijk hoe ver we al gekomen zijn. De tafel staat er bijna. Dankzij mensen als jij." },
+      { "speaker": "Fatima", "text": "Nora is zo blij met de stof. Ze vraagt of jij op de bruiloft komt. Ik heb ja gezegd." }
+    ]
+  },
 
-  "omar_flour_thanks": [
-    {
-      "speaker": "Omar",
-      "text": "Barakallahu fik! Budget Market, nr.326. Twee zakken van 5 kilo. Zeg maar dat het voor Omar is."
-    }
-  ],
+  "omar_bakker": {
+    "npc": "omar", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Omar", "text": "Khobz? Msemmen? Vers van vanmorgen vijf uur! Mijn oven staat nooit stil op de Turnhoutsebaan." },
+      { "speaker": "Omar", "text": "Tijdens de Ramadan bak ik soms tot middernacht. Dan staat de hele buurt voor mijn deur." },
+      { "speaker": "Omar", "text": "Heb je al gehoord van de 2-kilometer tafel? Wij hebben er brood voor 7000 mensen gebakken.", "flag": "knows_samen_tafel", "flagVal": true }
+    ]
+  },
 
-  "omar_flour_detail": [
-    {
-      "speaker": "Omar",
-      "text": "Twee zakken, 5 kilo elk. Bloem van goede kwaliteit — type 45 als ze het hebben. Budget Market, nr.326.",
-      "flag":    "flour_quest_accepted",
-      "flagVal": true
-    }
-  ],
+  "omar_flour_request": {
+    "npc": "omar", "priority": 60,
+    "conditions": { "flags": { "met_fatima": true, "omar_flour_asked": false } },
+    "lines": [
+      { "speaker": "Omar", "text": "Aiwa, groot probleem! Mijn leverancier is ziek. Geen meel voor morgen. Budget Market heeft het — maar ik kan de winkel niet verlaten.", "flag": "omar_flour_asked", "flagVal": true,
+        "choice": [
+          { "label": "Ik haal het voor je.", "flag": "flour_quest_accepted", "flagVal": true, "next": "omar_flour_thanks" },
+          { "label": "Hoeveel bloem?", "next": "omar_flour_detail" }
+        ]
+      }
+    ]
+  },
 
-  "omar_flour_done": [
-    {
-      "speaker": "Omar",
-      "text": "De bloem! Perfekt. Hier — harira en baklava voor jou. En als je ooit brood nodig hebt: gratis, altijd.",
-      "flag":       "omar_flour_done",
-      "flagVal":    true,
-      "removeItem": "flour",
-      "item":       "harira"
-    },
-    {
-      "speaker": "Omar",
-      "text": "Neem ook dit mee.",
-      "item":    "baklava"
-    }
-  ],
+  "omar_flour_thanks": {
+    "npc": "omar", "priority": 40,
+    "conditions": { "flags": { "flour_quest_accepted": true, "omar_flour_done": false } },
+    "lines": [
+      { "speaker": "Omar", "text": "Barakallahu fik! Budget Market, nr.326. Twee zakken van 5 kilo. Zeg maar dat het voor Omar is." }
+    ]
+  },
 
-  "budget_market_flour": [
-    {
-      "speaker": "Budget Market",
-      "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.",
-      "flag":    "has_flour",
-      "flagVal": true,
-      "item":    "flour"
-    },
-    {
-      "speaker": "Budget Market",
-      "text": "Groetjes aan Omar. Hij is een vaste klant al 15 jaar."
-    }
-  ],
+  "omar_flour_detail": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Omar", "text": "Twee zakken, 5 kilo elk. Bloem van goede kwaliteit — type 45 als ze het hebben. Budget Market, nr.326.", "flag": "flour_quest_accepted", "flagVal": true }
+    ]
+  },
 
-  "stunt_baert": [
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Stunt Solderie, al open sinds '85! Ik heb de hele wijk zien veranderen."
-    },
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Vroeger was dit een Vlaamse arbeiderswijk. Nu hoor ik vijf talen als ik mijn deur opendoe."
-    },
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Maar weet je? Mijn beste klanten zijn de Marokkaanse vrouwen. Ze kennen stoffen beter dan wie ook."
-    }
-  ],
+  "omar_flour_done": {
+    "npc": "omar", "priority": 100,
+    "conditions": { "flags": { "has_flour": true, "omar_flour_done": false } },
+    "lines": [
+      { "speaker": "Omar", "text": "De bloem! Perfekt. Hier — harira en baklava voor jou. En als je ooit brood nodig hebt: gratis, altijd.", "flag": "omar_flour_done", "flagVal": true, "removeItem": "flour", "item": "harira" },
+      { "speaker": "Omar", "text": "Neem ook dit mee.", "item": "baklava" }
+    ]
+  },
 
-  "stunt_baert_fabric": [
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Voor Fatima's nicht! Natuurlijk. Ik had al een stukje apart gelegd — ik wist dat ze iemand zou sturen.",
-      "flag":    "stunt_quest_active",
-      "flagVal": true,
-      "item":    "fabric_bolt"
-    },
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Zeg aan Fatima dat de stof een geschenk is van Stunt Solderie. Na al die jaren."
-    }
-  ],
+  "omar_signature": {
+    "npc": "omar", "priority": 30,
+    "conditions": { "flags": { "has_community_trust": true, "sig_omar": false } },
+    "lines": [
+      { "speaker": "Omar", "text": "Die speculant? Hij probeerde vorig jaar ook al mijn bakkerij te kopen. Hier — handtekening. En neem een broodje mee.", "flag": "sig_omar", "flagVal": true }
+    ]
+  },
 
-  "stunt_baert_signature": [
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Een petitie? Tegen die speculant? Geef hier. Ik teken als eerste. Mijn winkel staat hier al 40 jaar.",
-      "flag":    "sig_baert",
-      "flagVal": true
-    }
-  ],
+  "budget_market_flour": {
+    "npc": "yusuf", "priority": 80,
+    "conditions": { "flags": { "flour_quest_accepted": true, "has_flour": false, "omar_flour_done": false } },
+    "lines": [
+      { "speaker": "Budget Market", "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.", "flag": "has_flour", "flagVal": true, "item": "flour" },
+      { "speaker": "Budget Market", "text": "Groetjes aan Omar. Hij is een vaste klant al 15 jaar." }
+    ]
+  },
 
-  "stunt_baert_faction": [
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Bar Leon? Die jongens zijn niet gemakkelijk. Maar als ik erheen ga en uitleg wat het is... ze kennen mij. Ik doe het.",
-      "flag":    "baert_faction_convinced",
-      "flagVal": true
-    }
-  ],
+  "stunt_baert": {
+    "npc": "baert", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Mevrouw Baert", "text": "Stunt Solderie, al open sinds '85! Ik heb de hele wijk zien veranderen." },
+      { "speaker": "Mevrouw Baert", "text": "Vroeger was dit een Vlaamse arbeiderswijk. Nu hoor ik vijf talen als ik mijn deur opendoe." },
+      { "speaker": "Mevrouw Baert", "text": "Maar weet je? Mijn beste klanten zijn de Marokkaanse vrouwen. Ze kennen stoffen beter dan wie ook." }
+    ]
+  },
 
-  "reza_music": [
-    {
-      "speaker": "Reza",
-      "text": "Psst. Hoor je dat? Die klanken komen uit De Roma. Elke week iets anders — gnawa, jazz, rap."
-    },
-    {
-      "speaker": "Reza",
-      "text": "Paul McCartney heeft hier ooit gespeeld. Echt waar. Turnhoutsebaan 286, augustus '72."
-    },
-    {
-      "speaker": "Reza",
-      "text": "Mijn oud heeft een snaar gebroken. Als je er een vindt bij Mimoun, nr.239, speel ik vanavond een liedje voor jou.",
-      "choice": [
-        {
-          "label":   "Ik zoek die snaar voor je.",
-          "flag":    "oud_quest_accepted",
-          "flagVal": true,
-          "next":    "reza_oud_accept"
-        },
-        {
-          "label":   "Vertel me meer over De Roma.",
-          "next":    "reza_de_roma_lore"
-        }
-      ]
-    }
-  ],
+  "stunt_baert_fabric": {
+    "npc": "baert", "priority": 90,
+    "conditions": { "flags": { "knows_stunt_location": true, "stunt_quest_active": false } },
+    "lines": [
+      { "speaker": "Mevrouw Baert", "text": "Voor Fatima's nicht! Natuurlijk. Ik had al een stukje apart gelegd — ik wist dat ze iemand zou sturen.", "flag": "stunt_quest_active", "flagVal": true, "item": "fabric_bolt" },
+      { "speaker": "Mevrouw Baert", "text": "Zeg aan Fatima dat de stof een geschenk is van Stunt Solderie. Na al die jaren." }
+    ]
+  },
 
-  "reza_oud_accept": [
-    {
-      "speaker": "Reza",
-      "text": "Mimoun, nr.239 — verderop in de straat. Ze hebben soms muziekaccessoires. Vraag naar snaren voor een oud."
-    }
-  ],
+  "stunt_baert_signature": {
+    "npc": "baert", "priority": 60,
+    "conditions": { "flags": { "has_community_trust": true, "sig_baert": false } },
+    "lines": [
+      { "speaker": "Mevrouw Baert", "text": "Een petitie? Tegen die speculant? Geef hier. Ik teken als eerste. Mijn winkel staat hier al 40 jaar.", "flag": "sig_baert", "flagVal": true }
+    ]
+  },
 
-  "reza_de_roma_lore": [
-    {
-      "speaker": "Reza",
-      "text": "De Roma is Art Deco, 1927. Alphonse Pauwels bouwde hem voor 2000 mensen. Na jaren leegstand gered door 400 vrijwilligers in 2003."
-    },
-    {
-      "speaker": "Reza",
-      "text": "Nu komen gnawa uit Marrakech, hiphop uit Borgerhout, jazz uit overal. Dat IS de Turnhoutsebaan.",
-      "flag":    "oud_quest_accepted",
-      "flagVal": true
-    }
-  ],
+  "stunt_baert_faction": {
+    "npc": "baert", "priority": 50,
+    "conditions": { "flags": { "met_mayor": true, "baert_faction_convinced": false } },
+    "lines": [
+      { "speaker": "Mevrouw Baert", "text": "Bar Leon? Die jongens zijn niet gemakkelijk. Maar als ik erheen ga en uitleg wat het is... ze kennen mij. Ik doe het.", "flag": "baert_faction_convinced", "flagVal": true }
+    ]
+  },
 
-  "reza_oud_found": [
-    {
-      "speaker": "Reza",
-      "text": "De snaar... perfect. Wacht.",
-      "flag":       "reza_quest_done",
-      "flagVal":    true,
-      "removeItem": "oud_string"
-    },
-    {
-      "speaker": "Reza",
-      "text": "*speelt* ... Hoor je dat? Dat is de taal van deze straat. Jij begrijpt haar nu ook."
-    }
-  ],
+  "baert_done": {
+    "npc": "baert", "priority": 40,
+    "conditions": { "flags": { "baert_faction_convinced": true } },
+    "lines": [
+      { "speaker": "Mevrouw Baert", "text": "Bar Leon is overtuigd. Het kostte me een fles Duvel en een half uur uitleg, maar ze doen mee." },
+      { "speaker": "Mevrouw Baert", "text": "Zestig jaar Borgerhout, en dit is het mooiste wat ik heb meegemaakt." }
+    ]
+  },
 
-  "reza_signature": [
-    {
-      "speaker": "Reza",
-      "text": "Die speculant? Ik ken hem. Hij wil ook mijn studio kopen. Hier is mijn handtekening, en die van mijn twee buren erbij.",
-      "flag":    "sig_reza",
-      "flagVal": true
-    }
-  ],
+  "reza_music": {
+    "npc": "reza", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Reza", "text": "Psst. Hoor je dat? Die klanken komen uit De Roma. Elke week iets anders — gnawa, jazz, rap." },
+      { "speaker": "Reza", "text": "Paul McCartney heeft hier ooit gespeeld. Echt waar. Turnhoutsebaan 286, augustus '72." },
+      { "speaker": "Reza", "text": "Mijn oud heeft een snaar gebroken. Als je er een vindt bij Mimoun, nr.239, speel ik vanavond een liedje voor jou.",
+        "choice": [
+          { "label": "Ik zoek die snaar voor je.", "flag": "oud_quest_accepted", "flagVal": true, "next": "reza_oud_accept" },
+          { "label": "Vertel me meer over De Roma.", "next": "reza_de_roma_lore" }
+        ]
+      }
+    ]
+  },
 
-  "yusuf_delivery": [
-    {
-      "speaker": "Yusuf",
-      "text": "Nee nee nee! Lekke band en nog 12 pakjes! Meneer, mevrouw — kunt u mij helpen?",
-      "flag":    "met_yusuf",
-      "flagVal": true,
-      "choice": [
-        {
-          "label":   "Ik help je met de laatste drie.",
-          "flag":    "delivery_accepted",
-          "flagVal": true,
-          "next":    "yusuf_delivery_accept"
-        },
-        {
-          "label":   "Waar moeten ze naartoe?",
-          "next":    "yusuf_delivery_info"
-        }
-      ]
-    }
-  ],
+  "reza_oud_accept": {
+    "npc": "reza", "priority": 40,
+    "conditions": { "flags": { "oud_quest_accepted": true } },
+    "lines": [
+      { "speaker": "Reza", "text": "Mimoun, nr.239 — verderop in de straat. Ze hebben soms muziekaccessoires. Vraag naar snaren voor een oud." }
+    ]
+  },
 
-  "yusuf_delivery_accept": [
-    {
-      "speaker": "Yusuf",
-      "text": "Echt? Top! Pakje 1 → nr.170 (Patisserie Aladdin). Pakje 2 → nr.137 (Indian Boutique). Pakje 3 → nr.284 (Borger Hub). Alstublieft!",
-      "flag":    "delivery_packages_received",
-      "flagVal": true,
-      "item":    "delivery_package"
-    }
-  ],
+  "reza_de_roma_lore": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Reza", "text": "De Roma is Art Deco, 1927. Alphonse Pauwels bouwde hem voor 2000 mensen. Na jaren leegstand gered door 400 vrijwilligers in 2003." },
+      { "speaker": "Reza", "text": "Nu komen gnawa uit Marrakech, hiphop uit Borgerhout, jazz uit overal. Dat IS de Turnhoutsebaan.", "flag": "oud_quest_accepted", "flagVal": true }
+    ]
+  },
 
-  "yusuf_delivery_info": [
-    {
-      "speaker": "Yusuf",
-      "text": "Nr.170, nr.137 en nr.284. Drie adressen, één straat. Niet ver! Ik geef je een tramticket als beloning.",
-      "flag":    "delivery_accepted",
-      "flagVal": true,
-      "flag2":   "delivery_packages_received",
-      "flagVal2": true,
-      "item":    "delivery_package"
-    }
-  ],
+  "reza_oud_found": {
+    "npc": "reza", "priority": 90,
+    "conditions": { "flags": { "oud_quest_accepted": true }, "items": ["oud_string"] },
+    "lines": [
+      { "speaker": "Reza", "text": "De snaar... perfect. Wacht.", "flag": "reza_quest_done", "flagVal": true, "removeItem": "oud_string" },
+      { "speaker": "Reza", "text": "*speelt* ... Hoor je dat? Dat is de taal van deze straat. Jij begrijpt haar nu ook." }
+    ]
+  },
 
-  "yusuf_delivery_done": [
-    {
-      "speaker": "Yusuf",
-      "text": "Alles geleverd? Fantastisch! Hier — een tramticket. Moge je bakfiets nooit een lekke band krijgen.",
-      "flag":       "delivery_done",
-      "flagVal":    true,
-      "item":       "tram_ticket",
-      "removeItem": "delivery_package"
-    }
-  ],
+  "reza_signature": {
+    "npc": "reza", "priority": 60,
+    "conditions": { "flags": { "has_community_trust": true, "sig_reza": false } },
+    "lines": [
+      { "speaker": "Reza", "text": "Die speculant? Ik ken hem. Hij wil ook mijn studio kopen. Hier is mijn handtekening, en die van mijn twee buren erbij.", "flag": "sig_reza", "flagVal": true }
+    ]
+  },
 
-  "hamza_marbles": [
-    {
-      "speaker": "Hamza",
-      "text": "Yo! Knikkers? Altijd. Maar ik wil ook iets vragen — voor school. Weet jij wat de Reuzenpoort is?"
-    },
-    {
-      "speaker": "Hamza",
-      "text": "Ons juf zegt dat het een historische poort is. Maar waarom staat hij hier op de Turnhoutsebaan?",
-      "flag":    "met_hamza",
-      "flagVal": true
-    }
-  ],
+  "reza_done": {
+    "npc": "reza", "priority": 100,
+    "conditions": { "flags": { "reza_quest_done": true } },
+    "lines": [
+      { "speaker": "Reza", "text": "Hoor je dat? Dat is de snaar die jij gevonden hebt. Elke noot is een bedankje." },
+      { "speaker": "Reza", "text": "Vanavond De Roma — het nieuwe nummer. Je bent uitgenodigd. Geen excuses." }
+    ]
+  },
 
-  "hamza_school_faction": [
-    {
-      "speaker": "Hamza",
-      "text": "De school meedoen aan de Samen Aan Tafel? Ik ga het vragen aan juffrouw De Smedt. Ze is cool, ze zegt zeker ja.",
-      "flag":    "school_faction_convinced",
-      "flagVal": true
-    }
-  ],
+  "yusuf_delivery": {
+    "npc": "yusuf", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Yusuf", "text": "Nee nee nee! Lekke band en nog 12 pakjes! Meneer, mevrouw — kunt u mij helpen?", "flag": "met_yusuf", "flagVal": true,
+        "choice": [
+          { "label": "Ik help je met de laatste drie.", "flag": "delivery_accepted", "flagVal": true, "next": "yusuf_delivery_accept" },
+          { "label": "Waar moeten ze naartoe?", "next": "yusuf_delivery_info" }
+        ]
+      }
+    ]
+  },
 
-  "aziz_oud_string": [
-    {
-      "speaker": "Aziz",
-      "text": "Een oud-snaar? Wacht... ik denk dat ik er ergens nog eentje heb liggen.",
-      "flag":    "has_oud_string_item",
-      "flagVal": true,
-      "item":    "oud_string"
-    },
-    {
-      "speaker": "Aziz",
-      "text": "Hier. Zeg maar aan Reza dat die van Aziz komt. Dan speelt hij er dubbel zo goed op."
-    }
-  ],
+  "yusuf_delivery_accept": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Yusuf", "text": "Echt? Top! Pakje 1 → nr.170 (Patisserie Aladdin). Pakje 2 → nr.137 (Indian Boutique). Pakje 3 → nr.284 (Borger Hub). Alstublieft!", "flag": "delivery_packages_received", "flagVal": true, "item": "delivery_package" }
+    ]
+  },
 
-  "aziz_signature": [
-    {
-      "speaker": "Aziz",
-      "text": "Ik ben hier al 40 jaar. Ik heb gezien hoe ze ons eerst uitsloten, toen tolereerden, nu misschien... accepteren.",
-      "flag":    "sig_aziz",
-      "flagVal": true
-    },
-    {
-      "speaker": "Aziz",
-      "text": "Mijn handtekening? Ja. Voor deze straat teken ik alles.",
-      "flag":    "met_aziz",
-      "flagVal": true
-    }
-  ],
+  "yusuf_delivery_info": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Yusuf", "text": "Nr.170, nr.137 en nr.284. Drie adressen, één straat. Niet ver! Ik geef je een tramticket als beloning.", "flag": "delivery_accepted", "flagVal": true, "flag2": "delivery_packages_received", "flagVal2": true, "item": "delivery_package" }
+    ]
+  },
 
-  "fatima_signature": [
-    {
-      "speaker": "Fatima",
-      "text": "Een petitie! Eindelijk. Geef hier. Naam, adres en datum — klaar. Ga nu naar Omar, Reza, Mevrouw Baert en Aziz.",
-      "flag":    "sig_fatima",
-      "flagVal": true
-    }
-  ],
+  "yusuf_delivery_done": {
+    "npc": "yusuf", "priority": 60,
+    "conditions": { "flags": { "delivery_accepted": true, "delivery_packages_received": true } },
+    "lines": [
+      { "speaker": "Yusuf", "text": "Alles geleverd? Fantastisch! Hier — een tramticket. Moge je bakfiets nooit een lekke band krijgen.", "flag": "delivery_done", "flagVal": true, "item": "tram_ticket", "removeItem": "delivery_package" }
+    ]
+  },
 
-  "omar_signature": [
-    {
-      "speaker": "Omar",
-      "text": "Die speculant? Hij probeerde vorig jaar ook al mijn bakkerij te kopen. Hier — handtekening. En neem een broodje mee.",
-      "flag":    "sig_omar",
-      "flagVal": true
-    }
-  ],
+  "yusuf_done": {
+    "npc": "yusuf", "priority": 100,
+    "conditions": { "flags": { "delivery_done": true } },
+    "lines": [
+      { "speaker": "Yusuf", "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou." },
+      { "speaker": "Yusuf", "text": "Als je ooit iets wil laten bezorgen op de Turnhoutsebaan — zeg het maar. Voor vrienden: gratis." }
+    ]
+  },
 
-  "tine_faction": [
-    {
-      "speaker": "Tine",
-      "text": "Ah, de Samen Aan Tafel! Ik ken de voorzitter van de Turkse sociale club al 20 jaar. Als jij het vraagt en ik het ondersteun — hij zegt ja.",
-      "flag":    "tine_faction_convinced",
-      "flagVal": true
-    }
-  ],
+  "aziz_signature": {
+    "npc": "aziz", "priority": 40,
+    "conditions": { "flags": { "sig_aziz": false } },
+    "lines": [
+      { "speaker": "Aziz", "text": "Ik ben hier al 40 jaar. Ik heb gezien hoe ze ons eerst uitsloten, toen tolereerden, nu misschien... accepteren.", "flag": "sig_aziz", "flagVal": true },
+      { "speaker": "Aziz", "text": "Mijn handtekening? Ja. Voor deze straat teken ik alles.", "flag": "met_aziz", "flagVal": true }
+    ]
+  },
 
-  "kid_marbles": [
-    {
-      "speaker": "Kind",
-      "text": "Yo! Wil je knikkers? Ik win altijd maar het is saai als er niemand is om tegen te spelen."
-    },
-    {
-      "speaker": "Kind",
-      "text": "Mijn oma zegt dat vroeger de politie hier altijd patrouilleerde. Nu is er een cafeetje. Beter toch?"
-    }
-  ],
+  "aziz_oud_string": {
+    "npc": "aziz", "priority": 80,
+    "conditions": { "flags": { "oud_quest_accepted": true, "has_oud_string_item": false } },
+    "lines": [
+      { "speaker": "Aziz", "text": "Een oud-snaar? Wacht... ik denk dat ik er ergens nog eentje heb liggen.", "flag": "has_oud_string_item", "flagVal": true, "item": "oud_string" },
+      { "speaker": "Aziz", "text": "Hier. Zeg maar aan Reza dat die van Aziz komt. Dan speelt hij er dubbel zo goed op." }
+    ]
+  },
 
-  "delivery_rush": [
-    {
-      "speaker": "Koerier",
-      "text": "Nee nee nee, niet nu! Mijn bakfiets heeft een lekke band en ik heb nog 12 pakjes te leveren!"
-    },
-    {
-      "speaker": "Koerier",
-      "text": "Als jij mij helpt met de laatste drie, geef ik je een tramticket. Deal?"
-    }
-  ],
+  "reuzenpoort_legend": {
+    "npc": "aziz", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Gids", "text": "De Reuzenpoort dateert uit 1713. Ze bouwden hem voor het Reuzenhuis — lang voor het stadhuis hier stond." },
+      { "speaker": "Gids", "text": "In 1833 braken ze het Reuzenhuis af voor het nieuwe stadhuis van Josephus Hoefnagels. Maar de poort bleef." },
+      { "speaker": "Gids", "text": "Borgerhout was eeuwenlang zelfstandig. Pas op 1 januari 1983 werden wij Antwerpen. Velen betreuren dat nog." }
+    ]
+  },
 
-  "reuzenpoort_blocked": [
-    {
-      "speaker": "Turnhoutsebaan",
-      "text": "De poort blijft gesloten voor vreemden. Spreek eerst met Fatima aan het begin van de straat."
-    }
-  ],
+  "hamza_marbles": {
+    "npc": "hamza", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Hamza", "text": "Yo! Knikkers? Altijd. Maar ik wil ook iets vragen — voor school. Weet jij wat de Reuzenpoort is?" },
+      { "speaker": "Hamza", "text": "Ons juf zegt dat het een historische poort is. Maar waarom staat hij hier op de Turnhoutsebaan?", "flag": "met_hamza", "flagVal": true }
+    ]
+  },
 
-  "de_roma_blocked": [
-    {
-      "speaker": "Turnhoutsebaan",
-      "text": "De deur van De Roma opent alleen voor wie de taal van de straat begrijpt. Zoek Reza's oud-snaar."
-    }
-  ],
+  "hamza_school_faction": {
+    "npc": "hamza", "priority": 50,
+    "conditions": { "flags": { "met_mayor": true, "school_faction_convinced": false } },
+    "lines": [
+      { "speaker": "Hamza", "text": "De school meedoen aan de Samen Aan Tafel? Ik ga het vragen aan juffrouw De Smedt. Ze is cool, ze zegt zeker ja.", "flag": "school_faction_convinced", "flagVal": true }
+    ]
+  },
 
-  "deurne_blocked": [
-    {
-      "speaker": "Turnhoutsebaan",
-      "text": "De grenswachter vraagt naar uw papieren. Versla de Bulldozer-bureaucraat en draag zijn vergunning."
-    }
-  ],
+  "district_mayor": {
+    "npc": "el_osri", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "El Osri", "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.", "flag": "met_mayor", "flagVal": true },
+      { "speaker": "El Osri", "text": "Ik heb gehoord wat je gedaan hebt — de stof, de petitie, de snaar. Deze straat heeft je nodig." },
+      { "speaker": "El Osri", "text": "Ik organiseer de Samen Aan Tafel: 2 kilometer tafel, 7000 mensen, Easter en Iftar samen. Maar ik heb 7 facties nodig. Wil je helpen?", "flag": "act4_briefed", "flagVal": true,
+        "choice": [
+          { "label": "Ja. Ik doe mee.", "flag": "act4_started", "flagVal": true, "next": "mayor_briefing" },
+          { "label": "Vertel me meer.", "next": "mayor_explains" }
+        ]
+      }
+    ]
+  },
 
-  "reuzenpoort_legend": [
-    {
-      "speaker": "Gids",
-      "text": "De Reuzenpoort dateert uit 1713. Ze bouwden hem voor het Reuzenhuis — lang voor het stadhuis hier stond."
-    },
-    {
-      "speaker": "Gids",
-      "text": "In 1833 braken ze het Reuzenhuis af voor het nieuwe stadhuis van Josephus Hoefnagels. Maar de poort bleef."
-    },
-    {
-      "speaker": "Gids",
-      "text": "Borgerhout was eeuwenlang zelfstandig. Pas op 1 januari 1983 werden wij Antwerpen. Velen betreuren dat nog."
-    }
-  ],
+  "mayor_post_brief": {
+    "npc": "el_osri", "priority": 50,
+    "conditions": { "flags": { "act4_started": true } },
+    "lines": [
+      { "speaker": "El Osri", "text": "Hoe gaat het met de facties? We hebben ze alle zeven nodig voor de grote tafel." },
+      { "speaker": "El Osri", "text": "Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee, Frituur de Tram. Vooruit!" }
+    ]
+  },
 
-  "de_roma_keeper": [
-    {
-      "speaker": "De Roma",
-      "text": "Dit gebouw is Art Deco, gebouwd in 1927. Alphonse Pauwels ontwierp het voor 2000 toeschouwers.",
-      "flag":    "visited_de_roma",
-      "flagVal": true
-    },
-    {
-      "speaker": "De Roma",
-      "text": "Na jaren leegstand werden wij in 2003 gered door Paul Schyvens en 400 vrijwilligers."
-    },
-    {
-      "speaker": "De Roma",
-      "text": "Vanavond: gnawa-muziek uit Marrakech. Morgen: hiphop uit Borgerhout. Altijd welkom."
-    }
-  ],
+  "mayor_briefing": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "El Osri", "text": "Goed. Zeven facties: Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee en Frituur de Tram. Eén voor één." }
+    ]
+  },
 
-  "de_roma_concert": [
-    {
-      "speaker": "De Roma",
-      "text": "Reza speelt vanavond op het podium. Dankzij jou. Dankzij de snaar die je vond."
-    },
-    {
-      "speaker": "Reza",
-      "text": "*speelt oud* Dit nummer heet 'Turnhoutsebaan'. Ik schreef het voor iedereen hier.",
-      "flag":    "de_roma_concert_seen",
-      "flagVal": true
-    }
-  ],
+  "mayor_explains": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "El Osri", "text": "April 2024. 2 kilometer. Easter en Iftar op dezelfde dag. 7000 stoelen. De hele Turnhoutsebaan aan tafel. Real history.", "flag": "act4_started", "flagVal": true }
+    ]
+  },
 
-  "district_mayor": [
-    {
-      "speaker": "El Osri",
-      "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.",
-      "flag":    "met_mayor",
-      "flagVal": true
-    },
-    {
-      "speaker": "El Osri",
-      "text": "Ik heb gehoord wat je gedaan hebt — de stof, de petitie, de snaar. Deze straat heeft je nodig."
-    },
-    {
-      "speaker": "El Osri",
-      "text": "Ik organiseer de Samen Aan Tafel: 2 kilometer tafel, 7000 mensen, Easter en Iftar samen. Maar ik heb 7 facties nodig. Wil je helpen?",
-      "flag":    "act4_briefed",
-      "flagVal": true,
-      "choice": [
-        {
-          "label":   "Ja. Ik doe mee.",
-          "flag":    "act4_started",
-          "flagVal": true,
-          "next":    "mayor_briefing"
-        },
-        {
-          "label":   "Vertel me meer.",
-          "next":    "mayor_explains"
-        }
-      ]
-    }
-  ],
+  "tine_intro": {
+    "npc": "tine", "priority": 0,
+    "conditions": {},
+    "lines": [
+      { "speaker": "Tine", "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts." },
+      { "speaker": "Tine", "text": "Chocolade, aspirine, een luisterend oor — ik heb het allemaal. Welkom op de Turnhoutsebaan." }
+    ]
+  },
 
-  "mayor_briefing": [
-    {
-      "speaker": "El Osri",
-      "text": "Goed. Zeven facties: Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee en Frituur de Tram. Eén voor één."
-    }
-  ],
+  "tine_faction": {
+    "npc": "tine", "priority": 60,
+    "conditions": { "flags": { "met_mayor": true, "tine_faction_convinced": false } },
+    "lines": [
+      { "speaker": "Tine", "text": "Ah, de Samen Aan Tafel! Ik ken de voorzitter van de Turkse sociale club al 20 jaar. Als jij het vraagt en ik het ondersteun — hij zegt ja.", "flag": "tine_faction_convinced", "flagVal": true }
+    ]
+  },
 
-  "mayor_explains": [
-    {
-      "speaker": "El Osri",
-      "text": "April 2024. 2 kilometer. Easter en Iftar op dezelfde dag. 7000 stoelen. De hele Turnhoutsebaan aan tafel. Real history.",
-      "flag":    "act4_started",
-      "flagVal": true
-    }
-  ],
+  "tine_done": {
+    "npc": "tine", "priority": 40,
+    "conditions": { "flags": { "tine_faction_convinced": true } },
+    "lines": [
+      { "speaker": "Tine", "text": "De voorzitter van de Turkse club is erbij. Bel El Osri maar — het is geregeld." }
+    ]
+  },
 
-  "imam_mosque": [
-    {
-      "speaker": "Imam",
-      "text": "Vrede. Ik heb gehoord van uw tafel. Als de iftar-maaltijd gerespecteerd wordt — als er geen alcohol naast onze borden staat — dan doen wij mee.",
-      "flag":    "met_imam",
-      "flagVal": true,
-      "choice": [
-        {
-          "label":   "Dat beloof ik. We zorgen voor gescheiden zones.",
-          "flag":    "mosque_faction_convinced",
-          "flagVal": true,
-          "next":    "imam_agreed"
-        },
-        {
-          "label":   "Hoe stel je je dat voor?",
-          "next":    "imam_explains"
-        }
-      ]
-    }
-  ],
+  "reuzenpoort_blocked": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Turnhoutsebaan", "text": "De poort blijft gesloten voor vreemden. Spreek eerst met Fatima aan het begin van de straat." }
+    ]
+  },
 
-  "imam_agreed": [
-    {
-      "speaker": "Imam",
-      "text": "Alhamdulillah. De moskee doet mee. Een maaltijd gedeeld is een oordeel verschoven."
-    }
-  ],
+  "de_roma_blocked": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Turnhoutsebaan", "text": "De deur van De Roma opent alleen voor wie de taal van de straat begrijpt. Zoek Reza's oud-snaar." }
+    ]
+  },
 
-  "imam_explains": [
-    {
-      "speaker": "Imam",
-      "text": "Een aparte strook: halal, no alcohol, maar naast de anderen. Niet apart. Samen maar respectvol.",
-      "flag":    "mosque_faction_convinced",
-      "flagVal": true
-    }
-  ],
+  "deurne_blocked": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Turnhoutsebaan", "text": "De grenswachter vraagt naar uw papieren. Versla de Bulldozer-bureaucraat en draag zijn vergunning." }
+    ]
+  },
 
-  "frituur_faction": [
-    {
-      "speaker": "Frituur de Tram",
-      "text": "7000 zakjes friet? Dat is... heel veel aardappelen. Maar als jij de bestelling regelt bij de groothandel, doen wij mee.",
-      "choice": [
-        {
-          "label":   "Ik regel de bestelling.",
-          "flag":    "frituur_faction_convinced",
-          "flagVal": true,
-          "coins":   -5,
-          "next":    "frituur_agreed"
-        },
-        {
-          "label":   "Hoeveel kost dat?",
-          "next":    "frituur_cost"
-        }
-      ]
-    }
-  ],
+  "de_roma_keeper": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "De Roma", "text": "Dit gebouw is Art Deco, gebouwd in 1927. Alphonse Pauwels ontwierp het voor 2000 toeschouwers.", "flag": "visited_de_roma", "flagVal": true },
+      { "speaker": "De Roma", "text": "Na jaren leegstand werden wij in 2003 gered door Paul Schyvens en 400 vrijwilligers." },
+      { "speaker": "De Roma", "text": "Vanavond: gnawa-muziek uit Marrakech. Morgen: hiphop uit Borgerhout. Altijd welkom." }
+    ]
+  },
 
-  "frituur_agreed": [
-    {
-      "speaker": "Frituur de Tram",
-      "text": "Top! Friet met Andalous voor 7000 mensen. Dat schrijven we in de geschiedenis.",
-      "item":  "friet"
-    }
-  ],
+  "de_roma_concert": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "De Roma", "text": "Reza speelt vanavond op het podium. Dankzij jou. Dankzij de snaar die je vond." },
+      { "speaker": "Reza", "text": "*speelt oud* Dit nummer heet 'Turnhoutsebaan'. Ik schreef het voor iedereen hier.", "flag": "de_roma_concert_seen", "flagVal": true }
+    ]
+  },
 
-  "frituur_cost": [
-    {
-      "speaker": "Frituur de Tram",
-      "text": "Vijf munten voor de aanbetaling. Daarna regelen wij de rest.",
-      "flag":    "frituur_faction_convinced",
-      "flagVal": true,
-      "coins":   -5
-    }
-  ],
+  "imam_mosque": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Imam", "text": "Vrede. Ik heb gehoord van uw tafel. Als de iftar-maaltijd gerespecteerd wordt — als er geen alcohol naast onze borden staat — dan doen wij mee.", "flag": "met_imam", "flagVal": true,
+        "choice": [
+          { "label": "Dat beloof ik. We zorgen voor gescheiden zones.", "flag": "mosque_faction_convinced", "flagVal": true, "next": "imam_agreed" },
+          { "label": "Hoe stel je je dat voor?", "next": "imam_explains" }
+        ]
+      }
+    ]
+  },
 
-  "borgerhub_faction": [
-    {
-      "speaker": "Borgerhub",
-      "text": "Een kunstenaarscollectief aan de Samen Aan Tafel? Als De Roma ook meedoet — absoluut. Kunst en buurt horen samen.",
-      "flag":    "art_faction_convinced",
-      "flagVal": true
-    }
-  ],
+  "imam_agreed": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Imam", "text": "Alhamdulillah. De moskee doet mee. Een maaltijd gedeeld is een oordeel verschoven." }
+    ]
+  },
 
-  "fatima_all_done": [
-    {
-      "speaker": "Fatima",
-      "text": "Kijk hoe ver we al gekomen zijn. De tafel staat er bijna. Dankzij mensen als jij."
-    },
-    {
-      "speaker": "Fatima",
-      "text": "Nora is zo blij met de stof. Ze vraagt of jij op de bruiloft komt. Ik heb ja gezegd."
-    }
-  ],
+  "imam_explains": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Imam", "text": "Een aparte strook: halal, no alcohol, maar naast de anderen. Niet apart. Samen maar respectvol.", "flag": "mosque_faction_convinced", "flagVal": true }
+    ]
+  },
 
-  "reza_done": [
-    {
-      "speaker": "Reza",
-      "text": "Hoor je dat? Dat is de snaar die jij gevonden hebt. Elke noot is een bedankje."
-    },
-    {
-      "speaker": "Reza",
-      "text": "Vanavond De Roma — het nieuwe nummer. Je bent uitgenodigd. Geen excuses."
-    }
-  ],
+  "frituur_faction": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Frituur de Tram", "text": "7000 zakjes friet? Dat is... heel veel aardappelen. Maar als jij de bestelling regelt bij de groothandel, doen wij mee.",
+        "choice": [
+          { "label": "Ik regel de bestelling.", "flag": "frituur_faction_convinced", "flagVal": true, "coins": -5, "next": "frituur_agreed" },
+          { "label": "Hoeveel kost dat?", "next": "frituur_cost" }
+        ]
+      }
+    ]
+  },
 
-  "yusuf_done": [
-    {
-      "speaker": "Yusuf",
-      "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou."
-    },
-    {
-      "speaker": "Yusuf",
-      "text": "Als je ooit iets wil laten bezorgen op de Turnhoutsebaan — zeg het maar. Voor vrienden: gratis."
-    }
-  ],
+  "frituur_agreed": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Frituur de Tram", "text": "Top! Friet met Andalous voor 7000 mensen. Dat schrijven we in de geschiedenis.", "item": "friet" }
+    ]
+  },
 
-  "mayor_post_brief": [
-    {
-      "speaker": "El Osri",
-      "text": "Hoe gaat het met de facties? We hebben ze alle zeven nodig voor de grote tafel."
-    },
-    {
-      "speaker": "El Osri",
-      "text": "Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee, Frituur de Tram. Vooruit!"
-    }
-  ],
+  "frituur_cost": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Frituur de Tram", "text": "Vijf munten voor de aanbetaling. Daarna regelen wij de rest.", "flag": "frituur_faction_convinced", "flagVal": true, "coins": -5 }
+    ]
+  },
 
-  "tine_intro": [
-    {
-      "speaker": "Tine",
-      "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts."
-    },
-    {
-      "speaker": "Tine",
-      "text": "Chocolade, aspirine, een luisterend oor — ik heb het allemaal. Welkom op de Turnhoutsebaan."
-    }
-  ],
+  "borgerhub_faction": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Borgerhub", "text": "Een kunstenaarscollectief aan de Samen Aan Tafel? Als De Roma ook meedoet — absoluut. Kunst en buurt horen samen.", "flag": "art_faction_convinced", "flagVal": true }
+    ]
+  },
 
-  "tine_done": [
-    {
-      "speaker": "Tine",
-      "text": "De voorzitter van de Turkse club is erbij. Bel El Osri maar — het is geregeld."
-    }
-  ],
+  "kid_marbles": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Kind", "text": "Yo! Wil je knikkers? Ik win altijd maar het is saai als er niemand is om tegen te spelen." },
+      { "speaker": "Kind", "text": "Mijn oma zegt dat vroeger de politie hier altijd patrouilleerde. Nu is er een cafeetje. Beter toch?" }
+    ]
+  },
 
-  "baert_done": [
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Bar Leon is overtuigd. Het kostte me een fles Duvel en een half uur uitleg, maar ze doen mee."
-    },
-    {
-      "speaker": "Mevrouw Baert",
-      "text": "Zestig jaar Borgerhout, en dit is het mooiste wat ik heb meegemaakt."
-    }
-  ],
+  "delivery_rush": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Koerier", "text": "Nee nee nee, niet nu! Mijn bakfiets heeft een lekke band en ik heb nog 12 pakjes te leveren!" },
+      { "speaker": "Koerier", "text": "Als jij mij helpt met de laatste drie, geef ik je een tramticket. Deal?" }
+    ]
+  },
 
-  "geest_van_88_encounter": [
-    {
-      "speaker": "Geest van '88",
-      "text": "Borgerokko! Dit is onze wijk! Jullie horen hier niet!"
-    },
-    {
-      "speaker": "Turnhoutsebaan",
-      "text": "De Geest van '88 kan niet worden verslagen door kracht. Gebruik 'Samen Aan Tafel' in de strijd.",
-      "flag":    "geest_encountered",
-      "flagVal": true
-    }
-  ],
+  "geest_van_88_encounter": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Geest van '88", "text": "Borgerokko! Dit is onze wijk! Jullie horen hier niet!" },
+      { "speaker": "Turnhoutsebaan", "text": "De Geest van '88 kan niet worden verslagen door kracht. Gebruik 'Samen Aan Tafel' in de strijd.", "flag": "geest_encountered", "flagVal": true }
+    ]
+  },
 
-  "geest_van_88_defeated": [
-    {
-      "speaker": "Geest van '88",
-      "text": "Ik... ik heb al die jaren nooit... aan tafel gezeten met...",
-      "flag":    "kracht_van_gemeenschap",
-      "flagVal": true
-    },
-    {
-      "speaker": "Geest van '88",
-      "text": "*verdwijnt langzaam* ...smakelijk."
-    }
-  ]
+  "geest_van_88_defeated": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Geest van '88", "text": "Ik... ik heb al die jaren nooit... aan tafel gezeten met...", "flag": "kracht_van_gemeenschap", "flagVal": true },
+      { "speaker": "Geest van '88", "text": "*verdwijnt langzaam* ...smakelijk." }
+    ]
+  }
 }

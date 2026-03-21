@@ -7,7 +7,7 @@ import { NPC }            from '@entities/NPC';
 import { HUD }            from '@ui/HUD';
 import { ItemBar }        from '@ui/ItemBar';
 import { DialogueBox }    from '@ui/DialogueBox';
-import { DialogueSystem } from '@systems/DialogueSystem';
+import { DialogueSystem, DIALOGUES, DialogueConditions } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS, zoneForX } from '@systems/GateSystem';
 import { QuestSystem }    from '@systems/QuestSystem';
 import { playtimeTracker } from '@core/PlaytimeTracker';
@@ -1041,121 +1041,39 @@ export class OverworldScene extends Phaser.Scene {
   }
 
   /**
-   * Resolve the correct dialogue ID for an NPC based on current quest state.
-   * NPCs have different dialogue depending on what the player has already done.
+   * Resolve the correct dialogue node for an NPC by evaluating all nodes that
+   * declare `npc === npc.id` against current quest state, sorted by priority.
+   * The highest-priority node whose conditions all pass wins.
+   * Conditions and routing live in dialogue.json — no hardcoding here.
    */
   private resolveDialogueId(npc: NPC): string {
     const flags = stateManager.get().questFlags;
+    const candidates = Object.entries(DIALOGUES)
+      .filter(([_, node]) => node.npc === npc.id && this.conditionsMet(node.conditions, flags))
+      .sort((a, b) => b[1].priority - a[1].priority);
+    return candidates[0]?.[0] ?? npc.dialogueId;
+  }
 
-    switch (npc.id) {
-      case 'fatima':
-        // Holding fabric → deliver it now
-        if (stateManager.hasItem('fabric_bolt') && !flags['stunt_quest_done'])
-          return 'fatima_after_fabric';
-        // Quest accepted but fabric not yet picked up → remind where to go
-        if (flags['fabric_quest_accepted'] && !flags['stunt_quest_active'])
-          return 'fatima_fabric_accept';
-        // All done, convince Moroccan faction
-        if (flags['has_community_trust'] && flags['met_mayor'] && !flags['fatima_convinced'])
-          return 'fatima_faction';
-        // Fully done
-        if (flags['fatima_convinced'])
-          return 'fatima_all_done';
-        // Earned trust, collect signature first
-        if (flags['has_community_trust'] && !flags['sig_fatima'])
-          return 'fatima_signature';
-        // Already signed — hint at speculator + Omar
-        if (flags['has_community_trust'])
-          return 'fatima_post_trust';
-        return 'fatima_intro';
-
-      case 'omar':
-        // Flour in inventory → deliver
-        if (flags['has_flour'] && !flags['omar_flour_done'])
-          return 'omar_flour_done';
-        // Not yet asked about flour → offer
-        if (flags['met_fatima'] && !flags['omar_flour_asked'])
-          return 'omar_flour_request';
-        // Quest accepted, player hasn't gone to Budget Market yet → remind
-        if (flags['flour_quest_accepted'] && !flags['omar_flour_done'])
-          return 'omar_flour_thanks';
-        // Has trust, not yet signed
-        if (flags['has_community_trust'] && !flags['sig_omar'])
-          return 'omar_signature';
-        return 'omar_bakker';
-
-      case 'baert':
-        // Quest accepted, fabric not yet given
-        if (flags['knows_stunt_location'] && !flags['stunt_quest_active'])
-          return 'stunt_baert_fabric';
-        // Has trust, not yet signed
-        if (flags['has_community_trust'] && !flags['sig_baert'])
-          return 'stunt_baert_signature';
-        // Mayor met, Bar Leon not yet convinced
-        if (flags['met_mayor'] && !flags['baert_faction_convinced'])
-          return 'stunt_baert_faction';
-        // Bar Leon convinced → post-done
-        if (flags['baert_faction_convinced'])
-          return 'baert_done';
-        return 'stunt_baert';
-
-      case 'reza':
-        // Quest fully done → post-quest state
-        if (flags['reza_quest_done'])
-          return 'reza_done';
-        // Has the string → hand it over
-        if (flags['oud_quest_accepted'] && stateManager.hasItem('oud_string'))
-          return 'reza_oud_found';
-        // Has trust, not yet signed (check before oud reminder — separate quest)
-        if (flags['has_community_trust'] && !flags['sig_reza'])
-          return 'reza_signature';
-        // Quest accepted, no string yet → remind where to look
-        if (flags['oud_quest_accepted'])
-          return 'reza_oud_accept';
-        return 'reza_music';
-
-      case 'yusuf':
-        // Delivery fully done
-        if (flags['delivery_done'])
-          return 'yusuf_done';
-        // At Budget Market for flour (not already delivered to Omar)
-        if (flags['flour_quest_accepted'] && !flags['has_flour'] && !flags['omar_flour_done'])
-          return 'budget_market_flour';
-        // Packages received, ready to report back
-        if (flags['delivery_accepted'] && flags['delivery_packages_received'])
-          return 'yusuf_delivery_done';
-        return 'yusuf_delivery';
-
-      case 'aziz':
-        // Quest accepted, string not yet given
-        if (flags['oud_quest_accepted'] && !flags['has_oud_string_item'])
-          return 'aziz_oud_string';
-        // Not yet signed
-        if (!flags['sig_aziz'])
-          return 'aziz_signature';
-        return 'reuzenpoort_legend';
-
-      case 'hamza':
-        if (flags['met_mayor'] && !flags['school_faction_convinced'])
-          return 'hamza_school_faction';
-        return 'hamza_marbles';
-
-      case 'el_osri':
-        // Already briefed → progress check
-        if (flags['act4_started'])
-          return 'mayor_post_brief';
-        return 'district_mayor';
-
-      case 'tine':
-        if (flags['met_mayor'] && !flags['tine_faction_convinced'])
-          return 'tine_faction';
-        if (flags['tine_faction_convinced'])
-          return 'tine_done';
-        return 'tine_intro';
-
-      default:
-        return npc.dialogueId;
+  /**
+   * Returns true when ALL conditions in `cond` pass against current state.
+   * Undefined flags are treated as false (matches switch/case !flags['x'] behaviour).
+   */
+  private conditionsMet(
+    cond: DialogueConditions,
+    flags: Record<string, boolean | string | number>,
+  ): boolean {
+    if (cond.flags) {
+      for (const [key, val] of Object.entries(cond.flags)) {
+        if ((flags[key] ?? false) !== val) return false;
+      }
     }
+    if (cond.items) {
+      for (const id of cond.items)    { if (!stateManager.hasItem(id)) return false; }
+    }
+    if (cond.notItems) {
+      for (const id of cond.notItems) { if (stateManager.hasItem(id))  return false; }
+    }
+    return true;
   }
 
   private _gateDialogueId(targetZone: number): string {

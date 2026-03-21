@@ -5,7 +5,9 @@ import { DialogueBox }   from '@ui/DialogueBox';
 import { localeManager } from '@i18n/LocaleManager';
 import dialogueData from '@data/dialogue.json';
 
-interface DialogueLine {
+// ── Types ──────────────────────────────────────────────────────────────────
+
+export interface DialogueLine {
   speaker:     string;
   text?:       string;
   flag?:       string;
@@ -18,35 +20,53 @@ interface DialogueLine {
   choice?:     DialogueChoice[];
 }
 
-interface DialogueChoice {
+export interface DialogueChoice {
   label:    string;
-  next?:    string;           // jump to another dialogue tree
+  next?:    string;             // jump to another dialogue node
   flag?:    string;
   flagVal?: boolean | string | number;
   item?:    string;
   coins?:   number;
 }
 
-type DialogueTree = DialogueLine[];
-const DIALOGUES = dialogueData as Record<string, DialogueTree>;
+/** Conditions that must ALL pass for a node to be routed to via an NPC. */
+export interface DialogueConditions {
+  flags?:    Record<string, boolean | string | number>;  // each flag must === value
+  items?:    string[];    // player must carry ALL of these
+  notItems?: string[];    // player must NOT carry ANY of these
+}
+
+/** A self-describing dialogue node: declares which NPC it belongs to,
+ *  what conditions activate it, and what lines it contains.
+ *  Nodes with no `npc` field are jump-target-only (choice.next / direct open()). */
+export interface DialogueNode {
+  npc?:       string;               // NPC id (absent = non-routable, zone/gate/battle)
+  priority:   number;               // higher = evaluated first; 0 = fallback
+  conditions: DialogueConditions;
+  lines:      DialogueLine[];
+}
+
+export type DialogueData = Record<string, DialogueNode>;
+
+export const DIALOGUES = dialogueData as DialogueData;
 
 /**
- * DialogueSystem — drives branching dialogue trees.
+ * DialogueSystem — drives branching dialogue nodes.
  *
  * Supports:
  *   - Linear sequences of lines (advance with action key)
- *   - Per-line flag setting, item grants, coin changes
+ *   - Per-line flag setting, item grants/removals, coin changes
  *   - Choice branches: up to 4 options, navigate with up/down, confirm with action
- *   - Jumps to other dialogue trees via choice.next
- *   - QuestSystem.checkAll() called after every tree completion
+ *   - Jumps to other nodes via choice.next
+ *   - QuestSystem.checkAll() called after every node completion
  */
 export class DialogueSystem {
-  private box:          DialogueBox;
-  private lines:        DialogueLine[] = [];
-  private lineIdx       = 0;
-  private _isOpen       = false;
+  private box:           DialogueBox;
+  private lines:         DialogueLine[] = [];
+  private lineIdx        = 0;
+  private _isOpen        = false;
   private pendingChoices: DialogueChoice[] | null = null;
-  private dialogueId    = '';   // tracks current tree for locale lookups
+  private dialogueId     = '';   // tracks current node for locale lookups
 
   onClose: (() => void) | null = null;
 
@@ -59,14 +79,14 @@ export class DialogueSystem {
   // ── Public ─────────────────────────────────────────────────────────────────
 
   open(dialogueId: string): void {
-    const tree = DIALOGUES[dialogueId];
-    if (!tree || tree.length === 0) return;
+    const node = DIALOGUES[dialogueId];
+    if (!node || node.lines.length === 0) return;
 
-    this.dialogueId       = dialogueId;
-    this.lines            = tree;
-    this.lineIdx          = 0;
-    this._isOpen          = true;
-    this.pendingChoices   = null;
+    this.dialogueId     = dialogueId;
+    this.lines          = node.lines;
+    this.lineIdx        = 0;
+    this._isOpen        = true;
+    this.pendingChoices = null;
     this.showLine();
   }
 
@@ -74,16 +94,15 @@ export class DialogueSystem {
     if (!this._isOpen) return;
 
     if (this.box.inChoiceMode) {
-      // Choice navigation
-      if (input.upJustPressed)   this.box.moveCursor(-1);
-      if (input.downJustPressed) this.box.moveCursor(1);
+      if (input.upJustPressed)    this.box.moveCursor(-1);
+      if (input.downJustPressed)  this.box.moveCursor(1);
       if (input.actionJustPressed) this.confirmChoice();
       return;
     }
 
     if (input.actionJustPressed) {
       if (this.box.isTyping) {
-        this.box.skipType();   // reveal full text instantly, wait for next press to advance
+        this.box.skipType();
         return;
       }
       this.advance();
@@ -98,11 +117,8 @@ export class DialogueSystem {
     const line = this.lines[this.lineIdx];
     if (!line) { this.close(); return; }
 
-    // Apply side effects of showing this line
     this.applyLineEffects(line);
 
-    // Resolve translated text (falls back to NL original when locale is nl
-    // or when no translation exists for this entry)
     const displayText = localeManager.dialogueText(this.dialogueId, this.lineIdx) ?? line.text;
 
     if (line.choice && line.choice.length > 0) {
@@ -142,8 +158,6 @@ export class DialogueSystem {
   }
 
   private confirmChoice(): void {
-    // Reconstruct which choices were being presented
-    // They were already shown; find the current line's choices or a stored ref
     const line = this.lines[this.lineIdx];
     const choices = line?.choice ?? [];
     if (choices.length === 0) { this.advance(); return; }
@@ -151,14 +165,12 @@ export class DialogueSystem {
     const selected = choices[this.box.selectedChoice];
     if (!selected) { this.advance(); return; }
 
-    // Apply choice effects
     if (selected.flag !== undefined && selected.flagVal !== undefined) {
       stateManager.setFlag(selected.flag, selected.flagVal);
     }
-    if (selected.item) stateManager.addItem(selected.item);
+    if (selected.item)  stateManager.addItem(selected.item);
     if (selected.coins) stateManager.addCoins(selected.coins);
 
-    // Jump to another tree or continue
     if (selected.next) {
       this.open(selected.next);
     } else {
@@ -183,7 +195,7 @@ export class DialogueSystem {
     this._isOpen      = false;
     this.pendingChoices = null;
     this.box.hide();
-    QuestSystem.checkAll();  // check for newly-completed quests after every dialogue
+    QuestSystem.checkAll();
     this.onClose?.();
   }
 }
