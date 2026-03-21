@@ -4,7 +4,7 @@
   "description": "A 2D pixel-art RPG set on the real Turnhoutsebaan in Borgerhout, Antwerp",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && cp -r assets dist/",
     "preview": "vite preview",
     "start": "serve dist -l $PORT"
   },
