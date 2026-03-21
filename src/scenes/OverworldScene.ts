@@ -402,8 +402,8 @@ export class OverworldScene extends Phaser.Scene {
   private spawnVehicles(): void {
     const H = OverworldScene.WORLD_H;
     const W = OverworldScene.WORLD_W;
-    const VW = 192;  // vehicle display width (game-px)  — 3× original 64
-    const VH = 60;   // vehicle display height (game-px) — 3× original 20
+    const VW = 96;   // vehicle display width (game-px)
+    const VH = 30;   // vehicle display height (game-px)
 
     // Lane 1: eastbound  (moving right), y just above first tram track
     const laneE = Math.floor(H * 0.625);
