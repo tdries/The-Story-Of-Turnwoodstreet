@@ -147,8 +147,8 @@ app.get('/api/news', async (req, res) => {
   res.json({ headlines, fetchedAt: cache.fetchedAt });
 });
 
-// SPA fallback
-app.get('*', (req, res) => {
+// SPA fallback — use app.use so it works in Express 4 and 5
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
