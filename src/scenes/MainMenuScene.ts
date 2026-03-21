@@ -13,6 +13,7 @@ export class MainMenuScene extends Phaser.Scene {
   private menuTexts: Phaser.GameObjects.Text[] = [];
   private blinkTimer = 0;
   private arrowText!: Phaser.GameObjects.Text;
+  private _touchSeen = { up: false, down: false, action: false, enter: false };
 
   constructor() {
     super({ key: SCENE.MAIN_MENU });
@@ -135,6 +136,19 @@ export class MainMenuScene extends Phaser.Scene {
     if (this.blinkTimer > 500) {
       this.arrowText.setVisible(!this.arrowText.visible);
       this.blinkTimer = 0;
+    }
+
+    // Touch rising-edge detection
+    const touch = (window as any).__touch;
+    if (touch) {
+      if (touch.up    && !this._touchSeen.up)     this.moveCursor(-1);
+      if (touch.down  && !this._touchSeen.down)   this.moveCursor(1);
+      if ((touch.action && !this._touchSeen.action) ||
+          (touch.enter  && !this._touchSeen.enter))  this.select();
+      this._touchSeen.up     = touch.up;
+      this._touchSeen.down   = touch.down;
+      this._touchSeen.action = touch.action;
+      this._touchSeen.enter  = touch.enter;
     }
   }
 
