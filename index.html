@@ -28,6 +28,104 @@
     }
   </style>
   <style>
+    /* ── Feedback button & modal ─────────────────────────────────────────── */
+    #feedback-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 1000;
+      background: rgba(10,10,18,0.82);
+      border: 1px solid rgba(255,215,0,0.4);
+      border-radius: 8px;
+      color: #FFD700;
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 7px 10px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #feedback-btn:hover { background: rgba(255,215,0,0.15); }
+
+    #feedback-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 1001;
+      align-items: center;
+      justify-content: center;
+    }
+    #feedback-overlay.open { display: flex; }
+
+    #feedback-modal {
+      background: #0A0A12;
+      border: 2px solid #FFD700;
+      border-radius: 12px;
+      padding: 24px;
+      width: min(92vw, 380px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #feedback-modal h2 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 8px;
+      color: #FFD700;
+      line-height: 1.6;
+    }
+    #feedback-modal p {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: rgba(240,234,214,0.7);
+      line-height: 1.8;
+    }
+    #feedback-text {
+      background: #151520;
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 6px;
+      color: #F0EAD6;
+      font-family: sans-serif;
+      font-size: 14px;
+      padding: 10px;
+      resize: vertical;
+      min-height: 90px;
+      outline: none;
+    }
+    #feedback-text:focus { border-color: #FFD700; }
+    #feedback-modal .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .modal-btn {
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(255,215,0,0.4);
+    }
+    #btn-cancel-feedback {
+      background: transparent;
+      color: rgba(240,234,214,0.6);
+    }
+    #btn-send-feedback {
+      background: #FFD700;
+      color: #0A0A12;
+      border-color: #FFD700;
+    }
+    #btn-send-feedback:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    #feedback-status {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      min-height: 10px;
+      text-align: center;
+    }
+
     /* ── Touch controls ───────────────────────────────────────────────────── */
     #touch-controls {
       position: fixed;
@@ -120,6 +218,23 @@
 <body>
   <div id="game-container"></div>
 
+  <!-- Feedback button -->
+  <button id="feedback-btn">FEEDBACK</button>
+
+  <!-- Feedback modal -->
+  <div id="feedback-overlay">
+    <div id="feedback-modal">
+      <h2>STUUR FEEDBACK</h2>
+      <p>Bug gevonden? Idee? Vertel het ons.</p>
+      <textarea id="feedback-text" placeholder="Schrijf hier..."></textarea>
+      <div id="feedback-status"></div>
+      <div class="btn-row">
+        <button class="modal-btn" id="btn-cancel-feedback">ANNULEER</button>
+        <button class="modal-btn" id="btn-send-feedback">VERZEND</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Touch controls — shown only on touch-capable devices -->
   <div id="touch-controls">
     <div id="dpad">
@@ -176,6 +291,63 @@
     }
     saveBtn.addEventListener('touchstart', doSave, { passive: false });
     saveBtn.addEventListener('mousedown',  doSave);
+  </script>
+
+  <script>
+    // ── Feedback modal ────────────────────────────────────────────────────
+    const WEBHOOK = '__DISCORD_WEBHOOK_URL__';   // replaced by Railway env var at build time
+
+    const overlay   = document.getElementById('feedback-overlay');
+    const textarea  = document.getElementById('feedback-text');
+    const status    = document.getElementById('feedback-status');
+    const sendBtn   = document.getElementById('btn-send-feedback');
+
+    document.getElementById('feedback-btn').addEventListener('click', () => {
+      overlay.classList.add('open');
+      textarea.focus();
+    });
+    document.getElementById('btn-cancel-feedback').addEventListener('click', () => {
+      overlay.classList.remove('open');
+      textarea.value = '';
+      status.textContent = '';
+      status.style.color = '';
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) document.getElementById('btn-cancel-feedback').click();
+    });
+
+    sendBtn.addEventListener('click', async () => {
+      const msg = textarea.value.trim();
+      if (!msg) return;
+      if (!WEBHOOK || WEBHOOK === '__DISCORD_WEBHOOK_URL__') {
+        status.textContent = 'Feedback niet geconfigureerd.';
+        status.style.color = '#ff6633';
+        return;
+      }
+      sendBtn.disabled = true;
+      status.textContent = 'Verzenden...';
+      status.style.color = '#FFD700';
+      try {
+        await fetch(WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: `🎮 **Feedback Turnwoodstreet**\n\n${msg}` }),
+        });
+        status.textContent = 'Bedankt! Feedback ontvangen.';
+        status.style.color = '#44ff88';
+        textarea.value = '';
+        setTimeout(() => {
+          overlay.classList.remove('open');
+          status.textContent = '';
+          status.style.color = '';
+          sendBtn.disabled = false;
+        }, 1800);
+      } catch {
+        status.textContent = 'Fout bij verzenden. Probeer opnieuw.';
+        status.style.color = '#ff6633';
+        sendBtn.disabled = false;
+      }
+    });
   </script>
 
   <script type="module" src="/src/main.ts"></script>
