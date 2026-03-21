@@ -634,6 +634,52 @@
       left: 0;
     }
 
+    /* ── Guestbook modal ─────────────────────────────────────────────────── */
+    #gb-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 1001;
+      align-items: center; justify-content: center;
+    }
+    #gb-overlay.open { display: flex; }
+    #gb-modal {
+      background: #0A0A12; border: 2px solid #52C41A; border-radius: 12px;
+      padding: 22px; width: min(92vw, 400px);
+      display: flex; flex-direction: column; gap: 12px; max-height: 80vh;
+    }
+    #gb-modal h2 { font-family:"Press Start 2P",monospace; font-size:7px; color:#52C41A; line-height:1.6; }
+    #gb-entries {
+      display:flex; flex-direction:column; gap:8px;
+      overflow-y:auto; max-height:220px;
+    }
+    .gb-entry {
+      background: rgba(255,255,255,0.04); border-radius:6px;
+      padding: 8px 10px;
+    }
+    .gb-entry .gb-name { font-family:"Press Start 2P",monospace; font-size:4px; color:#FFD700; margin-bottom:4px; }
+    .gb-entry .gb-msg  { font-family:sans-serif; font-size:12px; color:#F0EAD6; line-height:1.5; }
+    #gb-textarea {
+      background:#151520; border:1px solid rgba(82,196,26,0.4); border-radius:6px;
+      color:#F0EAD6; font-family:sans-serif; font-size:13px;
+      padding:9px; resize:vertical; min-height:70px; outline:none;
+    }
+    #gb-textarea:focus { border-color:#52C41A; }
+    #gb-modal .btn-row { display:flex; gap:10px; justify-content:flex-end; }
+    #btn-gb-send {
+      font-family:"Press Start 2P",monospace; font-size:6px;
+      padding:8px 14px; border-radius:6px; cursor:pointer;
+      background:#52C41A; color:#0A0A12; border:1px solid #52C41A;
+    }
+    #btn-gb-send:disabled { opacity:0.4; cursor:default; }
+    #btn-gb-close {
+      font-family:"Press Start 2P",monospace; font-size:6px;
+      padding:8px 14px; border-radius:6px; cursor:pointer;
+      background:transparent; color:rgba(240,234,214,0.6);
+      border:1px solid rgba(255,255,255,0.15);
+    }
+    #gb-status { font-family:"Press Start 2P",monospace; font-size:5px; min-height:10px; text-align:center; }
+    #guestbook-btn { border:1px solid rgba(82,196,26,0.4); color:#52C41A; }
+    #guestbook-btn:hover { background:rgba(82,196,26,0.12); }
+
     /* ── Language selector ───────────────────────────────────────────────── */
     #lang-selector {
       display: flex;
@@ -895,6 +941,7 @@
       <button id="feedback-btn">FEEDBACK</button>
       <button id="radio-btn">📻 MINERVA</button>
       <button id="hint-btn">HINT</button>
+      <button id="guestbook-btn" style="background:rgba(10,10,18,0.82);border-radius:8px;font-family:'Press Start 2P',monospace;font-size:6px;padding:8px 10px;cursor:pointer;letter-spacing:0.5px;width:100%;text-align:center;line-height:1.8;">GASTENBOEK</button>
       <a id="coffee-btn" href="https://www.paypal.com/donate?business=info%40premiumbrick.com&currency_code=EUR" target="_blank" rel="noopener noreferrer" class="feedback-btn">☕ KOFFIE</a>
       <div id="lang-selector">
         <button class="lang-btn" data-loc="nl">NL</button>
@@ -1387,6 +1434,20 @@
     });
   </script>
 
+  <!-- Guestbook modal -->
+  <div id="gb-overlay">
+    <div id="gb-modal">
+      <h2>✍ GASTENBOEK</h2>
+      <div id="gb-entries"><div style="font-family:sans-serif;font-size:12px;color:#888">Laden...</div></div>
+      <textarea id="gb-textarea" placeholder="Laat een bericht achter..." maxlength="300"></textarea>
+      <div id="gb-status"></div>
+      <div class="btn-row">
+        <button id="btn-gb-close">SLUITEN</button>
+        <button id="btn-gb-send">PLAATSEN</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Subscription opt-in modal (shown after first feedback) -->
   <div id="sub-overlay">
     <div id="sub-modal">
@@ -1506,9 +1567,75 @@
   </script>
 
   <script>
+    // ── Guestbook ─────────────────────────────────────────────────────────
+    (function () {
+      const overlay  = document.getElementById('gb-overlay');
+      const entries  = document.getElementById('gb-entries');
+      const textarea = document.getElementById('gb-textarea');
+      const status   = document.getElementById('gb-status');
+      const sendBtn  = document.getElementById('btn-gb-send');
+      const closeBtn = document.getElementById('btn-gb-close');
+
+      function closeGb() {
+        overlay.classList.remove('open');
+        textarea.value = '';
+        status.textContent = '';
+        if (window.__setGameKeyboard) window.__setGameKeyboard(true);
+      }
+
+      async function loadEntries() {
+        entries.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">Laden...</div>';
+        const rows = window.__fetchGuestbook ? await window.__fetchGuestbook() : [];
+        if (!rows || !rows.length) {
+          entries.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">Nog geen berichten.</div>';
+          return;
+        }
+        entries.innerHTML = rows.map(r => `
+          <div class="gb-entry">
+            <div class="gb-name">${r.display_name || 'Anoniem'}</div>
+            <div class="gb-msg">${r.message.replace(/</g,'&lt;')}</div>
+          </div>`).join('');
+      }
+
+      document.getElementById('guestbook-btn').addEventListener('click', () => {
+        overlay.classList.add('open');
+        if (window.__setGameKeyboard) window.__setGameKeyboard(false);
+        loadEntries();
+      });
+
+      closeBtn.addEventListener('click', closeGb);
+      overlay.addEventListener('click', e => { if (e.target === overlay) closeGb(); });
+      textarea.addEventListener('keydown', e => e.stopPropagation());
+
+      sendBtn.addEventListener('click', async () => {
+        const msg = textarea.value.trim();
+        if (!msg) return;
+        sendBtn.disabled = true;
+        status.textContent = 'Plaatsen...';
+        status.style.color = '#FFD700';
+        try {
+          const ok = window.__postGuestbook ? await window.__postGuestbook(msg) : false;
+          if (ok) {
+            status.textContent = 'Geplaatst! Dank je.';
+            status.style.color = '#52C41A';
+            textarea.value = '';
+            await loadEntries();
+            setTimeout(closeGb, 2000);
+          } else {
+            status.textContent = 'Log in om een bericht te plaatsen.';
+            status.style.color = '#ff6633';
+          }
+        } catch (e) {
+          status.textContent = 'Fout: ' + e.message;
+          status.style.color = '#ff6633';
+        }
+        sendBtn.disabled = false;
+      });
+    })();
+
     // ── Breaking news ticker ──────────────────────────────────────────────
     (function () {
-      const SPEED        = 90;   // px per second
+      const SPEED        = 45;   // px per second
       const REFRESH_MS   = 4 * 60 * 60 * 1000;
       const SEPARATOR    = '   \u00B7   ';
       const FALLBACK     = ['Borgerhout nieuws wordt geladen\u2026'];

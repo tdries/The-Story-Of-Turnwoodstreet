@@ -55,6 +55,8 @@ export class OverworldScene extends Phaser.Scene {
     this.spawnTram();
     this.spawnBikers();
     this.spawnStepRiders();
+    this.spawnPigeons();
+    this.spawnCats();
     this.createPlayer();
     this.setupCamera();
     this.setupCollisions();
@@ -92,6 +94,8 @@ export class OverworldScene extends Phaser.Scene {
     this.updateVehicles(delta);
     this.updateBikers(delta);
     this.updateStepRiders(delta);
+    this.updatePigeons(delta);
+    this.updateCats(delta);
 
     // ── Zone gate check ────────────────────────────────────────────────────
     const px = this.player.sprite.x;
@@ -694,6 +698,209 @@ export class OverworldScene extends Phaser.Scene {
       }
 
       s.setDepth(s.y);
+    }
+  }
+
+  // ── Pigeons ───────────────────────────────────────────────────────────────
+  // 3 types × 4 frames: type*4+0=sit, +1=wings-up, +2=wings-level, +3=wings-down
+  // Rooftop Y ≈ 10–15px (buildingBottom=140 - displayHeight=130 = 10px from top)
+
+  private pigeons: Array<{
+    sprite:     Phaser.GameObjects.Image;
+    type:       number;  // 0=grey, 1=white dove, 2=fat brown
+    state:      'sitting' | 'flying';
+    stateTimer: number;
+    fromX:      number;
+    toX:        number;
+    rooftopY:   number;
+    animTimer:  number;
+    animFrame:  number;  // 0-3 within type
+  }> = [];
+
+  private spawnPigeons(): void {
+    const W = OverworldScene.WORLD_W;
+    const H = OverworldScene.WORLD_H;
+    const rooftopY = Math.floor(H * 0.52) - 125;  // near top of buildings
+
+    for (let i = 0; i < 6; i++) {
+      const x    = Math.floor((W / 6) * i + Phaser.Math.Between(20, 80));
+      const type = i % 3;
+      const sprite = this.add.image(x, rooftopY, 'pigeons', type * 4)
+        .setDisplaySize(14, 14)
+        .setOrigin(0.5, 0.5)
+        .setDepth(rooftopY);
+
+      this.pigeons.push({
+        sprite,
+        type,
+        state:      'sitting',
+        stateTimer: Phaser.Math.Between(2000, 6000),
+        fromX:      x,
+        toX:        x,
+        rooftopY,
+        animTimer:  Phaser.Math.Between(0, 400),
+        animFrame:  0,
+      });
+    }
+  }
+
+  private updatePigeons(delta: number): void {
+    const W = OverworldScene.WORLD_W;
+    for (const p of this.pigeons) {
+      p.stateTimer -= delta;
+
+      if (p.state === 'sitting') {
+        // Occasional idle head-bob using sit frame (frame 0 of type)
+        p.animTimer += delta;
+        if (p.animTimer > 800) {
+          p.animTimer = 0;
+          p.sprite.setFrame(p.type * 4 + 0);
+        }
+        if (p.stateTimer <= 0) {
+          // Pick a new rooftop to fly to
+          p.fromX = p.sprite.x;
+          p.toX   = Phaser.Math.Clamp(
+            p.sprite.x + Phaser.Math.Between(-320, 320),
+            60, W - 60,
+          );
+          p.state      = 'flying';
+          p.stateTimer = Math.abs(p.toX - p.fromX) / 80 * 1000;  // ~80px/s flight
+          p.animTimer  = 0;
+          p.animFrame  = 1;
+        }
+      } else {
+        // Flying: animate wing frames 1→2→3→2→1 cycling
+        p.animTimer += delta;
+        if (p.animTimer >= 120) {
+          p.animTimer = 0;
+          p.animFrame = (p.animFrame < 3) ? p.animFrame + 1 : 1;
+          p.sprite.setFrame(p.type * 4 + p.animFrame);
+        }
+
+        // Move towards target
+        const progress = 1 - Math.max(0, p.stateTimer) / (Math.abs(p.toX - p.fromX) / 80 * 1000);
+        p.sprite.x = p.fromX + (p.toX - p.fromX) * Math.min(progress, 1);
+        p.sprite.setFlipX(p.toX < p.fromX);
+
+        // Slight arc: rise in first half, descend in second half
+        const arc = Math.sin(Math.PI * Math.min(progress, 1)) * 8;
+        p.sprite.y = p.rooftopY - arc;
+
+        if (p.stateTimer <= 0) {
+          p.sprite.x = p.toX;
+          p.sprite.y = p.rooftopY;
+          p.sprite.setFrame(p.type * 4 + 0);
+          p.state      = 'sitting';
+          p.stateTimer = Phaser.Math.Between(3000, 8000);
+          p.animTimer  = 0;
+        }
+      }
+    }
+  }
+
+  // ── Street cats ───────────────────────────────────────────────────────────
+  // 3 types × 5 walk frames: type*5+0..4 (elegant walk cycle)
+  // Cats roam rooftops, occasionally sit or jump between levels
+
+  private cats: Array<{
+    sprite:     Phaser.GameObjects.Image;
+    type:       number;  // 0=orange tabby, 1=black, 2=grey
+    state:      'walking' | 'sitting' | 'jumping';
+    vx:         number;
+    stateTimer: number;
+    rooftopY:   number;
+    animTimer:  number;
+    animFrame:  number;
+    jumpVy:     number;
+  }> = [];
+
+  private spawnCats(): void {
+    const W = OverworldScene.WORLD_W;
+    const H = OverworldScene.WORLD_H;
+    const rooftopY = Math.floor(H * 0.52) - 120;
+
+    const speeds = [28, 22, 32];  // px/s per type (orange is fastest)
+
+    for (let i = 0; i < 5; i++) {
+      const x    = Math.floor((W / 5) * i + Phaser.Math.Between(30, 100));
+      const type = i % 3;
+      const sprite = this.add.image(x, rooftopY, 'cats', type * 5)
+        .setDisplaySize(16, 10)
+        .setOrigin(0.5, 1)
+        .setDepth(rooftopY);
+
+      this.cats.push({
+        sprite,
+        type,
+        state:      'sitting',
+        vx:         speeds[type] * (Phaser.Math.Between(0, 1) === 0 ? 1 : -1),
+        stateTimer: Phaser.Math.Between(1000, 4000),
+        rooftopY,
+        animTimer:  Phaser.Math.Between(0, 200),
+        animFrame:  0,
+        jumpVy:     0,
+      });
+    }
+  }
+
+  private updateCats(delta: number): void {
+    const W  = OverworldScene.WORLD_W;
+    const dt = delta / 1000;
+
+    for (const c of this.cats) {
+      c.stateTimer -= delta;
+
+      if (c.state === 'walking') {
+        c.sprite.x += c.vx * dt;
+        c.sprite.setFlipX(c.vx < 0);
+
+        // Wrap around world
+        if (c.sprite.x > W + 20) c.sprite.x = -20;
+        if (c.sprite.x < -20)    c.sprite.x = W + 20;
+
+        // Walk animation: cycle frames 0-4
+        c.animTimer += delta;
+        if (c.animTimer >= 130) {
+          c.animTimer = 0;
+          c.animFrame = (c.animFrame + 1) % 5;
+          c.sprite.setFrame(c.type * 5 + c.animFrame);
+        }
+
+        if (c.stateTimer <= 0) {
+          c.state      = 'sitting';
+          c.stateTimer = Phaser.Math.Between(2000, 6000);
+          c.animFrame  = 0;
+          c.sprite.setFrame(c.type * 5 + 0);  // sit pose
+          // Occasionally reverse direction on next walk
+          if (Phaser.Math.Between(0, 1) === 0) c.vx *= -1;
+        }
+      } else if (c.state === 'sitting') {
+        if (c.stateTimer <= 0) {
+          // Small chance to do a jump, otherwise start walking
+          if (Phaser.Math.Between(0, 4) === 0) {
+            c.state  = 'jumping';
+            c.jumpVy = -60;   // px/s upward
+            c.stateTimer = 800;
+          } else {
+            c.state      = 'walking';
+            c.stateTimer = Phaser.Math.Between(2000, 5000);
+            c.animTimer  = 0;
+          }
+        }
+      } else {
+        // jumping: simple arc
+        c.jumpVy   += 180 * dt;  // gravity
+        c.sprite.y += c.jumpVy * dt;
+        c.sprite.x += c.vx * 0.5 * dt;
+
+        if (c.sprite.y >= c.rooftopY) {
+          c.sprite.y   = c.rooftopY;
+          c.state      = 'sitting';
+          c.stateTimer = Phaser.Math.Between(1500, 4000);
+          c.jumpVy     = 0;
+          c.sprite.setFrame(c.type * 5 + 0);
+        }
+      }
     }
   }
 

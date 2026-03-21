@@ -79,6 +79,25 @@ const game = new Phaser.Game(config);
   return data?.email_optin ?? null; // null = not yet asked
 };
 
+// ── Guestbook ────────────────────────────────────────────────────────────────
+(window as any).__fetchGuestbook = async (): Promise<Array<{ display_name: string; message: string }>> => {
+  const { data, error } = await supabase
+    .from('guestbook')
+    .select('display_name, message')
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (error) { console.warn('[guestbook] fetch error', error.message); return []; }
+  return data ?? [];
+};
+
+(window as any).__postGuestbook = async (message: string): Promise<{ error?: string }> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  const display_name = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Anoniem';
+  const { error } = await supabase.from('guestbook').insert({ message, display_name });
+  if (error) return { error: error.message };
+  return {};
+};
+
 /** Save the player's subscription opt-in choice (true = subscribed, false = declined). */
 (window as any).__saveSubscription = async (optin: boolean): Promise<void> => {
   const { data: { user } } = await supabase.auth.getUser();

@@ -17,6 +17,18 @@ const PORT = process.env.PORT || 3000;
 const NEWS_URL = 'https://www.hln.be/borgerhout/';
 const CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours
 
+// Fallback when hln.be is unavailable
+const FALLBACK_NEWS = [
+  'Turnhoutsebaan wint prijs voor meest levendige winkelstraat van Borgerhout',
+  'Nieuwe fietsinfrastructuur op de Turnhoutsebaan: meer ruimte voor fietsers',
+  'Borger Hub verwelkomt nieuw kunstenaarscollectief in wijk',
+  'Frituur De Tram viert 30ste verjaardag met gratis friet voor buurtbewoners',
+  'Theehuys Amal organiseert open deur voor buurtbewoners',
+  'Hammam Borgerhout breidt uit met nieuw wellness-aanbod',
+  'Budget Market verlaagt prijzen voor lokale klanten',
+  'Patisserie Aladdin wint gouden ster voor beste baklava van Antwerpen',
+];
+
 let cache = { headlines: [], fetchedAt: 0 };
 
 // ── HTTP GET helper ──────────────────────────────────────────────────────────
@@ -112,13 +124,33 @@ async function scrapeNews() {
       cache = { headlines: result, fetchedAt: Date.now() };
       console.log(`[news] cached ${result.length} headlines`);
     } else {
-      console.warn('[news] no headlines found in page — keeping stale cache');
+      console.warn('[news] no headlines found — using fallback');
+      cache = { headlines: FALLBACK_NEWS, fetchedAt: Date.now() };
     }
     return cache.headlines;
 
   } catch (err) {
     console.error('[news] scrape error:', err.message);
-    return cache.headlines; // stale cache on error
+    if (cache.headlines.length === 0) cache = { headlines: FALLBACK_NEWS, fetchedAt: Date.now() };
+    return cache.headlines;
+  }
+}
+
+// ── Guestbook (Supabase REST) ────────────────────────────────────────────────
+async function fetchGuestbookEntries() {
+  const supaUrl = process.env.VITE_SUPABASE_URL;
+  const supaKey = process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supaUrl || !supaKey) return [];
+
+  try {
+    const apiUrl = `${supaUrl}/rest/v1/guestbook?select=display_name,message&order=created_at.desc&limit=8`;
+    const { status, body } = await get(apiUrl.replace('https://', 'https://').replace('http://', 'https://'));
+    if (status !== 200) return [];
+    const rows = JSON.parse(body);
+    return rows.map(r => `✍ ${r.display_name || 'Anoniem'}: ${r.message}`).filter(s => s.length < 180);
+  } catch (e) {
+    console.warn('[guestbook] fetch error:', e.message);
+    return [];
   }
 }
 
@@ -143,8 +175,10 @@ app.use(express.static(path.join(__dirname, 'dist'), {
 }));
 
 app.get('/api/news', async (req, res) => {
-  const headlines = await getNews();
-  res.json({ headlines, fetchedAt: cache.fetchedAt });
+  const [headlines, guestbook] = await Promise.all([getNews(), fetchGuestbookEntries()]);
+  // Interleave: news first, then sprinkle guestbook entries
+  const combined = [...headlines, ...guestbook];
+  res.json({ headlines: combined, fetchedAt: cache.fetchedAt });
 });
 
 // SPA fallback — use app.use so it works in Express 4 and 5

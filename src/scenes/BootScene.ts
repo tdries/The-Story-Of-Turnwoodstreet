@@ -107,6 +107,18 @@ export class BootScene extends Phaser.Scene {
       'assets/Sprites/vehicles/vehicles_sheet.png',
       { frameWidth: 320, frameHeight: 140 });
 
+    // ── Pigeons — 3 types × 4 animation frames (sit, wings-up, wings-level, wings-down)
+    // Sheet: 384×32 px  (12 frames, frameWidth=32, frameHeight=32)
+    this.load.spritesheet('pigeons',
+      'assets/Sprites/birds/pigeons_sheet.png',
+      { frameWidth: 32, frameHeight: 32 });
+
+    // ── Street cats — 3 types × 5 walk frames
+    // Sheet: 480×32 px  (15 frames, frameWidth=32, frameHeight=32)
+    this.load.spritesheet('cats',
+      'assets/Sprites/cats/cats_sheet.png',
+      { frameWidth: 32, frameHeight: 32 });
+
     // ── Main menu background (AI-generated street art) ────────────────────
     this.load.image('menu_bg',
       'assets/Sprites/raw_assets/Gemini_Generated_Image_bwblrpbwblrpbwbl.png');

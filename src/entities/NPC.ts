@@ -55,6 +55,23 @@ export class NPC {
       strokeThickness: 4,
     }).setOrigin(0.5).setDepth(y + 1);
 
+    // Bouncing interaction arrow above name tag
+    const arrow = scene.add.text(x, y - 54, '▼', {
+      fontFamily: '"Press Start 2P"',
+      fontSize:   '5px',
+      color:      '#FFD700',
+      stroke:     '#0A0A12',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(y + 2);
+    scene.tweens.add({
+      targets:  arrow,
+      y:        y - 49,
+      duration: 600,
+      ease:     'Sine.easeInOut',
+      yoyo:     true,
+      repeat:   -1,
+    });
+
     this.idleTimer = Phaser.Math.Between(500, 2500);
   }
 
