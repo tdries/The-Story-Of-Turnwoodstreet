@@ -392,7 +392,7 @@
             'Accept': 'application/vnd.github+json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ title, body, labels: ['player-feedback'] }),
+          body: JSON.stringify({ title, body }),
         });
 
         if (res.ok) {
@@ -408,10 +408,10 @@
             if (window.__setGameKeyboard) window.__setGameKeyboard(true);
           }, 2200);
         } else {
-          throw new Error(res.status);
+          throw new Error(`HTTP ${res.status}`);
         }
       } catch (err) {
-        status.textContent = 'Fout bij verzenden. Probeer opnieuw.';
+        status.textContent = `Fout bij verzenden (${err.message}).`;
         status.style.color = '#ff6633';
         console.error('Feedback error:', err);
         sendBtn.disabled = false;
