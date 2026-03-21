@@ -11,10 +11,12 @@
     body {
       background: #0A0A12;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      overflow: hidden;
+      padding-bottom: 180px;   /* room for controls below canvas */
+      overflow-x: hidden;
     }
     #game-container {
       image-rendering: pixelated;
@@ -257,10 +259,8 @@
       action: false, enter: false,
     };
 
-    // Show controls only on touch devices
-    if (window.matchMedia('(pointer: coarse)').matches) {
-      document.getElementById('touch-controls').classList.add('active');
-    }
+    // Always show controls
+    document.getElementById('touch-controls').classList.add('active');
 
     function bindBtn(id, flag) {
       const el = document.getElementById(id);
@@ -280,6 +280,24 @@
     bindBtn('btn-down',  'down');
     bindBtn('btn-talk',  'action');
     bindBtn('btn-ok',    'enter');
+
+    // Keyboard → button highlight mapping
+    const keyMap = {
+      'ArrowUp':    'btn-up',    'w': 'btn-up',    'W': 'btn-up',
+      'ArrowDown':  'btn-down',  's': 'btn-down',  'S': 'btn-down',
+      'ArrowLeft':  'btn-left',  'a': 'btn-left',  'A': 'btn-left',
+      'ArrowRight': 'btn-right', 'd': 'btn-right', 'D': 'btn-right',
+      ' ': 'btn-talk', 'z': 'btn-talk', 'Z': 'btn-talk',
+      'Enter': 'btn-ok',
+    };
+    document.addEventListener('keydown', (e) => {
+      const id = keyMap[e.key];
+      if (id) document.getElementById(id)?.classList.add('pressed');
+    });
+    document.addEventListener('keyup', (e) => {
+      const id = keyMap[e.key];
+      if (id) document.getElementById(id)?.classList.remove('pressed');
+    });
 
     // Save button — calls stateManager directly, no held-state needed
     const saveBtn = document.getElementById('btn-save');
