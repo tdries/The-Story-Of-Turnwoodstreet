@@ -10,6 +10,7 @@ import { DialogueSystem } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS, zoneForX } from '@systems/GateSystem';
 import { QuestSystem }    from '@systems/QuestSystem';
 import { playtimeTracker } from '@core/PlaytimeTracker';
+import { TimeManager }    from '@core/TimeManager';
 
 /**
  * OverworldScene — the main exploration scene.
@@ -37,6 +38,26 @@ export class OverworldScene extends Phaser.Scene {
   private gateHintCooldown = 0;
   private playtimeSyncTimer = 0;
 
+  // ── Day/Night cycle ───────────────────────────────────────────────────────
+  private _clock!:          TimeManager;
+  private skyRect!:         Phaser.GameObjects.Rectangle;
+  private sunGfx!:          Phaser.GameObjects.Graphics;
+  private moonGfx!:         Phaser.GameObjects.Graphics;
+  private starsGfx!:        Phaser.GameObjects.Graphics;
+  private clouds:           Array<{ gfx: Phaser.GameObjects.Graphics; x: number; y: number; width: number; speed: number }> = [];
+  private clockText!:       Phaser.GameObjects.Text;
+  private crowdThresholds:  number[] = [];
+  private vehicleThresholds: number[] = [];
+  private nightProps:       Phaser.GameObjects.Text[] = [];
+  private densityTimer = 0;
+
+  private static readonly SKY_STOPS: Array<[number, number]> = [
+    [ 0, 0x0D0D2B], [ 5, 0x0D0D2B], [ 6, 0x3D1A4A], [ 7, 0xE8936C],
+    [ 8, 0xB8D0E8], [10, 0x78AFE1], [16, 0x78AFE1], [17, 0xF0C060],
+    [18, 0xE87040], [19, 0x8A3060], [20, 0x3A1A50], [21, 0x120E2A],
+    [24, 0x0D0D2B],
+  ];
+
   // World dimensions (pixels)
   static readonly WORLD_W = GAME_WIDTH * 6;   // 2880 px
   static readonly WORLD_H = GAME_HEIGHT;      // 270 px
@@ -62,6 +83,7 @@ export class OverworldScene extends Phaser.Scene {
     this.setupCollisions();
     this.setupZoneTriggers();
     this.createUI();
+    this.initDayCycle();
 
     this.cameras.main.fadeIn(600, 0, 0, 0);
     this.syncMusic();
@@ -69,6 +91,7 @@ export class OverworldScene extends Phaser.Scene {
 
   update(_time: number, delta: number): void {
     if (this.gateHintCooldown > 0) this.gateHintCooldown -= delta;
+    this.updateDayCycle(delta);
 
     // Block movement while dialogue is open
     if (this.dialogueSystem.isOpen) {
@@ -135,9 +158,7 @@ export class OverworldScene extends Phaser.Scene {
 
     const g = this.add.graphics();
 
-    // Sky gradient
-    g.fillGradientStyle(0x78AFE1, 0x78AFE1, 0xD4EBF5, 0xD4EBF5, 1);
-    g.fillRect(0, 0, W, H * 0.52);
+    // Sky: handled by initDayCycle's skyRect (dynamic day/night cycle)
 
     // Asphalt road
     g.fillStyle(0x484440);
@@ -461,6 +482,7 @@ export class OverworldScene extends Phaser.Scene {
     const westbound = this.vehicles.filter(v => v.baseVx < 0);
 
     for (const v of this.vehicles) {
+      if (!v.sprite.active) continue;
       const isEast  = v.baseVx > 0;
       const sameLane = isEast ? eastbound : westbound;
 
@@ -685,6 +707,7 @@ export class OverworldScene extends Phaser.Scene {
 
     for (let i = 0; i < this.crowdNPCs.length; i++) {
       const s   = this.crowdNPCs[i];
+      if (!s.active) continue;
       const dir = this.crowdDirs[i];
 
       // ── Direction timer ──────────────────────────────────────────────────
@@ -1088,5 +1111,198 @@ export class OverworldScene extends Phaser.Scene {
       case 4: return 'deurne_blocked';
       default: return 'reuzenpoort_blocked';
     }
+  }
+
+  // ── Day/Night cycle ───────────────────────────────────────────────────────
+
+  private initDayCycle(): void {
+    const H    = GAME_HEIGHT;
+    const skyH = Math.floor(H * 0.52);
+
+    this._clock = new TimeManager(9);
+
+    // Sky rectangle — screen-space, covers the sky strip
+    this.skyRect = this.add.rectangle(0, 0, GAME_WIDTH, skyH, 0x78AFE1)
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(-2);
+
+    // Stars — drawn once, toggled visible at night
+    this.starsGfx = this.add.graphics().setScrollFactor(0).setDepth(-1);
+    this.starsGfx.fillStyle(0xFFFFFF, 0.85);
+    for (let i = 0; i < 80; i++) {
+      this.starsGfx.fillPoint(
+        Math.floor(Math.random() * GAME_WIDTH),
+        Math.floor(Math.random() * (skyH - 8) + 4),
+        1,
+      );
+    }
+    this.starsGfx.setVisible(false);
+
+    // Sun + moon: Graphics redrawn each frame
+    this.sunGfx  = this.add.graphics().setScrollFactor(0).setDepth(-1);
+    this.moonGfx = this.add.graphics().setScrollFactor(0).setDepth(-1);
+
+    // Clouds: 4 drifting cloud shapes (screen-space)
+    const cloudDefs = [
+      { x:  40, y: 22, width: 64, speed: 2.2 },
+      { x: 180, y: 34, width: 80, speed: 1.8 },
+      { x: 310, y: 14, width: 52, speed: 3.0 },
+      { x: 400, y: 28, width: 68, speed: 2.5 },
+    ];
+    for (const def of cloudDefs) {
+      const gfx = this.add.graphics().setScrollFactor(0).setDepth(-1);
+      this.drawCloud(gfx, def.width);
+      gfx.x = def.x;
+      gfx.y = def.y;
+      this.clouds.push({ gfx, ...def });
+    }
+
+    // Clock — top-centre, screen-space
+    this.clockText = this.add.text(GAME_WIDTH / 2, 4, '09:00', {
+      fontFamily:      '"Press Start 2P"',
+      fontSize:        '6px',
+      color:           '#FFFFFF',
+      stroke:          '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(201);
+
+    // Night props — world-space emoji near bars/cafés, visible during isNightlife
+    const sw = Math.floor(H * 0.54);
+    const propDefs: Array<{ x: number; emoji: string }> = [
+      { x:  748, emoji: '🍺' },  // Theehuys Amal #215
+      { x:  775, emoji: '🚬' },
+      { x: 1065, emoji: '🍺' },  // Mimoun #239
+      { x: 1090, emoji: '🚬' },
+      { x: 1265, emoji: '🚬' },  // Hammam #260
+      { x: 1300, emoji: '🍺' },
+      { x: 1455, emoji: '🍺' },  // Borger Hub #284
+      { x:  592, emoji: '🚬' },  // Bakkerij Charif #189
+      { x:  242, emoji: '🍺' },  // Indian Boutique #137
+      { x:  265, emoji: '🚬' },
+    ];
+    for (const def of propDefs) {
+      const t = this.add.text(def.x, sw - 14, def.emoji, { fontSize: '8px' })
+        .setOrigin(0.5, 1).setDepth(200).setVisible(false);
+      this.nightProps.push(t);
+    }
+
+    // Crowd thresholds: first 60 → random 0-1; last 30 (night crowd) → 0-0.4
+    for (let i = 0; i < this.crowdNPCs.length; i++) {
+      this.crowdThresholds.push(i < 60 ? Math.random() : Math.random() * 0.4);
+    }
+
+    // Vehicle thresholds: spread so low-index vehicles stay active even at low density
+    for (let i = 0; i < this.vehicles.length; i++) {
+      this.vehicleThresholds.push((i % 4 + 1) / 8);  // 0.125, 0.25, 0.375, 0.5
+    }
+
+    this.applyDayCycleState();
+    this.updateDayCycle(0);
+  }
+
+  private updateDayCycle(delta: number): void {
+    this._clock.update(delta);
+    const fh   = this._clock.fractionalHour;
+    const H    = GAME_HEIGHT;
+    const skyH = Math.floor(H * 0.52);
+    const dt   = delta / 1000;
+
+    // Sky colour
+    this.skyRect.setFillStyle(this.getSkyColor(fh));
+
+    // Stars
+    this.starsGfx.setVisible(this._clock.isNight);
+
+    // Sun (6:30–19:30)
+    this.sunGfx.clear();
+    if (fh >= 6.5 && fh <= 19.5) {
+      const t  = (fh - 6.5) / 13;
+      const sx = t * GAME_WIDTH;
+      const sy = skyH * 0.55 - Math.sin(Math.PI * t) * skyH * 0.38;
+      const noon  = 1 - Math.abs(t - 0.5) * 2;
+      const sg    = Math.round(160 + noon * 95);
+      const sb    = Math.round(noon * 20);
+      const sunCol = (0xFF << 16) | (sg << 8) | sb;
+      this.sunGfx.fillStyle(sunCol, 0.28);
+      this.sunGfx.fillCircle(sx, sy, 14);   // soft glow
+      this.sunGfx.fillStyle(sunCol, 1);
+      this.sunGfx.fillCircle(sx, sy, 9);
+    }
+
+    // Moon (20:00–06:00) with crescent shadow
+    this.moonGfx.clear();
+    if (fh >= 20 || fh < 6) {
+      const moonFh = fh >= 20 ? fh : fh + 24;
+      const t  = (moonFh - 20) / 10;
+      const mx = t * GAME_WIDTH;
+      const my = skyH * 0.45 - Math.sin(Math.PI * t) * skyH * 0.32;
+      this.moonGfx.fillStyle(0xF8F8D0, 1);
+      this.moonGfx.fillCircle(mx, my, 8);
+      this.moonGfx.fillStyle(this.getSkyColor(fh), 1);
+      this.moonGfx.fillCircle(mx + 3, my - 2, 8);  // crescent mask
+    }
+
+    // Clouds drift westward, wrap to right edge
+    for (const cloud of this.clouds) {
+      cloud.x -= cloud.speed * dt;
+      if (cloud.x + cloud.width < 0) cloud.x = GAME_WIDTH;
+      cloud.gfx.x = cloud.x;
+    }
+
+    // Clock
+    this.clockText.setText(this._clock.timeString);
+
+    // Night props (bars/smokers visible 20:00–04:00)
+    const showProps = this._clock.isNightlife;
+    for (const p of this.nightProps) p.setVisible(showProps);
+
+    // Recompute crowd/traffic density every 5 s
+    this.densityTimer += delta;
+    if (this.densityTimer >= 5000) {
+      this.densityTimer = 0;
+      this.applyDayCycleState();
+    }
+  }
+
+  private applyDayCycleState(): void {
+    const crowd   = this._clock.crowdDensity;
+    const traffic = this._clock.trafficDensity;
+
+    for (let i = 0; i < this.crowdNPCs.length; i++) {
+      const show = crowd >= this.crowdThresholds[i];
+      if (!show) this.crowdNPCs[i].setVelocityX(0);
+      this.crowdNPCs[i].setActive(show).setVisible(show);
+    }
+
+    for (let i = 0; i < this.vehicles.length; i++) {
+      const show = traffic >= this.vehicleThresholds[i];
+      this.vehicles[i].sprite.setActive(show).setVisible(show);
+    }
+  }
+
+  /** Linearly interpolate between the sky colour stops at a given fractional hour. */
+  private getSkyColor(fh: number): number {
+    const stops = OverworldScene.SKY_STOPS;
+    for (let i = 0; i < stops.length - 1; i++) {
+      const [h0, c0] = stops[i];
+      const [h1, c1] = stops[i + 1];
+      if (fh >= h0 && fh < h1) {
+        const t  = (fh - h0) / (h1 - h0);
+        const r  = Math.round(((c0 >> 16) & 0xFF) + (((c1 >> 16) & 0xFF) - ((c0 >> 16) & 0xFF)) * t);
+        const g  = Math.round(((c0 >>  8) & 0xFF) + (((c1 >>  8) & 0xFF) - ((c0 >>  8) & 0xFF)) * t);
+        const b  = Math.round(( c0        & 0xFF) + (( c1        & 0xFF) - ( c0        & 0xFF)) * t);
+        return (r << 16) | (g << 8) | b;
+      }
+    }
+    return 0x0D0D2B;
+  }
+
+  /** Draw a fluffy cloud shape into a Graphics object (origin = left edge, centre-y). */
+  private drawCloud(gfx: Phaser.GameObjects.Graphics, width: number): void {
+    const h  = Math.floor(width * 0.38);
+    const cx = width * 0.5;
+    gfx.fillStyle(0xFFFFFF, 0.82);
+    gfx.fillEllipse(cx,                0,          width,        h);
+    gfx.fillEllipse(cx - width * 0.22, h * 0.15,  width * 0.55, h * 0.80);
+    gfx.fillEllipse(cx + width * 0.18, h * 0.15,  width * 0.50, h * 0.72);
   }
 }
