@@ -13,15 +13,6 @@ export class MainMenuScene extends Phaser.Scene {
   private menuTexts: Phaser.GameObjects.Text[] = [];
   private blinkTimer = 0;
   private arrowText!: Phaser.GameObjects.Text;
-  private keys!: {
-    up: Phaser.Input.Keyboard.Key;
-    down: Phaser.Input.Keyboard.Key;
-    w: Phaser.Input.Keyboard.Key;
-    s: Phaser.Input.Keyboard.Key;
-    z: Phaser.Input.Keyboard.Key;
-    space: Phaser.Input.Keyboard.Key;
-    enter: Phaser.Input.Keyboard.Key;
-  };
 
   constructor() {
     super({ key: SCENE.MAIN_MENU });
@@ -129,15 +120,6 @@ export class MainMenuScene extends Phaser.Scene {
 
     // ── Input ────────────────────────────────────────────────────────────────
     const kb = this.input.keyboard!;
-    this.keys = {
-      up:    kb.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
-      down:  kb.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
-      w:     kb.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-      s:     kb.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-      z:     kb.addKey(Phaser.Input.Keyboard.KeyCodes.Z),
-      space: kb.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
-      enter: kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER),
-    };
 
     kb.on('keydown-UP',    () => this.moveCursor(-1));
     kb.on('keydown-DOWN',  () => this.moveCursor(1));

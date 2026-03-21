@@ -20,7 +20,6 @@ export class NPC {
 
   // Walk-animation state
   private stepFrame  = 0;          // toggles 0 / 1  → sprite frame 1 / 2
-  private moveDir    = 1;          // +1 right, -1 left — needed for frame phase
   private frameTimer = 0;
   private readonly STEP_MS  = 210; // ms per walk frame
   private readonly WALK_SPD = 18;  // px / s
@@ -73,7 +72,6 @@ export class NPC {
         this.idleTimer = Phaser.Math.Between(1500, 4500);
       } else {
         const dir = Math.sign(dx);
-        this.moveDir = dir;
         this.sprite.x += dir * this.WALK_SPD * dt;
         this.sprite.setFlipX(dir < 0);
 
