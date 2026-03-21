@@ -26,7 +26,7 @@ export class DialogueBox {
   private _typeDone   = false;
   private _fullText   = '';
 
-  private readonly BOX_H   = 72;
+  private readonly BOX_H   = 90;
   private readonly PAD     = 6;
   private readonly BOX_Y   = GAME_HEIGHT - this.BOX_H - 2;
   private readonly MAX_CHOICES = 4;
@@ -49,23 +49,23 @@ export class DialogueBox {
       .setOrigin(0, 0).setScrollFactor(0).setDepth(201);
 
     this.speakerText = this.scene.add.text(this.PAD + 2, y + this.PAD, '', {
-      fontFamily: '"Press Start 2P"', fontSize: '6px', color: '#FFD700',
+      fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#FFD700',
     }).setScrollFactor(0).setDepth(202).setResolution(2);
 
-    this.bodyText = this.scene.add.text(this.PAD + 2, y + this.PAD + 12, '', {
-      fontFamily: '"Press Start 2P"', fontSize: '6px', color: '#F0EAD6',
+    this.bodyText = this.scene.add.text(this.PAD + 2, y + this.PAD + 18, '', {
+      fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#F0EAD6',
       wordWrap:   { width: w - this.PAD * 4 },
     }).setScrollFactor(0).setDepth(202).setResolution(2);
 
     this.promptText = this.scene.add.text(w - this.PAD - 2, y + this.BOX_H - this.PAD - 2, '▼', {
-      fontFamily: '"Press Start 2P"', fontSize: '6px', color: '#FFD700',
+      fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#FFD700',
     }).setOrigin(1, 1).setScrollFactor(0).setDepth(202).setResolution(2);
 
     // Pre-build choice text objects (hidden until needed)
     for (let i = 0; i < this.MAX_CHOICES; i++) {
       const ct = this.scene.add.text(
-        this.PAD + 8, y + this.PAD + 12 + i * 14, '',
-        { fontFamily: '"Press Start 2P"', fontSize: '6px', color: '#F0EAD6' },
+        this.PAD + 8, y + this.PAD + 18 + i * 20, '',
+        { fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#F0EAD6' },
       ).setScrollFactor(0).setDepth(202).setResolution(2).setVisible(false);
       this.choiceTexts.push(ct);
     }
@@ -128,7 +128,7 @@ export class DialogueBox {
 
     for (let i = 0; i < this.MAX_CHOICES; i++) {
       const ct = this.choiceTexts[i];
-      ct.setY(y + this.PAD + 12 + i * 14);
+      ct.setY(y + this.PAD + 18 + i * 20);
       if (i < cnt) {
         ct.setText((i === 0 ? '▶ ' : '  ') + labels[i]);
         ct.setColor('#F0EAD6');

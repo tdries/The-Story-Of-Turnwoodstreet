@@ -1,3 +1,5 @@
+import { supabase } from '@core/SupabaseClient';
+
 /**
  * Global game state — quest flags, inventory, player stats.
  * Lives outside Phaser scenes so it survives scene transitions.
@@ -19,11 +21,12 @@ export interface QuestFlags {
 }
 
 export interface GameState {
-  player:      PlayerState;
-  questFlags:  QuestFlags;
-  currentMap:  string;
-  spawnPoint:  { x: number; y: number };
-  playtimeMs:  number;
+  player:           PlayerState;
+  questFlags:       QuestFlags;
+  currentMap:       string;
+  spawnPoint:       { x: number; y: number };
+  playtimeMs:       number;
+  gameTimeMinutes:  number;   // in-game clock (0–1439); default = 9*60 (09:00)
 }
 
 const DEFAULT_STATE: GameState = {
@@ -38,10 +41,11 @@ const DEFAULT_STATE: GameState = {
     skills:    [],
     inventory: [],
   },
-  questFlags:  {},
-  currentMap:  'borgerhout_main',
-  spawnPoint:  { x: 64, y: 146 },   // front sidewalk band (H*0.52 ≈ 141, walkable to ~156)
-  playtimeMs:  0,
+  questFlags:       {},
+  currentMap:       'borgerhout_main',
+  spawnPoint:       { x: 64, y: 146 },   // front sidewalk band (H*0.52 ≈ 141, walkable to ~156)
+  playtimeMs:       0,
+  gameTimeMinutes:  9 * 60,              // start at 09:00
 };
 
 class StateManager {
@@ -100,10 +104,49 @@ class StateManager {
     p.hp      = p.maxHp;
   }
 
+  setGameTime(totalMinutes: number): void {
+    this.state.gameTimeMinutes = Math.round(totalMinutes) % 1440;
+  }
+
   save(): void {
     try {
       localStorage.setItem('tbaan_save', JSON.stringify(this.state));
     } catch { /* storage full or unavailable */ }
+    this.saveToCloud();   // fire-and-forget cloud backup
+  }
+
+  /** Upsert current state to Supabase save_states table (one row per player). */
+  private async saveToCloud(): Promise<void> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from('save_states').upsert(
+        { user_id: user.id, state: this.state, saved_at: new Date().toISOString() },
+        { onConflict: 'user_id' },
+      );
+    } catch { /* network unavailable — localStorage save is the fallback */ }
+  }
+
+  /**
+   * Load save from Supabase and overwrite local state.
+   * Call this after login — cloud is the source of truth.
+   */
+  async loadFromCloud(): Promise<void> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('save_states')
+        .select('state')
+        .eq('user_id', user.id)
+        .single();
+      if (data?.state) {
+        // Merge with default so new fields added after the save still get defaults
+        this.state = { ...structuredClone(DEFAULT_STATE), ...(data.state as Partial<GameState>) };
+        try { localStorage.setItem('tbaan_save', JSON.stringify(this.state)); } catch { /* ok */ }
+        console.log('[StateManager] loaded from cloud');
+      }
+    } catch { /* network error — keep localStorage state */ }
   }
 
   private load(): GameState | null {

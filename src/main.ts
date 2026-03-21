@@ -99,12 +99,17 @@ const game = new Phaser.Game(config);
   return data ?? [];
 };
 
-(window as any).__postGuestbook = async (message: string): Promise<{ error?: string }> => {
+(window as any).__postGuestbook = async (message: string): Promise<boolean> => {
   const { data: { user } } = await supabase.auth.getUser();
-  const display_name = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Anoniem';
-  const { error } = await supabase.from('guestbook').insert({ message, display_name });
-  if (error) return { error: error.message };
-  return {};
+  if (!user) return false;
+  const display_name = user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email?.split('@')[0] ?? 'Anoniem';
+  const { error } = await supabase.from('guestbook').insert({
+    user_id: user.id,
+    display_name,
+    message,
+  });
+  if (error) { console.error('[guestbook] insert error:', error.message); return false; }
+  return true;
 };
 
 /** Save the player's subscription opt-in choice (true = subscribed, false = declined). */
@@ -121,6 +126,7 @@ const game = new Phaser.Game(config);
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session) {
     await playtimeTracker.loadFromDB();
+    await stateManager.loadFromCloud();   // cloud save overwrites localStorage
     (window as any).__onAuthChange?.(session.user);
   }
 });
@@ -129,6 +135,7 @@ supabase.auth.getSession().then(async ({ data: { session } }) => {
 supabase.auth.onAuthStateChange(async (_event, session) => {
   if (session) {
     await playtimeTracker.loadFromDB();
+    await stateManager.loadFromCloud();   // reload cloud save on every login
   }
   (window as any).__onAuthChange?.(session?.user ?? null);
 });

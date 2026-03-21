@@ -1119,7 +1119,8 @@ export class OverworldScene extends Phaser.Scene {
     const H    = GAME_HEIGHT;
     const skyH = Math.floor(H * 0.52);
 
-    this._clock = new TimeManager(9);
+    const savedMin = stateManager.get().gameTimeMinutes ?? 9 * 60;
+    this._clock = new TimeManager(savedMin / 60);
 
     // Sky rectangle — screen-space, covers the sky strip
     this.skyRect = this.add.rectangle(0, 0, GAME_WIDTH, skyH, 0x78AFE1)
@@ -1255,11 +1256,12 @@ export class OverworldScene extends Phaser.Scene {
     const showProps = this._clock.isNightlife;
     for (const p of this.nightProps) p.setVisible(showProps);
 
-    // Recompute crowd/traffic density every 5 s
+    // Recompute crowd/traffic density + sync game time to save state every 5 s
     this.densityTimer += delta;
     if (this.densityTimer >= 5000) {
       this.densityTimer = 0;
       this.applyDayCycleState();
+      stateManager.setGameTime(this._clock.totalMinutes);
     }
   }
 

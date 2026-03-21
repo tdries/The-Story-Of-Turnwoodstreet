@@ -21,6 +21,7 @@ export class TimeManager {
   get hours():          number { return Math.floor(this._totalMin / 60); }
   get minutes():        number { return Math.floor(this._totalMin % 60); }
   get fractionalHour(): number { return this._totalMin / 60; }
+  get totalMinutes():   number { return this._totalMin; }
 
   get timeString(): string {
     return `${String(this.hours).padStart(2, '0')}:${String(this.minutes).padStart(2, '0')}`;
