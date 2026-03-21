@@ -3,6 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@core/GameConfig';
 import { InputHandler }    from '@core/InputHandler';
 import { InventorySystem } from '@systems/InventorySystem';
 import { stateManager }    from '@core/StateManager';
+import { localeManager }   from '@i18n/LocaleManager';
 
 /**
  * InventoryMenu — full-screen overlay that pauses the overworld.
@@ -32,8 +33,8 @@ export class InventoryMenu {
       .setScrollFactor(0)
       .setDepth(300);
 
-    this.title = this.scene.add.text(W / 2, p + 6, 'RUGZAK', {
-      fontFamily: '"Press Start 2P"',
+    this.title = this.scene.add.text(W / 2, p + 6, localeManager.t('backpack'), {
+      fontFamily: localeManager.gameFont,
       fontSize:   '7px',
       color:      '#FFD700',
     }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(301);
@@ -85,26 +86,28 @@ export class InventoryMenu {
     }).setOrigin(1, 0).setScrollFactor(0).setDepth(301);
 
     if (items.length === 0) {
-      const t = this.scene.add.text(W / 2, GAME_HEIGHT / 2, 'Leeg', {
-        fontFamily: '"Press Start 2P"', fontSize: '5px', color: '#555555',
+      const t = this.scene.add.text(W / 2, GAME_HEIGHT / 2, localeManager.t('empty'), {
+        fontFamily: localeManager.gameFont, fontSize: '5px', color: '#555555',
       }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
       this.rows.push(t);
       return;
     }
 
     items.forEach((item, i) => {
-      const y   = 28 + i * 14;
-      const col = i === this.cursor ? '#FFD700' : '#F0EAD6';
+      const y    = 28 + i * 14;
+      const col  = i === this.cursor ? '#FFD700' : '#F0EAD6';
       const prefix = i === this.cursor ? '▶ ' : '  ';
-      const t = this.scene.add.text(12, y, `${prefix}${item.name}`, {
-        fontFamily: '"Press Start 2P"', fontSize: '5px', color: col,
+      const displayName = localeManager.itemName(item.id) ?? item.name;
+      const t = this.scene.add.text(12, y, `${prefix}${displayName}`, {
+        fontFamily: localeManager.gameFont, fontSize: '5px', color: col,
       }).setScrollFactor(0).setDepth(301);
       this.rows.push(t);
     });
 
     if (items[this.cursor]) {
-      const desc = this.scene.add.text(12, GAME_HEIGHT - 22, items[this.cursor].description, {
-        fontFamily: '"Press Start 2P"', fontSize: '4px', color: '#888888',
+      const displayDesc = localeManager.itemDescription(items[this.cursor].id) ?? items[this.cursor].description;
+      const desc = this.scene.add.text(12, GAME_HEIGHT - 22, displayDesc, {
+        fontFamily: localeManager.gameFont, fontSize: '4px', color: '#888888',
         wordWrap: { width: W - 24 },
       }).setScrollFactor(0).setDepth(301);
       this.rows.push(desc);

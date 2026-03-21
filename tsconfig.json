@@ -20,7 +20,8 @@
       "@entities/*":["src/entities/*"],
       "@systems/*": ["src/systems/*"],
       "@ui/*":      ["src/ui/*"],
-      "@data/*":    ["src/data/*"]
+      "@data/*":    ["src/data/*"],
+      "@i18n/*":    ["src/i18n/*"]
     }
   },
   "include": ["src/**/*.ts"],

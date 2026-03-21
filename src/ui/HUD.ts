@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PlayerState, stateManager } from '@core/StateManager';
 import { GAME_WIDTH, GAME_HEIGHT }   from '@core/GameConfig';
+import { localeManager }             from '@i18n/LocaleManager';
 
 /**
  * HUD — top-left overlay showing HP bar, coins, and level.
@@ -32,9 +33,11 @@ export class HUD {
       .setScrollFactor(0)
       .setDepth(100);
 
+    const gf = localeManager.gameFont;
+
     // HP label
-    this.scene.add.text(p + 2, p + 2, 'HP', {
-      fontFamily: '"Press Start 2P"',
+    this.scene.add.text(p + 2, p + 2, localeManager.t('hp'), {
+      fontFamily: gf,
       fontSize:   '4px',
       color:      '#E63946',
     }).setScrollFactor(0).setDepth(101);
@@ -53,14 +56,14 @@ export class HUD {
 
     // Coins
     this.coinsText = this.scene.add.text(p + 2, p + 12, '¢0', {
-      fontFamily: '"Press Start 2P"',
+      fontFamily: gf,
       fontSize:   '4px',
       color:      '#FFD700',
     }).setScrollFactor(0).setDepth(101);
 
     // Level
     this.levelText = this.scene.add.text(p + 2, p + 20, 'Lv.1', {
-      fontFamily: '"Press Start 2P"',
+      fontFamily: gf,
       fontSize:   '4px',
       color:      '#A8D8EA',
     }).setScrollFactor(0).setDepth(101);
@@ -71,8 +74,8 @@ export class HUD {
       .setScrollFactor(0)
       .setDepth(100);
 
-    this.scene.add.text(GAME_WIDTH - p - 30, p + 8, 'KAART', {
-      fontFamily: '"Press Start 2P"',
+    this.scene.add.text(GAME_WIDTH - p - 30, p + 8, localeManager.t('map'), {
+      fontFamily: gf,
       fontSize:   '3px',
       color:      '#555555',
     }).setScrollFactor(0).setDepth(101);
@@ -85,8 +88,8 @@ export class HUD {
       .setScrollFactor(0)
       .setDepth(100)
       .setInteractive({ useHandCursor: true });
-    const saveLabel = this.scene.add.text(bx + 15, by + 6, 'OPSLAAN', {
-      fontFamily: '"Press Start 2P"',
+    const saveLabel = this.scene.add.text(bx + 15, by + 6, localeManager.t('save'), {
+      fontFamily: gf,
       fontSize:   '3px',
       color:      '#7FDD7F',
     }).setOrigin(0.5, 0.5).setScrollFactor(0).setDepth(101);
@@ -95,8 +98,8 @@ export class HUD {
     saveBg.on('pointerout',   () => { saveBg.setFillStyle(0x1A3A1A, 0.85); });
     saveBg.on('pointerdown',  () => {
       stateManager.save();
-      saveLabel.setText('OPGESLAGEN!');
-      this.scene.time.delayedCall(1200, () => saveLabel.setText('OPSLAAN'));
+      saveLabel.setText(localeManager.t('saved'));
+      this.scene.time.delayedCall(1200, () => saveLabel.setText(localeManager.t('save')));
     });
 
     // Black border frame around the entire game viewport

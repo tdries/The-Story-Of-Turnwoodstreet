@@ -11,6 +11,7 @@ export default defineConfig({
       '@systems': path.resolve(__dirname, 'src/systems'),
       '@ui':      path.resolve(__dirname, 'src/ui'),
       '@data':    path.resolve(__dirname, 'src/data'),
+      '@i18n':    path.resolve(__dirname, 'src/i18n'),
     }
   },
   server: {

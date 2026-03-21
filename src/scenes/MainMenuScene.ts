@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SCENE } from '@core/GameConfig';
-import { stateManager } from '@core/StateManager';
+import { stateManager }  from '@core/StateManager';
+import { localeManager, LOCALES, LOCALE_LABELS } from '@i18n/LocaleManager';
 
 /**
  * MainMenuScene — title screen with interactive cursor menu.
@@ -26,12 +27,12 @@ export class MainMenuScene extends Phaser.Scene {
     // Build menu items based on whether a save exists
     if (stateManager.hasSave()) {
       this.menuItems = [
-        { label: 'DOORGAAN',  action: () => this.continueGame() },
-        { label: 'NIEUW SPEL', action: () => this.newGame() },
+        { label: localeManager.t('continue_game'), action: () => this.continueGame() },
+        { label: localeManager.t('new_game'),      action: () => this.newGame() },
       ];
     } else {
       this.menuItems = [
-        { label: 'NIEUW SPEL', action: () => this.newGame() },
+        { label: localeManager.t('new_game'), action: () => this.newGame() },
       ];
     }
 
@@ -113,11 +114,32 @@ export class MainMenuScene extends Phaser.Scene {
       color: '#888888',
     }).setOrigin(1, 1).setDepth(D);
 
-    this.add.text(cx, height - 4, 'BORGERHOUT 2140 · DEURNE 2100 · WIJNEGEM 2110', {
-      fontFamily: '"Press Start 2P"',
+    this.add.text(cx, height - 4, localeManager.t('game_footer'), {
+      fontFamily: localeManager.gameFont,
       fontSize: '4px',
       color: '#888888',
     }).setOrigin(0.5, 1).setDepth(D);
+
+    // ── Language selector (bottom-left) ──────────────────────────────────────
+    const localeY = height - 4;
+    const localeX = 6;
+    LOCALES.forEach((loc, i) => {
+      const active = loc === localeManager.locale;
+      const btn = this.add.text(localeX + i * 22, localeY, LOCALE_LABELS[loc], {
+        fontFamily: '"Press Start 2P"',
+        fontSize: '4px',
+        color: active ? '#FFD700' : '#555555',
+      }).setOrigin(0, 1).setDepth(D).setInteractive({ useHandCursor: true });
+
+      btn.on('pointerover',  () => { if (!active) btn.setColor('#AAAAAA'); });
+      btn.on('pointerout',   () => { if (!active) btn.setColor('#555555'); });
+      btn.on('pointerdown',  () => {
+        if (loc === localeManager.locale) return;
+        localeManager.setLocale(loc);
+        // Reload page so all Phaser scenes and HTML are rebuilt with the new locale
+        window.location.reload();
+      });
+    });
 
     // ── Input ────────────────────────────────────────────────────────────────
     const kb = this.input.keyboard!;

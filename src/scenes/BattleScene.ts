@@ -3,6 +3,7 @@ import { SCENE, GAME_WIDTH, GAME_HEIGHT } from '@core/GameConfig';
 import { stateManager }  from '@core/StateManager';
 import { InputHandler }  from '@core/InputHandler';
 import { CombatSystem, BattleResult } from '@systems/CombatSystem';
+import { localeManager } from '@i18n/LocaleManager';
 import enemyData from '@data/enemies.json';
 
 export interface BattleSceneData {
@@ -33,7 +34,9 @@ export class BattleScene extends Phaser.Scene {
   private playerHpBar!: Phaser.GameObjects.Rectangle;
   private enemyHpBar!:  Phaser.GameObjects.Rectangle;
 
-  private readonly MENU = ['AANVALLEN', 'SKILL', 'ITEM', 'VLUCHTEN'] as const;
+  // Menu labels resolved at create() time; indices: 0=attack 1=skill 2=item 3=run
+  private readonly MENU_ACTIONS = ['attack', 'skill', 'item', 'run'] as const;
+  private menuLabels: string[] = [];
 
   constructor() {
     super({ key: SCENE.BATTLE });
@@ -46,17 +49,27 @@ export class BattleScene extends Phaser.Scene {
   create(): void {
     this.controls = new InputHandler(this);
 
+    // Build locale-aware menu labels
+    this.menuLabels = [
+      localeManager.t('attack'),
+      localeManager.t('skill'),
+      localeManager.t('item'),
+      localeManager.t('run'),
+    ];
+
     const enemy = (enemyData as Record<string, typeof enemyData[keyof typeof enemyData]>)[this.enemyId];
     const player = stateManager.get().player;
     this.combat = new CombatSystem(
       { id: 'player', name: player.name, hp: player.hp, maxHp: player.maxHp, atk: 5, def: 2, spd: 4 },
-      { id: this.enemyId, name: enemy?.name ?? 'Vijand', hp: enemy?.hp ?? 10,
-        maxHp: enemy?.hp ?? 10, atk: enemy?.atk ?? 3, def: enemy?.def ?? 1, spd: enemy?.spd ?? 3 },
+      { id: this.enemyId, name: enemy?.name ?? localeManager.t('enemy_default'),
+        hp: enemy?.hp ?? 10, maxHp: enemy?.hp ?? 10,
+        atk: enemy?.atk ?? 3, def: enemy?.def ?? 1, spd: enemy?.spd ?? 3 },
     );
 
-    this.buildUI(enemy?.name ?? 'Vijand');
+    const enemyName = enemy?.name ?? localeManager.t('enemy_default');
+    this.buildUI(enemyName);
     this.cameras.main.fadeIn(300, 0, 0, 0);
-    this.showMessage(`${enemy?.name ?? 'Vijand'} verschijnt!`);
+    this.showMessage(localeManager.t('enemy_appears').replace('{name}', enemyName));
   }
 
   update(): void {
@@ -105,9 +118,9 @@ export class BattleScene extends Phaser.Scene {
     const menuX = W - 90;
     const menuY = H * 0.84;
     this.add.rectangle(menuX + 40, menuY + 12, 90, 36, 0x0A0A12).setStrokeStyle(1, 0xFFD700);
-    this.menuTexts = this.MENU.map((label, i) => {
+    this.menuTexts = this.menuLabels.map((label, i) => {
       return this.add.text(menuX + 4, menuY + 4 + i * 9, label, {
-        fontFamily: '"Press Start 2P"',
+        fontFamily: localeManager.gameFont,
         fontSize: '5px',
         color: '#F0EAD6',
       });
@@ -117,7 +130,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private moveMenu(dir: number): void {
-    this.menuIndex = Phaser.Math.Wrap(this.menuIndex + dir, 0, this.MENU.length);
+    this.menuIndex = Phaser.Math.Wrap(this.menuIndex + dir, 0, this.menuLabels.length);
     this.highlightMenu();
   }
 
@@ -128,11 +141,11 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private selectMenu(): void {
-    const choice = this.MENU[this.menuIndex];
-    if (choice === 'VLUCHTEN') { this.endBattle('escaped'); return; }
+    const action = this.MENU_ACTIONS[this.menuIndex];
+    if (action === 'run') { this.endBattle('escaped'); return; }
 
     this.menuLocked = true;
-    const result = this.combat.playerTurn(choice === 'AANVALLEN' ? 'attack' : 'skill');
+    const result = this.combat.playerTurn(action === 'attack' ? 'attack' : 'skill');
     this.showMessage(result.message);
     this.refreshBars();
 
@@ -166,11 +179,11 @@ export class BattleScene extends Phaser.Scene {
     if (result === 'victory') {
       const xpGain = 20;
       const levelled = stateManager.gainXP(xpGain);
-      const msg = levelled ? 'Level up!' : `+${xpGain} XP`;
-      this.showMessage(`Gewonnen! ${msg}`);
+      const msg = levelled ? localeManager.t('level_up') : `+${xpGain} XP`;
+      this.showMessage(`${localeManager.t('victory')} ${msg}`);
     } else if (result === 'defeat') {
-      state.player.hp = 1; // knocked out but not dead
-      this.showMessage('Gevloerd… maar je staat weer op.');
+      state.player.hp = 1;
+      this.showMessage(localeManager.t('defeat'));
     }
 
     stateManager.get().player.hp = this.combat.getState().player.hp;

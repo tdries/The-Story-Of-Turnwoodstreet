@@ -496,9 +496,225 @@
     .action-btn:active, .action-btn.pressed {
       background: rgba(255,215,0,0.30);
     }
+
+    /* ── Language selector ───────────────────────────────────────────────── */
+    #lang-selector {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .lang-btn {
+      background: rgba(10,10,18,0.82);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 5px;
+      color: #555555;
+      font-family: "Press Start 2P", monospace;
+      font-size: 4px;
+      padding: 4px 5px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+    }
+    .lang-btn.active { color: #FFD700; border-color: rgba(255,215,0,0.5); }
+    .lang-btn:hover:not(.active) { color: #AAAAAA; }
   </style>
 </head>
 <body>
+  <script>
+    // ── HTML i18n — runs before DOM renders ───────────────────────────────
+    (function () {
+      var loc = localStorage.getItem('game_locale') || 'nl';
+      var T = {
+        nl: {
+          login_btn: 'Log in met Google', login_sub: 'Borgerhout \u00B7 Antwerpen \u00B7 2140',
+          logout: 'uitloggen', scores_btn: '\uD83C\uDFC6 SCORES',
+          feedback_btn: 'FEEDBACK', hint_btn: 'HINT',
+          save_main: 'SAVEN', save_sub: 'opslaan',
+          talk_main: 'PRAAT', talk_sub: 'spatiebalk',
+          ok_main: 'OK', ok_sub: 'enter',
+          scores_title: 'SPEELTIJD TOP 10', scores_close: 'SLUITEN',
+          hint_title: 'VOLGENDE STAP', hint_close: 'OK',
+          feedback_title: 'STUUR FEEDBACK', feedback_desc: 'Bug gevonden? Idee? Vertel het ons.',
+          feedback_opt_a: 'A) Story logic', feedback_opt_b: 'B) Visual input',
+          feedback_opt_c: 'C) Gameplay', feedback_opt_d: 'D) Other',
+          feedback_placeholder: 'Schrijf hier...',
+          feedback_cancel: 'ANNULEER', feedback_send: 'VERZEND',
+          feedback_not_cfg: 'Feedback nog niet geconfigureerd.',
+          feedback_cooldown: function(s){ return 'Wacht nog '+s+'s voor je opnieuw verstuurt.'; },
+          feedback_sending: 'Verzenden...',
+          feedback_success: function(n){ return 'Bedankt! Issue #'+n+' aangemaakt.'; },
+          feedback_error:   function(m){ return 'Fout bij verzenden ('+m+').'; },
+          scores_loading: 'Laden...', scores_empty: 'Nog geen scores.',
+          player_default: 'Speler', loading_retry: 'Laden... probeer opnieuw.',
+        },
+        en: {
+          login_btn: 'Log in with Google', login_sub: 'Borgerhout \u00B7 Antwerp \u00B7 2140',
+          logout: 'log out', scores_btn: '\uD83C\uDFC6 SCORES',
+          feedback_btn: 'FEEDBACK', hint_btn: 'HINT',
+          save_main: 'SAVE', save_sub: 'save game',
+          talk_main: 'TALK', talk_sub: 'spacebar',
+          ok_main: 'OK', ok_sub: 'enter',
+          scores_title: 'PLAYTIME TOP 10', scores_close: 'CLOSE',
+          hint_title: 'NEXT STEP', hint_close: 'OK',
+          feedback_title: 'SEND FEEDBACK', feedback_desc: 'Found a bug? Got an idea? Let us know.',
+          feedback_opt_a: 'A) Story logic', feedback_opt_b: 'B) Visual input',
+          feedback_opt_c: 'C) Gameplay', feedback_opt_d: 'D) Other',
+          feedback_placeholder: 'Write here...',
+          feedback_cancel: 'CANCEL', feedback_send: 'SEND',
+          feedback_not_cfg: 'Feedback not yet configured.',
+          feedback_cooldown: function(s){ return 'Wait '+s+'s before sending again.'; },
+          feedback_sending: 'Sending...',
+          feedback_success: function(n){ return 'Thank you! Issue #'+n+' created.'; },
+          feedback_error:   function(m){ return 'Error sending ('+m+').'; },
+          scores_loading: 'Loading...', scores_empty: 'No scores yet.',
+          player_default: 'Player', loading_retry: 'Loading... try again.',
+        },
+        fr: {
+          login_btn: 'Se connecter avec Google', login_sub: 'Borgerhout \u00B7 Anvers \u00B7 2140',
+          logout: 'd\u00E9connexion', scores_btn: '\uD83C\uDFC6 SCORES',
+          feedback_btn: 'FEEDBACK', hint_btn: 'INDICE',
+          save_main: 'SAUVER', save_sub: 'sauvegarder',
+          talk_main: 'PARLER', talk_sub: 'espace',
+          ok_main: 'OK', ok_sub: 'entr\u00E9e',
+          scores_title: 'TOP 10 TEMPS DE JEU', scores_close: 'FERMER',
+          hint_title: 'PROCHAINE \u00C9TAPE', hint_close: 'OK',
+          feedback_title: 'ENVOYER FEEDBACK', feedback_desc: 'Bug trouv\u00E9? Id\u00E9e? Dites-le nous.',
+          feedback_opt_a: 'A) Logique narrative', feedback_opt_b: 'B) Visuel',
+          feedback_opt_c: 'C) Gameplay', feedback_opt_d: 'D) Autre',
+          feedback_placeholder: '\u00C9crivez ici...',
+          feedback_cancel: 'ANNULER', feedback_send: 'ENVOYER',
+          feedback_not_cfg: 'Feedback pas encore configur\u00E9.',
+          feedback_cooldown: function(s){ return 'Attendez encore '+s+'s avant de renvoyer.'; },
+          feedback_sending: 'Envoi...',
+          feedback_success: function(n){ return 'Merci! Issue #'+n+' cr\u00E9\u00E9e.'; },
+          feedback_error:   function(m){ return 'Erreur lors de l\u2019envoi ('+m+').'; },
+          scores_loading: 'Chargement...', scores_empty: 'Pas encore de scores.',
+          player_default: 'Joueur', loading_retry: 'Chargement... r\u00E9essayez.',
+        },
+        ar: {
+          login_btn: '\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644 \u0628\u0640 Google',
+          login_sub: '\u0628\u0648\u0631\u062E\u0631\u0647\u0627\u0648\u062A \u00B7 \u0623\u0646\u062A\u0648\u064A\u0631\u0628 \u00B7 2140',
+          logout: '\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C',
+          scores_btn: '\uD83C\uDFC6 \u0627\u0644\u0646\u0642\u0627\u0637',
+          feedback_btn: '\u0645\u0644\u0627\u062D\u0638\u0627\u062A', hint_btn: '\u062A\u0644\u0645\u064A\u062D',
+          save_main: '\u062D\u0641\u0638', save_sub: '\u0627\u062D\u0641\u0638 \u0627\u0644\u0644\u0639\u0628\u0629',
+          talk_main: '\u062A\u062D\u062F\u062B', talk_sub: '\u0645\u0633\u0627\u0641\u0629',
+          ok_main: '\u0645\u0648\u0627\u0641\u0642', ok_sub: '\u0625\u062F\u062E\u0627\u0644',
+          scores_title: '\u0623\u0641\u0636\u0644 10 \u0644\u0627\u0639\u0628\u064A\u0646',
+          scores_close: '\u0625\u063A\u0644\u0627\u0642',
+          hint_title: '\u0627\u0644\u062E\u0637\u0648\u0629 \u0627\u0644\u062A\u0627\u0644\u064A\u0629',
+          hint_close: '\u0645\u0648\u0627\u0641\u0642',
+          feedback_title: '\u0625\u0631\u0633\u0627\u0644 \u0645\u0644\u0627\u062D\u0638\u0627\u062A',
+          feedback_desc: '\u0648\u062C\u062F\u062A \u062E\u0637\u0623\u061F \u0644\u062F\u064A\u0643 \u0641\u0643\u0631\u0629\u061F \u0623\u062E\u0628\u0631\u0646\u0627.',
+          feedback_opt_a: '\u0623) \u0645\u0646\u0637\u0642 \u0627\u0644\u0642\u0635\u0629',
+          feedback_opt_b: '\u0628) \u0627\u0644\u0645\u062F\u062E\u0644\u0627\u062A \u0627\u0644\u0628\u0635\u0631\u064A\u0629',
+          feedback_opt_c: '\u062C) \u0637\u0631\u064A\u0642\u0629 \u0627\u0644\u0644\u0639\u0628',
+          feedback_opt_d: '\u062F) \u0623\u062E\u0631\u0649',
+          feedback_placeholder: '\u0627\u0643\u062A\u0628 \u0647\u0646\u0627...',
+          feedback_cancel: '\u0625\u0644\u063A\u0627\u0621', feedback_send: '\u0625\u0631\u0633\u0627\u0644',
+          feedback_not_cfg: '\u0644\u0645 \u064A\u062A\u0645 \u062A\u0643\u0648\u064A\u0646 \u0627\u0644\u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0628\u0639\u062F.',
+          feedback_cooldown: function(s){ return '\u0627\u0646\u062A\u0638\u0631 '+s+' \u062B\u0627\u0646\u064A\u0629 \u0642\u0628\u0644 \u0627\u0644\u0625\u0631\u0633\u0627\u0644 \u0645\u062C\u062F\u062F\u064B\u0627.'; },
+          feedback_sending: '\u062C\u0627\u0631\u0650 \u0627\u0644\u0625\u0631\u0633\u0627\u0644...',
+          feedback_success: function(n){ return '\u0634\u0643\u0631\u064B\u0627! \u062A\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0645\u0634\u0643\u0644\u0629 #'+n+'.'; },
+          feedback_error:   function(m){ return '\u062E\u0637\u0623 \u0641\u064A \u0627\u0644\u0625\u0631\u0633\u0627\u0644 ('+m+').'; },
+          scores_loading: '\u062C\u0627\u0631\u0650 \u0627\u0644\u062A\u062D\u0645\u064A\u0644...',
+          scores_empty: '\u0644\u0627 \u062A\u0648\u062C\u062F \u0646\u0642\u0627\u0637 \u0628\u0639\u062F.',
+          player_default: '\u0644\u0627\u0639\u0628',
+          loading_retry: '\u062C\u0627\u0631\u0650 \u0627\u0644\u062A\u062D\u0645\u064A\u0644... \u062D\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062E\u0631\u0649.',
+        },
+      };
+
+      var t = T[loc] || T.nl;
+      window.__htmlLocale = loc;
+      window.__htmlT = t;
+
+      function applyLocale() {
+        document.documentElement.lang = loc;
+        document.documentElement.dir = (loc === 'ar') ? 'rtl' : 'ltr';
+
+        var el = function(id){ return document.getElementById(id); };
+        var qs = function(sel){ return document.querySelector(sel); };
+
+        // Login gate
+        var gateBtn = el('btn-gate-google');
+        if (gateBtn) gateBtn.textContent = t.login_btn;
+        var gateSub = qs('#login-gate p');
+        if (gateSub) gateSub.textContent = t.login_sub;
+
+        // Auth panel
+        var logoutBtn = el('btn-logout');
+        if (logoutBtn) logoutBtn.textContent = t.logout;
+        var scoresBtn = el('btn-scores');
+        if (scoresBtn) scoresBtn.textContent = t.scores_btn;
+
+        // Right panel
+        var fbBtn = el('feedback-btn');
+        if (fbBtn) fbBtn.textContent = t.feedback_btn;
+        var hintBtn = el('hint-btn');
+        if (hintBtn) hintBtn.textContent = t.hint_btn;
+
+        // Action buttons
+        var saveBtn = el('btn-save');
+        if (saveBtn) saveBtn.innerHTML = t.save_main + '<span class="sub">' + t.save_sub + '</span>';
+        var talkBtn = el('btn-talk');
+        if (talkBtn) talkBtn.innerHTML = t.talk_main + '<span class="sub">' + t.talk_sub + '</span>';
+        var okBtn = el('btn-ok');
+        if (okBtn) okBtn.innerHTML = t.ok_main + '<span class="sub">' + t.ok_sub + '</span>';
+
+        // Scoreboard modal
+        var scTitle = qs('#scores-modal h2');
+        if (scTitle) scTitle.textContent = t.scores_title;
+        var scClose = el('scores-close');
+        if (scClose) scClose.textContent = t.scores_close;
+
+        // Hint modal
+        var hTitle = qs('#hint-modal h2');
+        if (hTitle) hTitle.textContent = t.hint_title;
+        var hClose = el('hint-close');
+        if (hClose) hClose.textContent = t.hint_close;
+
+        // Feedback modal
+        var fTitle = qs('#feedback-modal h2');
+        if (fTitle) fTitle.textContent = t.feedback_title;
+        var fDesc = qs('#feedback-modal p');
+        if (fDesc) fDesc.textContent = t.feedback_desc;
+        var fCat = el('feedback-category');
+        if (fCat && fCat.options.length >= 4) {
+          fCat.options[0].text = t.feedback_opt_a;
+          fCat.options[1].text = t.feedback_opt_b;
+          fCat.options[2].text = t.feedback_opt_c;
+          fCat.options[3].text = t.feedback_opt_d;
+        }
+        var fArea = el('feedback-text');
+        if (fArea) fArea.placeholder = t.feedback_placeholder;
+        var fCancel = el('btn-cancel-feedback');
+        if (fCancel) fCancel.textContent = t.feedback_cancel;
+        var fSend = el('btn-send-feedback');
+        if (fSend) fSend.textContent = t.feedback_send;
+
+        // Language selector active state
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.loc === loc);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', applyLocale);
+
+      // Language selector click handler (set up after DOM ready)
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var newLoc = btn.dataset.loc;
+            if (newLoc === loc) return;
+            localStorage.setItem('game_locale', newLoc);
+            window.location.reload();
+          });
+        });
+      });
+    })();
+  </script>
+
   <!-- Login gate — covers everything until authenticated -->
   <div id="login-gate">
     <canvas id="login-canvas"></canvas>
@@ -542,6 +758,12 @@
       <button id="feedback-btn">FEEDBACK</button>
       <button id="radio-btn">📻 MINERVA</button>
       <button id="hint-btn">HINT</button>
+      <div id="lang-selector">
+        <button class="lang-btn" data-loc="nl">NL</button>
+        <button class="lang-btn" data-loc="en">EN</button>
+        <button class="lang-btn" data-loc="fr">FR</button>
+        <button class="lang-btn" data-loc="ar">AR</button>
+      </div>
     </div>
     <div class="panel-bottom">
       <div id="action-btns">
@@ -681,8 +903,9 @@
       const msg = textarea.value.trim();
       if (!msg) return;
 
+      const _t = window.__htmlT || {};
       if (!TOKEN_SET) {
-        status.textContent = 'Feedback nog niet geconfigureerd.';
+        status.textContent = _t.feedback_not_cfg || 'Feedback nog niet geconfigureerd.';
         status.style.color = '#ff6633';
         return;
       }
@@ -690,13 +913,13 @@
       const now = Date.now();
       if (now - lastSentAt < COOLDOWN) {
         const secs = Math.ceil((COOLDOWN - (now - lastSentAt)) / 1000);
-        status.textContent = `Wacht nog ${secs}s voor je opnieuw verstuurt.`;
+        status.textContent = (_t.feedback_cooldown || function(s){ return 'Wacht nog '+s+'s voor je opnieuw verstuurt.'; })(secs);
         status.style.color = '#ff6633';
         return;
       }
 
       sendBtn.disabled = true;
-      status.textContent = 'Verzenden...';
+      status.textContent = _t.feedback_sending || 'Verzenden...';
       status.style.color = '#FFD700';
 
       const cat   = category.value;
@@ -718,7 +941,7 @@
           const issue = await res.json();
           lastSentAt = Date.now();
           if (window.__logFeedback) window.__logFeedback();
-          status.textContent = `Bedankt! Issue #${issue.number} aangemaakt.`;
+          status.textContent = (_t.feedback_success || function(n){ return 'Bedankt! Issue #'+n+' aangemaakt.'; })(issue.number);
           status.style.color = '#44ff88';
           textarea.value = '';
           setTimeout(() => {
@@ -732,7 +955,7 @@
           throw new Error(`HTTP ${res.status}`);
         }
       } catch (err) {
-        status.textContent = `Fout bij verzenden (${err.message}).`;
+        status.textContent = (_t.feedback_error || function(m){ return 'Fout bij verzenden ('+m+').'; })(err.message);
         status.style.color = '#ff6633';
         console.error('Feedback error:', err);
         sendBtn.disabled = false;
@@ -899,7 +1122,7 @@
         authName.textContent = user.user_metadata?.full_name
                             || user.user_metadata?.name
                             || user.user_metadata?.user_name
-                            || 'Speler';
+                            || (window.__htmlT?.player_default ?? 'Speler');
         const av = user.user_metadata?.avatar_url;
         authAvatar.src = av || '';
         authAvatar.style.display = av ? 'block' : 'none';
@@ -918,7 +1141,7 @@
 
     document.getElementById('btn-gate-google').addEventListener('click', () => {
       if (window.__loginWith) window.__loginWith('google');
-      else { gateError.textContent = 'Laden... probeer opnieuw.'; }
+      else { gateError.textContent = window.__htmlT?.loading_retry ?? 'Laden... probeer opnieuw.'; }
     });
     document.getElementById('btn-logout').addEventListener('click', () => {
       if (window.__logout) window.__logout();
@@ -937,24 +1160,26 @@
     document.getElementById('btn-scores').addEventListener('click', async () => {
       scoresOverlay.classList.add('open');
       if (window.__setGameKeyboard) window.__setGameKeyboard(false);
-      scoresList.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">Laden...</div>';
+      const _st = window.__htmlT || {};
+      scoresList.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">' + (_st.scores_loading || 'Laden...') + '</div>';
 
       const rows = window.__getScoreboard
         ? await window.__getScoreboard()
         : [];
 
       if (!rows.length) {
-        scoresList.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">Nog geen scores.</div>';
+        scoresList.innerHTML = '<div style="font-family:sans-serif;font-size:12px;color:#888">' + (_st.scores_empty || 'Nog geen scores.') + '</div>';
         return;
       }
 
+      const _playerDefault = _st.player_default || 'Speler';
       scoresList.innerHTML = rows.map((r, i) => `
         <div class="score-row${r.user_id === currentUserId ? ' me' : ''}">
           <span class="score-rank">${i + 1}</span>
           ${r.avatar_url
             ? `<img class="score-avatar" src="${r.avatar_url}" alt="" />`
             : `<div class="score-avatar"></div>`}
-          <span class="score-name">${r.display_name ?? 'Speler'}</span>
+          <span class="score-name">${r.display_name ?? _playerDefault}</span>
           <span class="score-time">${fmtTime(r.playtime_seconds ?? 0)}</span>
         </div>`).join('');
     });

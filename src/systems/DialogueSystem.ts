@@ -1,7 +1,8 @@
-import { InputHandler } from '@core/InputHandler';
-import { stateManager } from '@core/StateManager';
-import { QuestSystem }  from '@systems/QuestSystem';
-import { DialogueBox }  from '@ui/DialogueBox';
+import { InputHandler }  from '@core/InputHandler';
+import { stateManager }  from '@core/StateManager';
+import { QuestSystem }   from '@systems/QuestSystem';
+import { DialogueBox }   from '@ui/DialogueBox';
+import { localeManager } from '@i18n/LocaleManager';
 import dialogueData from '@data/dialogue.json';
 
 interface DialogueLine {
@@ -39,11 +40,12 @@ const DIALOGUES = dialogueData as Record<string, DialogueTree>;
  *   - QuestSystem.checkAll() called after every tree completion
  */
 export class DialogueSystem {
-  private box:       DialogueBox;
-  private lines:     DialogueLine[] = [];
-  private lineIdx    = 0;
-  private _isOpen    = false;
+  private box:          DialogueBox;
+  private lines:        DialogueLine[] = [];
+  private lineIdx       = 0;
+  private _isOpen       = false;
   private pendingChoices: DialogueChoice[] | null = null;
+  private dialogueId    = '';   // tracks current tree for locale lookups
 
   onClose: (() => void) | null = null;
 
@@ -59,6 +61,7 @@ export class DialogueSystem {
     const tree = DIALOGUES[dialogueId];
     if (!tree || tree.length === 0) return;
 
+    this.dialogueId       = dialogueId;
     this.lines            = tree;
     this.lineIdx          = 0;
     this._isOpen          = true;
@@ -97,20 +100,21 @@ export class DialogueSystem {
     // Apply side effects of showing this line
     this.applyLineEffects(line);
 
+    // Resolve translated text (falls back to NL original when locale is nl
+    // or when no translation exists for this entry)
+    const displayText = localeManager.dialogueText(this.dialogueId, this.lineIdx) ?? line.text;
+
     if (line.choice && line.choice.length > 0) {
-      // Show text first (if any), then present choices on next advance
-      // OR show choices immediately if no text
-      if (line.text) {
-        this.box.show(line.speaker, line.text);
+      if (displayText) {
+        this.box.show(line.speaker, displayText);
         this.pendingChoices = line.choice;
       } else {
         this.presentChoices(line.choice);
       }
-    } else if (line.text) {
-      this.box.show(line.speaker, line.text);
+    } else if (displayText) {
+      this.box.show(line.speaker, displayText);
       this.pendingChoices = null;
     } else {
-      // Line with only effects and no text — auto-advance
       this.advance();
     }
   }
@@ -131,7 +135,9 @@ export class DialogueSystem {
 
   private presentChoices(choices: DialogueChoice[]): void {
     this.pendingChoices = null;
-    this.box.showChoices(choices.map(c => c.label));
+    const translatedLabels = localeManager.dialogueChoices(this.dialogueId, this.lineIdx);
+    const labels = choices.map((c, i) => translatedLabels?.[i] ?? c.label);
+    this.box.showChoices(labels);
   }
 
   private confirmChoice(): void {
