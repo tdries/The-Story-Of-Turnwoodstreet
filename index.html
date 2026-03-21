@@ -28,9 +28,145 @@
       border: 2px solid #2a2a2a;
     }
   </style>
+  <style>
+    /* ── Touch controls ───────────────────────────────────────────────────── */
+    #touch-controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: none;           /* shown only on touch devices via JS */
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 12px 24px 20px;
+      pointer-events: none;
+      z-index: 999;
+      gap: 16px;
+    }
+    #touch-controls.active { display: flex; }
+
+    /* D-pad */
+    #dpad {
+      display: grid;
+      grid-template-areas:
+        ".    up   ."
+        "left mid  right"
+        ".    down .";
+      grid-template-columns: 52px 52px 52px;
+      grid-template-rows:    52px 52px 52px;
+      gap: 4px;
+      pointer-events: all;
+    }
+    .dpad-btn {
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,215,0,0.45);
+      border-radius: 10px;
+      color: #FFD700;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.08s;
+    }
+    .dpad-btn:active, .dpad-btn.pressed {
+      background: rgba(255,215,0,0.30);
+    }
+    #btn-up    { grid-area: up;    }
+    #btn-left  { grid-area: left;  }
+    #btn-right { grid-area: right; }
+    #btn-down  { grid-area: down;  }
+
+    /* Action buttons */
+    #action-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: all;
+    }
+    .action-btn {
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,215,0,0.45);
+      border-radius: 10px;
+      color: #FFD700;
+      font-family: "Press Start 2P", monospace;
+      font-size: 8px;
+      padding: 0 14px;
+      height: 52px;
+      min-width: 90px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: background 0.08s;
+    }
+    .action-btn .sub {
+      font-size: 5px;
+      color: rgba(255,215,0,0.55);
+    }
+    .action-btn:active, .action-btn.pressed {
+      background: rgba(255,215,0,0.30);
+    }
+  </style>
 </head>
 <body>
   <div id="game-container"></div>
+
+  <!-- Touch controls — shown only on touch-capable devices -->
+  <div id="touch-controls">
+    <div id="dpad">
+      <button class="dpad-btn" id="btn-up">↑</button>
+      <button class="dpad-btn" id="btn-left">←</button>
+      <button class="dpad-btn" id="btn-right">→</button>
+      <button class="dpad-btn" id="btn-down">↓</button>
+    </div>
+    <div id="action-btns">
+      <button class="action-btn" id="btn-talk">PRAAT<span class="sub">spatiebalk</span></button>
+      <button class="action-btn" id="btn-ok">OK<span class="sub">enter</span></button>
+    </div>
+  </div>
+
+  <script>
+    // ── Global touch state (read by InputHandler) ──────────────────────────
+    window.__touch = {
+      left: false, right: false, up: false, down: false,
+      action: false, enter: false,
+    };
+
+    // Show controls only on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      document.getElementById('touch-controls').classList.add('active');
+    }
+
+    function bindBtn(id, flag) {
+      const el = document.getElementById(id);
+      function press(e)   { e.preventDefault(); window.__touch[flag] = true;  el.classList.add('pressed'); }
+      function release(e) { e.preventDefault(); window.__touch[flag] = false; el.classList.remove('pressed'); }
+      el.addEventListener('touchstart',  press,   { passive: false });
+      el.addEventListener('touchend',    release, { passive: false });
+      el.addEventListener('touchcancel', release, { passive: false });
+      // Also support mouse for desktop testing
+      el.addEventListener('mousedown', press);
+      el.addEventListener('mouseup',   release);
+    }
+
+    bindBtn('btn-up',    'up');
+    bindBtn('btn-left',  'left');
+    bindBtn('btn-right', 'right');
+    bindBtn('btn-down',  'down');
+    bindBtn('btn-talk',  'action');
+    bindBtn('btn-ok',    'enter');
+  </script>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

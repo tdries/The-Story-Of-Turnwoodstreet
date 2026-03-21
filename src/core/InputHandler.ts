@@ -1,6 +1,14 @@
 import Phaser from 'phaser';
 
-/** Unified input abstraction — keyboard + gamepad. */
+// Touch state injected by index.html
+declare global {
+  interface Window {
+    __touch: { left: boolean; right: boolean; up: boolean; down: boolean; action: boolean; enter: boolean };
+  }
+}
+const t = () => window.__touch ?? { left: false, right: false, up: false, down: false, action: false, enter: false };
+
+/** Unified input abstraction — keyboard + touch. */
 export class InputHandler {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd!: {
@@ -32,16 +40,16 @@ export class InputHandler {
   }
 
   get up(): boolean {
-    return this.cursors.up.isDown || this.wasd.up.isDown;
+    return this.cursors.up.isDown || this.wasd.up.isDown || t().up;
   }
   get down(): boolean {
-    return this.cursors.down.isDown || this.wasd.down.isDown;
+    return this.cursors.down.isDown || this.wasd.down.isDown || t().down;
   }
   get left(): boolean {
-    return this.cursors.left.isDown || this.wasd.left.isDown;
+    return this.cursors.left.isDown || this.wasd.left.isDown || t().left;
   }
   get right(): boolean {
-    return this.cursors.right.isDown || this.wasd.right.isDown;
+    return this.cursors.right.isDown || this.wasd.right.isDown || t().right;
   }
 
   /** Direction vector, normalised. */
@@ -64,7 +72,9 @@ export class InputHandler {
   get actionJustPressed(): boolean {
     return Phaser.Input.Keyboard.JustDown(this.actionKey) ||
            Phaser.Input.Keyboard.JustDown(this.cursors.space) ||
-           Phaser.Input.Keyboard.JustDown(this.enterKey);
+           Phaser.Input.Keyboard.JustDown(this.enterKey) ||
+           this._consumeTouch('action') ||
+           this._consumeTouch('enter');
   }
   get cancelJustPressed(): boolean {
     return Phaser.Input.Keyboard.JustDown(this.cancelKey) ||
@@ -80,5 +90,14 @@ export class InputHandler {
   get downJustPressed(): boolean {
     return Phaser.Input.Keyboard.JustDown(this.cursors.down) ||
            Phaser.Input.Keyboard.JustDown(this.wasd.down);
+  }
+
+  /** Reads a touch flag as a one-shot rising-edge signal. */
+  private _touchSeen: Partial<Record<string, boolean>> = {};
+  private _consumeTouch(flag: 'action' | 'enter'): boolean {
+    const isDown = t()[flag];
+    const wasDown = this._touchSeen[flag] ?? false;
+    this._touchSeen[flag] = isDown;
+    return isDown && !wasDown;   // true only on the frame the button goes down
   }
 }
