@@ -325,12 +325,14 @@
     document.getElementById('feedback-btn').addEventListener('click', () => {
       overlay.classList.add('open');
       textarea.focus();
+      if (window.__setGameKeyboard) window.__setGameKeyboard(false);
     });
     document.getElementById('btn-cancel-feedback').addEventListener('click', () => {
       overlay.classList.remove('open');
       textarea.value = '';
       status.textContent = '';
       status.style.color = '';
+      if (window.__setGameKeyboard) window.__setGameKeyboard(true);
     });
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) document.getElementById('btn-cancel-feedback').click();
@@ -378,6 +380,7 @@
             status.textContent = '';
             status.style.color = '';
             sendBtn.disabled = false;
+            if (window.__setGameKeyboard) window.__setGameKeyboard(true);
           }, 2200);
         } else {
           throw new Error(res.status);
