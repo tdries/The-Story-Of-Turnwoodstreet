@@ -314,6 +314,21 @@
       font-size: 5px;
       color: #FFD700;
     }
+    .score-stats {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+    .score-meta {
+      display: flex;
+      gap: 6px;
+    }
+    .score-badge {
+      font-family: "Press Start 2P", monospace;
+      font-size: 4px;
+      color: rgba(240,234,214,0.55);
+    }
     #scores-close {
       font-family: "Press Start 2P", monospace;
       font-size: 6px;
@@ -765,7 +780,7 @@
           save_main: 'SAVEN', save_sub: 'opslaan',
           talk_main: 'PRAAT', talk_sub: 'spatiebalk',
           ok_main: 'OK', ok_sub: 'enter',
-          scores_title: 'SPEELTIJD TOP 10', scores_close: 'SLUITEN',
+          scores_title: 'SPEELTIJD TOP 50', scores_close: 'SLUITEN',
           hint_title: 'VOLGENDE STAP', hint_close: 'OK',
           feedback_title: 'STUUR FEEDBACK', feedback_desc: 'Bug gevonden? Idee? Vertel het ons.',
           feedback_opt_a: 'A) Story logic', feedback_opt_b: 'B) Visual input',
@@ -787,7 +802,7 @@
           save_main: 'SAVE', save_sub: 'save game',
           talk_main: 'TALK', talk_sub: 'spacebar',
           ok_main: 'OK', ok_sub: 'enter',
-          scores_title: 'PLAYTIME TOP 10', scores_close: 'CLOSE',
+          scores_title: 'PLAYTIME TOP 50', scores_close: 'CLOSE',
           hint_title: 'NEXT STEP', hint_close: 'OK',
           feedback_title: 'SEND FEEDBACK', feedback_desc: 'Found a bug? Got an idea? Let us know.',
           feedback_opt_a: 'A) Story logic', feedback_opt_b: 'B) Visual input',
@@ -809,7 +824,7 @@
           save_main: 'SAUVER', save_sub: 'sauvegarder',
           talk_main: 'PARLER', talk_sub: 'espace',
           ok_main: 'OK', ok_sub: 'entr\u00E9e',
-          scores_title: 'TOP 10 TEMPS DE JEU', scores_close: 'FERMER',
+          scores_title: 'TOP 50 TEMPS DE JEU', scores_close: 'FERMER',
           hint_title: 'PROCHAINE \u00C9TAPE', hint_close: 'OK',
           feedback_title: 'ENVOYER FEEDBACK', feedback_desc: 'Bug trouv\u00E9? Id\u00E9e? Dites-le nous.',
           feedback_opt_a: 'A) Logique narrative', feedback_opt_b: 'B) Visuel',
@@ -1011,7 +1026,7 @@
   <!-- Modals -->
   <div id="scores-overlay">
     <div id="scores-modal">
-      <h2>SPEELTIJD TOP 10</h2>
+      <h2>SPEELTIJD TOP 50</h2>
       <div id="scores-list"><div style="font-family:sans-serif;font-size:12px;color:#888">Laden...</div></div>
       <button id="scores-close">SLUITEN</button>
     </div>
@@ -1397,7 +1412,11 @@
     loginMusic.play().catch(() => {});   // autoplay may be blocked; fine
 
     function fmtTime(secs) {
-      return `${secs}s`;
+      if (secs < 60)  return secs + 's';
+      const m = Math.floor(secs / 60);
+      if (m  < 60)  return m + 'm';
+      const h = Math.floor(m / 60), rm = m % 60;
+      return rm > 0 ? h + 'h ' + rm + 'm' : h + 'h';
     }
 
     window.__onAuthChange = (user) => {
@@ -1470,7 +1489,13 @@
             ? `<img class="score-avatar" src="${r.avatar_url}" alt="" />`
             : `<div class="score-avatar"></div>`}
           <span class="score-name">${r.display_name ?? _playerDefault}</span>
-          <span class="score-time">${fmtTime(r.playtime_seconds ?? 0)}</span>
+          <div class="score-stats">
+            <span class="score-time">⏱ ${fmtTime(r.playtime_seconds ?? 0)}</span>
+            <div class="score-meta">
+              <span class="score-badge">💬 ${r.feedback_count ?? 0}</span>
+              <span class="score-badge">✍ ${r.guestbook_count ?? 0}</span>
+            </div>
+          </div>
         </div>`).join('');
     });
 

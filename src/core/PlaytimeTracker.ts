@@ -86,19 +86,40 @@ class PlaytimeTracker {
     console.log('[PlaytimeTracker] base:', this.baseSeconds, 's | session:', Math.floor(this.sessionMs / 1000), 's | total:', this.totalSeconds, 's');
   }
 
-  /** Fetch top-10 scoreboard rows. */
+  /** Fetch top-50 scoreboard rows with feedback and guestbook counts. */
   static async getScoreboard(): Promise<Array<{
-    display_name: string;
-    avatar_url:   string | null;
+    display_name:    string;
+    avatar_url:      string | null;
     playtime_seconds: number;
-    user_id:      string;
+    user_id:         string;
+    feedback_count:  number;
+    guestbook_count: number;
   }>> {
-    const { data } = await supabase
+    const { data: players } = await supabase
       .from('players')
       .select('user_id, display_name, avatar_url, playtime_seconds')
       .order('playtime_seconds', { ascending: false })
-      .limit(10);
-    return data ?? [];
+      .limit(50);
+
+    if (!players || players.length === 0) return [];
+
+    const userIds = players.map(p => p.user_id).filter(Boolean);
+
+    const [{ data: feedbacks }, { data: guestbooks }] = await Promise.all([
+      supabase.from('feedback_submissions').select('user_id').in('user_id', userIds),
+      supabase.from('guestbook').select('user_id').in('user_id', userIds),
+    ]);
+
+    const fbCount:  Record<string, number> = {};
+    const gbCount:  Record<string, number> = {};
+    for (const f of feedbacks  ?? []) if (f.user_id) fbCount[f.user_id] = (fbCount[f.user_id]  ?? 0) + 1;
+    for (const g of guestbooks ?? []) if (g.user_id) gbCount[g.user_id] = (gbCount[g.user_id] ?? 0) + 1;
+
+    return players.map(p => ({
+      ...p,
+      feedback_count:  fbCount[p.user_id]  ?? 0,
+      guestbook_count: gbCount[p.user_id] ?? 0,
+    }));
   }
 }
 
