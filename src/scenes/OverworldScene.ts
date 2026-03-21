@@ -403,25 +403,27 @@ export class OverworldScene extends Phaser.Scene {
     const H  = OverworldScene.WORLD_H;
     const W  = OverworldScene.WORLD_W;
     const VW = 96;
-    const VH = 30;
+    const VH = 26;  // keep cars short so they stay within their lane
 
-    const laneE = Math.floor(H * 0.625);  // eastbound
-    const laneW = Math.floor(H * 0.665);  // westbound
+    // North tram rail: H*0.615 = 166px  — cars must stay ABOVE this
+    // South tram rail: H*0.685 = 185px  — buses must stay BELOW this
+    // Front bike lane centre: H*0.578 = 156px
+    // Rear  bike lane centre: H*0.750 = 202px
+    const laneE = Math.floor(H * 0.608);  // eastbound — between front bike lane and north rail
+    const laneW = Math.floor(H * 0.705);  // westbound — between south rail and rear bike lane
 
     // [frame, speed px/s, display_w, display_h]
-    // Eastbound: slowest first so faster cars queue behind naturally
     const eastTypes: [number, number, number, number][] = [
-      [5, 48, VW + 16, VH + 2],  // bus — slowest leader
-      [2, 62, VW + 6,  VH],      // kangoo
-      [3, 70, VW + 2,  VH],      // suv
-      [4, 72, VW,      VH],      // taxi
+      [5, 46, VW + 14, VH],  // De Lijn bus — slowest, leads the queue
+      [2, 62, VW + 6,  VH],  // kangoo
+      [3, 70, VW,      VH],  // suv
+      [4, 72, VW,      VH],  // taxi
     ];
-    // Westbound mix
     const westTypes: [number, number, number, number][] = [
       [0, 68, VW,      VH],      // clio_blue
       [1, 74, VW,      VH],      // clio_red
-      [6, 88, VW - 16, VH - 4],  // scooter
-      [3, 65, VW + 2,  VH],      // suv
+      [6, 86, VW - 14, VH - 4],  // scooter (smaller)
+      [3, 65, VW,      VH],      // suv
     ];
 
     const N = 4;  // cars per lane — 4 cars spread across 2880px ≈ 720px each
