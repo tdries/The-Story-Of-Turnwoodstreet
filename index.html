@@ -486,6 +486,7 @@
       </div>
     </div>
     <button class="auth-btn" id="btn-scores">🏆 SCORES</button>
+    <div id="auth-error" style="display:none;font-family:'Press Start 2P',monospace;font-size:4px;color:#ff6633;max-width:120px;line-height:1.8;"></div>
   </div>
 
   <!-- Scoreboard modal -->
@@ -764,11 +765,20 @@
       }
     };
 
+    const authError = document.getElementById('auth-error');
+    window.__onLoginError = (msg) => {
+      authError.textContent = msg;
+      authError.style.display = 'block';
+      setTimeout(() => { authError.style.display = 'none'; }, 6000);
+    };
+
     document.getElementById('btn-login-discord').addEventListener('click', () => {
       if (window.__loginWith) window.__loginWith('discord');
+      else window.__onLoginError('Game nog aan het laden...');
     });
     document.getElementById('btn-login-google').addEventListener('click', () => {
       if (window.__loginWith) window.__loginWith('google');
+      else window.__onLoginError('Game nog aan het laden...');
     });
     document.getElementById('btn-logout').addEventListener('click', () => {
       if (window.__logout) window.__logout();

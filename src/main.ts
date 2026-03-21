@@ -5,7 +5,7 @@ import { MainMenuScene }  from '@scenes/MainMenuScene';
 import { OverworldScene } from '@scenes/OverworldScene';
 import { BattleScene }    from '@scenes/BattleScene';
 import { stateManager }   from '@core/StateManager';
-import { supabase }       from '@core/SupabaseClient';
+import { supabase, supabaseConfigured } from '@core/SupabaseClient';
 import { playtimeTracker } from '@core/PlaytimeTracker';
 import { PlaytimeTracker } from '@core/PlaytimeTracker';
 
@@ -37,10 +37,19 @@ const game = new Phaser.Game(config);
 
 // ── Auth / Scoreboard (Supabase) ────────────────────────────────────────────
 (window as any).__loginWith = async (provider: 'google' | 'discord') => {
-  await supabase.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo: window.location.origin },
-  });
+  if (!supabaseConfigured) {
+    (window as any).__onLoginError?.('Supabase nog niet geconfigureerd (env vars ontbreken).');
+    return;
+  }
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) (window as any).__onLoginError?.(error.message);
+  } catch (e: any) {
+    (window as any).__onLoginError?.(e?.message ?? 'Login mislukt.');
+  }
 };
 
 (window as any).__logout = async () => {
