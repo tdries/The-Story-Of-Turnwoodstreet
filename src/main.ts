@@ -81,3 +81,8 @@ supabase.auth.onAuthStateChange(async (_event, session) => {
   }
   (window as any).__onAuthChange?.(session?.user ?? null);
 });
+
+// Sync playtime when tab closes so no movement time is lost
+window.addEventListener('beforeunload', () => {
+  playtimeTracker.sync();
+});
