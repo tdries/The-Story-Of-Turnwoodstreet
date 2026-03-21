@@ -36,7 +36,7 @@ const game = new Phaser.Game(config);
 };
 
 // ── Auth / Scoreboard (Supabase) ────────────────────────────────────────────
-(window as any).__loginWith = async (provider: 'google' | 'discord') => {
+(window as any).__loginWith = async (provider: 'google') => {
   if (!supabaseConfigured) {
     (window as any).__onLoginError?.('Supabase nog niet geconfigureerd (env vars ontbreken).');
     return;

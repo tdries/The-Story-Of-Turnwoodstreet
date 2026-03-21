@@ -162,9 +162,7 @@
       align-items: center;
       gap: 6px;
     }
-    #btn-login-discord { border-color: rgba(114,137,218,0.6); color: #7289DA; }
-    #btn-login-discord:hover { background: rgba(114,137,218,0.12); }
-    #btn-login-google  { border-color: rgba(234,67,53,0.5);   color: #EA4335; }
+    #btn-login-google  { border-color: rgba(234,67,53,0.5); color: #EA4335; }
     #btn-login-google:hover  { background: rgba(234,67,53,0.10); }
     #btn-scores {
       border-color: rgba(255,215,0,0.4);
@@ -380,6 +378,56 @@
       text-align: center;
     }
 
+    /* ── Login gate ──────────────────────────────────────────────────────── */
+    #login-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: #0A0A12;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.6s;
+    }
+    #login-gate.hidden { opacity: 0; pointer-events: none; }
+    #login-gate h1 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 14px;
+      color: #FFD700;
+      text-align: center;
+      line-height: 1.8;
+      text-shadow: 0 0 30px rgba(255,215,0,0.4);
+    }
+    #login-gate p {
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      color: #FF6633;
+      text-align: center;
+    }
+    #btn-gate-google {
+      margin-top: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 2px solid rgba(234,67,53,0.7);
+      border-radius: 10px;
+      color: #F0EAD6;
+      font-family: "Press Start 2P", monospace;
+      font-size: 7px;
+      padding: 14px 24px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.1s;
+    }
+    #btn-gate-google:hover { background: rgba(234,67,53,0.15); }
+    #login-gate-error {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #ff6633;
+      text-align: center;
+      min-height: 12px;
+    }
+
     /* ── Touch controls ───────────────────────────────────────────────────── */
     #touch-controls {
       position: fixed;
@@ -470,13 +518,18 @@
   </style>
 </head>
 <body>
+  <!-- Login gate — covers everything until authenticated -->
+  <div id="login-gate">
+    <h1>TURNHOUTSEBAAN<br>RPG</h1>
+    <p>Borgerhout · Antwerpen · 2140</p>
+    <button id="btn-gate-google">Log in met Google</button>
+    <div id="login-gate-error"></div>
+  </div>
+
   <div id="game-container"></div>
 
-  <!-- Auth panel (top-left) -->
+  <!-- Auth panel (top-left) — only shown after login -->
   <div id="auth-panel">
-    <!-- Shown when logged out -->
-    <button class="auth-btn" id="btn-login-discord">Discord</button>
-    <button class="auth-btn" id="btn-login-google">Google</button>
     <!-- Shown when logged in -->
     <div id="auth-user">
       <img id="auth-avatar" src="" alt="avatar" />
@@ -734,11 +787,17 @@
 
   <script>
     // ── Auth UI ────────────────────────────────────────────────────────────
-    const loginBtns  = [document.getElementById('btn-login-discord'),
-                        document.getElementById('btn-login-google')];
-    const authUser   = document.getElementById('auth-user');
-    const authAvatar = document.getElementById('auth-avatar');
-    const authName   = document.getElementById('auth-name');
+    const loginGate     = document.getElementById('login-gate');
+    const gateError     = document.getElementById('login-gate-error');
+    const authUser      = document.getElementById('auth-user');
+    const authAvatar    = document.getElementById('auth-avatar');
+    const authName      = document.getElementById('auth-name');
+
+    // BGM during login screen
+    const loginMusic = new Audio('assets/audio/bgm/nastelbom-arabic-490152.mp3');
+    loginMusic.loop   = true;
+    loginMusic.volume = 0.35;
+    loginMusic.play().catch(() => {});   // autoplay may be blocked; fine
 
     function fmtTime(secs) {
       const h = Math.floor(secs / 3600);
@@ -747,10 +806,14 @@
       return `${m}m`;
     }
 
-    // Called by main.ts when auth state changes
     window.__onAuthChange = (user) => {
       if (user) {
-        loginBtns.forEach(b => b.style.display = 'none');
+        // Fade out gate
+        loginMusic.pause();
+        loginGate.classList.add('hidden');
+        setTimeout(() => { loginGate.style.display = 'none'; }, 650);
+
+        // Show user in auth panel
         authUser.classList.add('visible');
         authName.textContent = user.user_metadata?.full_name
                             || user.user_metadata?.name
@@ -760,25 +823,21 @@
         authAvatar.src = av || '';
         authAvatar.style.display = av ? 'block' : 'none';
       } else {
-        loginBtns.forEach(b => b.style.display = '');
+        loginGate.style.display = '';
+        loginGate.classList.remove('hidden');
         authUser.classList.remove('visible');
+        loginMusic.play().catch(() => {});
       }
     };
 
-    const authError = document.getElementById('auth-error');
     window.__onLoginError = (msg) => {
-      authError.textContent = msg;
-      authError.style.display = 'block';
-      setTimeout(() => { authError.style.display = 'none'; }, 6000);
+      gateError.textContent = msg;
+      setTimeout(() => { gateError.textContent = ''; }, 6000);
     };
 
-    document.getElementById('btn-login-discord').addEventListener('click', () => {
-      if (window.__loginWith) window.__loginWith('discord');
-      else window.__onLoginError('Game nog aan het laden...');
-    });
-    document.getElementById('btn-login-google').addEventListener('click', () => {
+    document.getElementById('btn-gate-google').addEventListener('click', () => {
       if (window.__loginWith) window.__loginWith('google');
-      else window.__onLoginError('Game nog aan het laden...');
+      else { gateError.textContent = 'Laden... probeer opnieuw.'; }
     });
     document.getElementById('btn-logout').addEventListener('click', () => {
       if (window.__logout) window.__logout();
