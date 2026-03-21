@@ -50,8 +50,9 @@
     {
       "speaker": "Fatima",
       "text": "De stof! Shukran, shukran! Nora zal zo blij zijn.",
-      "flag":    "stunt_quest_done",
-      "flagVal": true
+      "flag":       "stunt_quest_done",
+      "flagVal":    true,
+      "removeItem": "fabric_bolt"
     },
     {
       "speaker": "Fatima",
@@ -139,8 +140,29 @@
     {
       "speaker": "Omar",
       "text": "De bloem! Perfekt. Hier — harira en baklava voor jou. En als je ooit brood nodig hebt: gratis, altijd.",
-      "flag":    "omar_flour_done",
-      "flagVal": true
+      "flag":       "omar_flour_done",
+      "flagVal":    true,
+      "removeItem": "flour",
+      "item":       "harira"
+    },
+    {
+      "speaker": "Omar",
+      "text": "Neem ook dit mee.",
+      "item":    "baklava"
+    }
+  ],
+
+  "budget_market_flour": [
+    {
+      "speaker": "Budget Market",
+      "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.",
+      "flag":    "has_flour",
+      "flagVal": true,
+      "item":    "flour"
+    },
+    {
+      "speaker": "Budget Market",
+      "text": "Groetjes aan Omar. Hij is een vaste klant al 15 jaar."
     }
   ],
 
@@ -242,8 +264,9 @@
     {
       "speaker": "Reza",
       "text": "De snaar... perfect. Wacht.",
-      "flag":    "reza_quest_done",
-      "flagVal": true
+      "flag":       "reza_quest_done",
+      "flagVal":    true,
+      "removeItem": "oud_string"
     },
     {
       "speaker": "Reza",
@@ -286,7 +309,8 @@
       "speaker": "Yusuf",
       "text": "Echt? Top! Pakje 1 → nr.170 (Patisserie Aladdin). Pakje 2 → nr.137 (Indian Boutique). Pakje 3 → nr.284 (Borger Hub). Alstublieft!",
       "flag":    "delivery_packages_received",
-      "flagVal": true
+      "flagVal": true,
+      "item":    "delivery_package"
     }
   ],
 
@@ -297,7 +321,8 @@
       "flag":    "delivery_accepted",
       "flagVal": true,
       "flag2":   "delivery_packages_received",
-      "flagVal2": true
+      "flagVal2": true,
+      "item":    "delivery_package"
     }
   ],
 
@@ -305,9 +330,10 @@
     {
       "speaker": "Yusuf",
       "text": "Alles geleverd? Fantastisch! Hier — een tramticket. Moge je bakfiets nooit een lekke band krijgen.",
-      "flag":    "delivery_done",
-      "flagVal": true,
-      "item":    "tram_ticket"
+      "flag":       "delivery_done",
+      "flagVal":    true,
+      "item":       "tram_ticket",
+      "removeItem": "delivery_package"
     }
   ],
 
@@ -330,6 +356,20 @@
       "text": "De school meedoen aan de Samen Aan Tafel? Ik ga het vragen aan juffrouw De Smedt. Ze is cool, ze zegt zeker ja.",
       "flag":    "school_faction_convinced",
       "flagVal": true
+    }
+  ],
+
+  "aziz_oud_string": [
+    {
+      "speaker": "Aziz",
+      "text": "Een oud-snaar? Wacht... ik denk dat ik er ergens nog eentje heb liggen.",
+      "flag":    "has_oud_string_item",
+      "flagVal": true,
+      "item":    "oud_string"
+    },
+    {
+      "speaker": "Aziz",
+      "text": "Hier. Zeg maar aan Reza dat die van Aziz komt. Dan speelt hij er dubbel zo goed op."
     }
   ],
 

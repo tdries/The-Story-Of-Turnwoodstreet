@@ -103,6 +103,14 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
     hamza_school_faction: [
       { text: "The school joining Samen Aan Tafel? I'll ask Miss De Smedt. She's cool, she'll definitely say yes." },
     ],
+    budget_market_flour: [
+      { text: "Ah, for Omar the baker! His flour is always ready. Two 5-kilo bags — type 45, the best." },
+      { text: "Greetings to Omar. He's been a regular customer for 15 years." },
+    ],
+    aziz_oud_string: [
+      { text: "An oud string? Wait... I think I still have one somewhere." },
+      { text: "Here. Tell Reza it's from Aziz. He'll play twice as well on it." },
+    ],
     aziz_signature: [
       { text: "I've been here for 40 years. I've seen how they first excluded us, then tolerated us, and now maybe... accepted us." },
       { text: "My signature? Yes. For this street I'll sign anything." },
@@ -283,6 +291,14 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
     hamza_school_faction: [
       { text: "L'école participer au Samen Aan Tafel? Je vais demander à Mademoiselle De Smedt. Elle est cool, elle dit sûrement oui." },
     ],
+    budget_market_flour: [
+      { text: "Ah, pour Omar le boulanger! Sa farine est toujours prête. Deux sacs de 5 kilos — type 45, le meilleur." },
+      { text: "Saluez Omar de ma part. C'est un client fidèle depuis 15 ans." },
+    ],
+    aziz_oud_string: [
+      { text: "Une corde de oud? Attends... je crois que j'en ai encore une quelque part." },
+      { text: "Tiens. Dis à Reza que ça vient d'Aziz. Il jouera deux fois mieux avec." },
+    ],
     aziz_signature: [
       { text: "Je suis ici depuis 40 ans. J'ai vu comment ils nous ont d'abord exclus, puis tolérés, et maintenant peut-être... acceptés." },
       { text: "Ma signature? Oui. Pour cette rue, je signe tout." },
@@ -462,6 +478,14 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
     ],
     hamza_school_faction: [
       { text: "المدرسة تشارك في ساميناان تافيل؟ سأسأل الأستاذة De Smedt. إنها رائعة، ستقول نعم بالتأكيد." },
+    ],
+    budget_market_flour: [
+      { text: "آه، لعمر الخباز! طحينه جاهز دائمًا. كيسان بخمسة كيلو — نوع 45، الأفضل." },
+      { text: "سلّم على عمر. إنه زبون ثابت منذ 15 سنة." },
+    ],
+    aziz_oud_string: [
+      { text: "وتر عود؟ انتظر... أظن أن لديّ واحدًا في مكان ما." },
+      { text: "تفضّل. قل لريزا إنه من عزيز. سيعزف عليه بضعف الجودة." },
     ],
     aziz_signature: [
       { text: "أنا هنا منذ 40 سنة. رأيت كيف استبعدونا أولًا، ثم تحملونا، والآن ربما... يقبلوننا." },

@@ -119,6 +119,14 @@ export class BootScene extends Phaser.Scene {
       'assets/Sprites/cats/cats_sheet.png',
       { frameWidth: 32, frameHeight: 32 });
 
+    // ── Item icons (13 icons × 16×16 px, horizontal strip) ───────────────
+    // Order: fabric_bolt(0) delivery_package(1) flour(2) oud_string(3)
+    //        tram_ticket(4) harira(5) baklava(6) samen_flyer(7) permit_doc(8)
+    //        friet(9) reuzenpoort_key(10) mint_tea(11) smoske(12)
+    this.load.spritesheet('items_sheet',
+      'assets/Sprites/items/items_sheet.png',
+      { frameWidth: 16, frameHeight: 16 });
+
     // ── Main menu background (AI-generated street art) ────────────────────
     this.load.image('menu_bg',
       'assets/Sprites/raw_assets/Gemini_Generated_Image_bwblrpbwblrpbwbl.png');

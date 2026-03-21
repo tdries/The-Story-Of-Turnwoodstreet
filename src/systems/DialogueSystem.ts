@@ -6,15 +6,16 @@ import { localeManager } from '@i18n/LocaleManager';
 import dialogueData from '@data/dialogue.json';
 
 interface DialogueLine {
-  speaker:   string;
-  text?:     string;
-  flag?:     string;
-  flagVal?:  boolean | string | number;
-  flag2?:    string;
-  flagVal2?: boolean | string | number;
-  item?:     string;          // add this item to inventory when line is shown
-  coins?:    number;          // add/subtract coins when line is shown
-  choice?:   DialogueChoice[];
+  speaker:     string;
+  text?:       string;
+  flag?:       string;
+  flagVal?:    boolean | string | number;
+  flag2?:      string;
+  flagVal2?:   boolean | string | number;
+  item?:       string;          // add this item to inventory when line is shown
+  removeItem?: string;          // remove this item from inventory when line is shown
+  coins?:      number;          // add/subtract coins when line is shown
+  choice?:     DialogueChoice[];
 }
 
 interface DialogueChoice {
@@ -171,10 +172,11 @@ export class DialogueSystem {
   }
 
   private applyLineEffects(line: DialogueLine): void {
-    if (line.flag    !== undefined && line.flagVal  !== undefined) stateManager.setFlag(line.flag,    line.flagVal);
-    if (line.flag2   !== undefined && line.flagVal2 !== undefined) stateManager.setFlag(line.flag2,   line.flagVal2);
-    if (line.item)   stateManager.addItem(line.item);
-    if (line.coins)  stateManager.addCoins(line.coins);
+    if (line.flag       !== undefined && line.flagVal  !== undefined) stateManager.setFlag(line.flag,  line.flagVal);
+    if (line.flag2      !== undefined && line.flagVal2 !== undefined) stateManager.setFlag(line.flag2, line.flagVal2);
+    if (line.item)       stateManager.addItem(line.item);
+    if (line.removeItem) stateManager.removeItem(line.removeItem);
+    if (line.coins)      stateManager.addCoins(line.coins);
   }
 
   private close(): void {

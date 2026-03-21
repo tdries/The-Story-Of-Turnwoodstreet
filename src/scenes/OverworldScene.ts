@@ -5,6 +5,7 @@ import { stateManager }   from '@core/StateManager';
 import { Player }         from '@entities/Player';
 import { NPC }            from '@entities/NPC';
 import { HUD }            from '@ui/HUD';
+import { ItemBar }        from '@ui/ItemBar';
 import { DialogueBox }    from '@ui/DialogueBox';
 import { DialogueSystem } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS, zoneForX } from '@systems/GateSystem';
@@ -25,6 +26,7 @@ export class OverworldScene extends Phaser.Scene {
   private npcs:            NPC[]    = [];
   private crowdNPCs:       Phaser.Physics.Arcade.Sprite[] = [];
   private hud!:            HUD;
+  private itemBar!:        ItemBar;
   private dialogueBox!:    DialogueBox;
   private dialogueSystem!: DialogueSystem;
 
@@ -148,6 +150,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     this.hud.update(stateManager.get().player);
+    this.itemBar.update();
   }
 
   // ── World ─────────────────────────────────────────────────────────────────
@@ -981,6 +984,7 @@ export class OverworldScene extends Phaser.Scene {
 
   private createUI(): void {
     this.hud            = new HUD(this);
+    this.itemBar        = new ItemBar(this);
     this.dialogueBox    = new DialogueBox(this);
     this.dialogueSystem = new DialogueSystem(this.dialogueBox);
     this.dialogueSystem.onClose = () => this.syncMusic();
@@ -1077,11 +1081,15 @@ export class OverworldScene extends Phaser.Scene {
         return 'reza_music';
 
       case 'yusuf':
+        if (flags['flour_quest_accepted'] && !flags['has_flour'])
+          return 'budget_market_flour';
         if (flags['delivery_accepted'] && flags['delivery_packages_received'])
           return 'yusuf_delivery_done';
         return 'yusuf_delivery';
 
       case 'aziz':
+        if (flags['oud_quest_accepted'] && !flags['has_oud_string_item'])
+          return 'aziz_oud_string';
         if (!flags['sig_aziz'])
           return 'aziz_signature';
         return 'reuzenpoort_legend';

@@ -91,5 +91,21 @@
     "type":        "misc",
     "value":       0,
     "stackable":   false
+  },
+  "flour": {
+    "id":          "flour",
+    "name":        "Bloem (2×5 kg)",
+    "description": "Twee zakken bloem van 5 kilo voor Omar de bakker. Type 45.",
+    "type":        "misc",
+    "value":       4,
+    "stackable":   false
+  },
+  "delivery_package": {
+    "id":          "delivery_package",
+    "name":        "Pakjes (×3)",
+    "description": "Drie pakjes voor Yusuf — te leveren aan nr.170, 137 en 284.",
+    "type":        "misc",
+    "value":       0,
+    "stackable":   false
   }
 }
