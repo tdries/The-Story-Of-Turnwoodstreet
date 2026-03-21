@@ -12,7 +12,8 @@ const https    = require('https');
 const http     = require('http');
 const path     = require('path');
 const cheerio  = require('cheerio');
-const crypto   = require('crypto');
+const crypto     = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -218,11 +219,19 @@ async function getSubmissionsForIssue(issueNumber) {
   );
 }
 
+const mailer = nodemailer.createTransport({
+  host:   'smtp.gmail.com',
+  port:   465,
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
 async function sendThankYouEmail(email, issueNumber, category, message) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from   = process.env.RESEND_FROM || 'Turnwoodstreet <noreply@premiumbrick.com>';
-  if (!apiKey) {
-    console.warn('[email] RESEND_API_KEY not set — skipping mail to', email);
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('[email] SMTP_USER/SMTP_PASS not set — skipping mail to', email);
     return false;
   }
 
@@ -255,17 +264,14 @@ async function sendThankYouEmail(email, issueNumber, category, message) {
 </html>`;
 
   try {
-    const { status, body } = await post(
-      'https://api.resend.com/emails',
-      { from, to: [email], subject: 'We hebben naar je geluisterd! 🎮 Turnwoodstreet', html },
-      { 'Authorization': `Bearer ${apiKey}` },
-    );
-    if (status >= 200 && status < 300) {
-      console.log(`[email] sent to ${email} for issue #${issueNumber}`);
-      return true;
-    }
-    console.warn(`[email] Resend error ${status}: ${body}`);
-    return false;
+    await mailer.sendMail({
+      from:    `Turnwoodstreet <${process.env.SMTP_USER}>`,
+      to:      email,
+      subject: 'We hebben naar je geluisterd! 🎮 Turnwoodstreet',
+      html,
+    });
+    console.log(`[email] sent to ${email} for issue #${issueNumber}`);
+    return true;
   } catch (e) {
     console.error('[email] send error:', e.message);
     return false;
