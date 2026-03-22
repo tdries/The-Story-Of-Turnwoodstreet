@@ -57,7 +57,7 @@
 
   "fatima_faction": {
     "npc": "fatima", "priority": 80,
-    "conditions": { "flags": { "has_community_trust": true, "met_mayor": true, "fatima_convinced": false } },
+    "conditions": { "flags": { "has_community_trust": true, "sig_fatima": true, "met_mayor": true, "fatima_convinced": false } },
     "lines": [
       { "speaker": "Fatima", "text": "De Samen Aan Tafel... ja. Als iedereen meedoet, dan ja. Ik zal de Marokkaanse vereniging bellen.", "flag": "fatima_convinced", "flagVal": true }
     ]
@@ -65,7 +65,7 @@
 
   "fatima_all_done": {
     "npc": "fatima", "priority": 70,
-    "conditions": { "flags": { "fatima_convinced": true } },
+    "conditions": { "flags": { "sig_fatima": true, "fatima_convinced": true } },
     "lines": [
       { "speaker": "Fatima", "text": "Kijk hoe ver we al gekomen zijn. De tafel staat er bijna. Dankzij mensen als jij." },
       { "speaker": "Fatima", "text": "Nora is zo blij met de stof. Ze vraagt of jij op de bruiloft komt. Ik heb ja gezegd." }

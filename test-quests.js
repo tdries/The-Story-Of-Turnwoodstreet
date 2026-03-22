@@ -350,6 +350,26 @@ talk('omar', 'Omar post-sig → bakker fallback', {
   expectNode: 'omar_bakker',
 });
 
+// ── Regression: met_mayor before all sigs ────────────────────────────────────
+// Simulates a player who wandered into zone 3 before collecting Fatima's sig.
+// fatima_faction (80) and fatima_all_done (70) must NOT fire when sig_fatima=false.
+console.log(`\n${DIM}── Regression: zone-3 access before Fatima's signature ─────${X}`);
+{
+  const savedFlags = { ...flags };
+  // Inject met_mayor=true as if player talked to El Osri before all sigs
+  flags.met_mayor = true;
+  flags.sig_fatima = false;  // pretend we haven't got her sig yet
+
+  talk('fatima', 'Fatima with met_mayor=true but sig_fatima=false → must give signature', {
+    expectNode:  'fatima_signature',
+    expectFlags: { sig_fatima: true },
+  });
+
+  // Restore — continue as if this branch never happened
+  Object.assign(flags, savedFlags);
+  flags.sig_fatima = true;  // mark it done for next tests
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 //  SUMMARY
 // ═══════════════════════════════════════════════════════════════════════════════
