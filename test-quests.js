@@ -350,6 +350,15 @@ talk('omar', 'Omar post-sig → bakker fallback', {
   expectNode: 'omar_bakker',
 });
 
+// ── Zone 3: El Osri ───────────────────────────────────────────────────────────
+console.log(`\n${DIM}── Zone 3: El Osri / Borger Hub ────────────────────────────${X}`);
+
+talk('el_osri', 'Talk to El Osri → visited_de_roma + met_mayor', {
+  expectNode:  'district_mayor',
+  choicePath:  [0],   // "Ja. Ik doe mee."
+  expectFlags: { met_mayor: true, visited_de_roma: true, act4_started: true },
+});
+
 // ── Regression: met_mayor before all sigs ────────────────────────────────────
 // Simulates a player who wandered into zone 3 before collecting Fatima's sig.
 // fatima_faction (80) and fatima_all_done (70) must NOT fire when sig_fatima=false.

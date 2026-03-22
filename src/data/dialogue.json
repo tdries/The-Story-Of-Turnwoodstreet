@@ -330,7 +330,7 @@
     "npc": "el_osri", "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "El Osri", "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.", "flag": "met_mayor", "flagVal": true },
+      { "speaker": "El Osri", "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.", "flag": "met_mayor", "flagVal": true, "flag2": "visited_de_roma", "flagVal2": true },
       { "speaker": "El Osri", "text": "Ik heb gehoord wat je gedaan hebt — de stof, de petitie, de snaar. Deze straat heeft je nodig." },
       { "speaker": "El Osri", "text": "Ik organiseer de Samen Aan Tafel: 2 kilometer tafel, 7000 mensen, Easter en Iftar samen. Maar ik heb 7 facties nodig. Wil je helpen?", "flag": "act4_briefed", "flagVal": true,
         "choice": [

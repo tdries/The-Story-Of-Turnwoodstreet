@@ -1031,7 +1031,7 @@ export class OverworldScene extends Phaser.Scene {
       if (!f('sig_aziz'))   return { x: 1060, label: 'Aziz'   };
     }
     // Zone 3
-    if (!f('met_mayor')) return { x: 1550, label: 'El Osri' };
+    if (!f('visited_de_roma')) return { x: 1550, label: 'El Osri' };
     return null;
   }
 
