@@ -8,7 +8,7 @@ import { HUD }            from '@ui/HUD';
 import { ItemBar }        from '@ui/ItemBar';
 import { DialogueBox }    from '@ui/DialogueBox';
 import { DialogueSystem, DIALOGUES, DialogueConditions } from '@systems/DialogueSystem';
-import { GateSystem, ZONE_STARTS, zoneForX } from '@systems/GateSystem';
+import { GateSystem, ZONE_STARTS } from '@systems/GateSystem';
 import { QuestSystem }    from '@systems/QuestSystem';
 import { playtimeTracker } from '@core/PlaytimeTracker';
 import { TimeManager }    from '@core/TimeManager';
@@ -29,6 +29,8 @@ export class OverworldScene extends Phaser.Scene {
   private itemBar!:        ItemBar;
   private dialogueBox!:    DialogueBox;
   private dialogueSystem!: DialogueSystem;
+  private navArrow!:       Phaser.GameObjects.Text;
+  private _navBlink = 0;
 
   // Gate trigger zones (invisible physics zones)
   private gateTriggers: Array<{
@@ -154,6 +156,7 @@ export class OverworldScene extends Phaser.Scene {
 
     this.hud.update(stateManager.get().player);
     this.itemBar.update();
+    this.updateNavArrow(delta);
   }
 
   // ── World ─────────────────────────────────────────────────────────────────
@@ -991,6 +994,61 @@ export class OverworldScene extends Phaser.Scene {
     this.dialogueBox    = new DialogueBox(this);
     this.dialogueSystem = new DialogueSystem(this.dialogueBox);
     this.dialogueSystem.onClose = () => this.syncMusic();
+
+    // Navigation arrow — bottom-centre, fixed to camera
+    this.navArrow = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 6, '', {
+      fontSize:        '11px',
+      fontFamily:      'monospace',
+      color:           '#ffffff',
+      backgroundColor: '#00000088',
+      padding:         { x: 5, y: 2 },
+    }).setScrollFactor(0).setDepth(500).setOrigin(0.5, 1).setAlpha(0);
+  }
+
+  // ── Navigation arrow ──────────────────────────────────────────────────────
+
+  /** Returns the world-x of the next quest objective and a short NPC label. */
+  private getNextTarget(): { x: number; label: string } | null {
+    const flags = stateManager.get().questFlags;
+    const f = (k: string) => (flags[k] ?? false) === true;
+
+    // Zone 1 — delivery
+    if (!f('met_yusuf') || !f('delivery_done')) return { x: 1840, label: 'Yusuf'   };
+    // Zone 1 — fabric quest
+    if (!f('met_fatima') || !f('stunt_quest_active'))                    return { x:  400, label: 'Fatima'  };
+    if (!stateManager.hasItem('fabric_bolt') && !f('stunt_quest_done'))  return { x:  210, label: 'Baert'   };
+    if (stateManager.hasItem('fabric_bolt'))                             return { x:  400, label: 'Fatima'  };
+    // Zone 2 — oud quest
+    if (!f('oud_quest_accepted'))   return { x:  880, label: 'Reza'    };
+    if (!f('has_oud_string_item'))  return { x: 1060, label: 'Aziz'    };
+    if (!f('reza_quest_done'))      return { x:  880, label: 'Reza'    };
+    // Zone 2 — signatures (guide to first missing one)
+    if (f('has_community_trust') && !f('speculator_threatened')) {
+      if (!f('sig_fatima')) return { x:  400, label: 'Fatima' };
+      if (!f('sig_omar'))   return { x:  590, label: 'Omar'   };
+      if (!f('sig_reza'))   return { x:  880, label: 'Reza'   };
+      if (!f('sig_baert'))  return { x:  210, label: 'Baert'  };
+      if (!f('sig_aziz'))   return { x: 1060, label: 'Aziz'   };
+    }
+    // Zone 3
+    if (!f('met_mayor')) return { x: 1550, label: 'El Osri' };
+    return null;
+  }
+
+  private updateNavArrow(delta: number): void {
+    const target = this.getNextTarget();
+    if (!target) { this.navArrow.setAlpha(0); return; }
+
+    const px = this.player.sprite.x;
+    const dx = target.x - px;
+    if (Math.abs(dx) < 40) { this.navArrow.setAlpha(0); return; }  // close enough
+
+    const goRight = dx > 0;
+    this.navArrow.setText(goRight ? `${target.label}  ▶` : `◀  ${target.label}`);
+
+    // Gentle pulse so it draws the eye without being distracting
+    this._navBlink = (_navBlink => (_navBlink + delta * 0.003) % (Math.PI * 2))(this._navBlink);
+    this.navArrow.setAlpha(0.55 + Math.sin(this._navBlink) * 0.3);
   }
 
   // ── Music ─────────────────────────────────────────────────────────────────
@@ -1073,14 +1131,6 @@ export class OverworldScene extends Phaser.Scene {
     return true;
   }
 
-  private _gateDialogueId(targetZone: number): string {
-    switch (targetZone) {
-      case 2: return 'reuzenpoort_blocked';
-      case 3: return 'de_roma_blocked';
-      case 4: return 'deurne_blocked';
-      default: return 'reuzenpoort_blocked';
-    }
-  }
 
   // ── Day/Night cycle ───────────────────────────────────────────────────────
 
