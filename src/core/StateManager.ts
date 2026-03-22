@@ -129,6 +129,24 @@ class StateManager {
       this.actor = createActor(GameMachine);
     }
     this.actor.start();
+    this._attachDebugLogger();
+  }
+
+  private _attachDebugLogger(): void {
+    if (!import.meta.env.DEV) return;
+
+    this.actor.subscribe(snapshot => {
+      const ctx = snapshot.context as typeof snapshot.context;
+      const flags = flagBridge(snapshot as { value: unknown; context: GameContext });
+      console.groupCollapsed(
+        `%c[XState] transition`,
+        'color: #FFD700; font-weight: bold',
+      );
+      console.log('state   :', snapshot.value);
+      console.log('context :', { coins: ctx.coins, xp: ctx.xp, hp: ctx.hp, level: ctx.level, skills: ctx.skills, inventory: ctx.inventory });
+      console.log('flags   :', flags);
+      console.groupEnd();
+    });
   }
 
   // ── Actor access ────────────────────────────────────────────────────────────
