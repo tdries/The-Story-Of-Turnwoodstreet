@@ -6,12 +6,12 @@ import { QuestSystem }  from '@systems/QuestSystem';
  *
  * Pure TypeScript — no Phaser imports.
  *
- * Zone layout (world pixel x-coordinates, WORLD_W = 2880):
- *   Zone 1:  x =    0 –  576   Borgerhout West   (nos.   1–110)  no gate
- *   Zone 2:  x =  576 – 1152   Borgerhout Central (nos. 110–200) gate: has_community_trust
- *   Zone 3:  x = 1152 – 1728   Borgerhout East    (nos. 200–300) gate: reza_quest_done
- *   Zone 4:  x = 1728 – 2304   Deurne             (nos. 300–400) gate: has_permit_doc
- *   Zone 5:  x = 2304 – 2880   The 2km Table      (nos. 400+)    gate: 7 factions
+ * Zone layout (world pixel x-coordinates, WORLD_W = 5760):
+ *   Zone 1:  x =    0 – 1152   Borgerhout West   (nos.   1–110)  no gate
+ *   Zone 2:  x = 1152 – 2304   Borgerhout Central (nos. 110–200) gate: has_community_trust
+ *   Zone 3:  x = 2304 – 3456   Borgerhout East    (nos. 200–300) gate: reza_quest_done
+ *   Zone 4:  x = 3456 – 4608   Deurne             (nos. 300–400) gate: has_permit_doc
+ *   Zone 5:  x = 4608 – 5760   The 2km Table      (nos. 400+)    gate: 7 factions
  *
  * Usage:
  *   const result = GateSystem.canEnter(2);
@@ -25,11 +25,11 @@ export interface GateResult {
 
 /** World x-coordinate where each zone begins. */
 export const ZONE_STARTS: Record<number, number> = {
-  1:  0,
-  2:  576,
-  3:  1152,
-  4:  1728,
-  5:  2304,
+  1:    0,
+  2: 1152,
+  3: 2304,
+  4: 3456,
+  5: 4608,
 };
 
 /** Returns the zone number (1–5) for a given world x-coordinate. */

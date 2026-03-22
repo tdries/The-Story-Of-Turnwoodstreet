@@ -514,7 +514,7 @@ export class OverworldScene extends Phaser.Scene {
       { id: 'tine',     texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_faction'      }, // Nacht Winkel #240
       { id: 'el_osri',  texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284 (tile 17, x=1632)
       // De Roma #286 handled by location trigger at x=1728 → de_roma_keeper dialogue
-      { id: 'yusuf',    texture: 'npc_yusuf',   x: 1952, y: sw,     dialogue: 'yusuf_delivery'    }, // Budget Market #326 (tile 20, x=1920)
+      { id: 'yusuf',    texture: 'npc_yusuf',   x:  300, y: sw,     dialogue: 'yusuf_delivery'    }, // near start of street — courier with flat tyre
     ];
 
     this.npcs = seed.map(d =>
@@ -1143,7 +1143,7 @@ export class OverworldScene extends Phaser.Scene {
     const f = (k: string) => (flags[k] ?? false) === true;
 
     // Zone 1 — delivery
-    if (!f('met_yusuf') || !f('delivery_done')) return { x: 1952, label: 'Yusuf'   };
+    if (!f('met_yusuf') || !f('delivery_done')) return { x:  300, label: 'Yusuf'   };
     // Zone 1 — fabric quest
     if (!f('met_fatima') || !f('stunt_quest_active'))                    return { x:  400, label: 'Fatima'  };
     if (!stateManager.hasItem('fabric_bolt') && !f('stunt_quest_done'))  return { x:  210, label: 'Baert'   };
