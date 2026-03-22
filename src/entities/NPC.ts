@@ -106,20 +106,16 @@ export class NPC {
       } else {
         const dir = Math.sign(dx);
         this.sprite.x += dir * this.WALK_SPD * dt;
-        this.sprite.setFlipX(dir < 0);
+        // Sprites face LEFT by default — flip when moving RIGHT.
+        this.sprite.setFlipX(dir > 0);
 
         // Cycle walk frames 1 ↔ 2.
-        // When moving LEFT the frame order is reversed (2→1 instead of 1→2)
-        // so the leading foot phases correctly after the sprite is flipped.
         this.frameTimer += delta;
         if (this.frameTimer >= this.STEP_MS) {
           this.frameTimer = 0;
           this.stepFrame  = 1 - this.stepFrame;
         }
-        const walkFrame = dir > 0
-          ? 1 + this.stepFrame    // right: 0→frame1, 1→frame2
-          : 2 - this.stepFrame;   // left:  0→frame2, 1→frame1
-        this.sprite.setFrame(walkFrame);
+        this.sprite.setFrame(1 + this.stepFrame);
       }
     } else {
       // Idle — count down then pick a nearby target

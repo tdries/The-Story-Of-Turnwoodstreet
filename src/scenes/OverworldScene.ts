@@ -9,7 +9,7 @@ import { ItemBar }        from '@ui/ItemBar';
 import { DialogueBox }    from '@ui/DialogueBox';
 import { DialogueSystem, DIALOGUES, DialogueConditions } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS } from '@systems/GateSystem';
-import { getNavTarget }            from '@systems/GameMachine';
+import { getNavTarget, getHintText } from '@systems/GameMachine';
 import { QuestSystem }    from '@systems/QuestSystem';
 import { playtimeTracker } from '@core/PlaytimeTracker';
 import { TimeManager }    from '@core/TimeManager';
@@ -98,6 +98,7 @@ export class OverworldScene extends Phaser.Scene {
 
     this.cameras.main.fadeIn(600, 0, 0, 0);
     this.syncMusic();
+    this.registerGlobals();
 
     // Auto-start Radio Minerva — user has already clicked Play so the browser
     // autoplay gesture requirement is satisfied.
@@ -552,6 +553,12 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
+  /** Expose hint text to the HTML layer so the hint button always matches the nav arrow. */
+  private registerGlobals(): void {
+    (window as unknown as Record<string, unknown>).__getNavHint =
+      () => getHintText(stateManager.getSnapshot());
+  }
+
   // ── Crowd NPCs (anonymous pedestrians + vehicles) ─────────────────────────
 
   private crowdTimers:      number[] = [];
@@ -874,7 +881,8 @@ export class OverworldScene extends Phaser.Scene {
       // ── Movement & animation ─────────────────────────────────────────────
       if (dir !== 0) {
         s.setVelocityX(dir * SPEED);
-        s.setFlipX(dir < 0);
+        // Crowd sprites face LEFT by default — flip when moving RIGHT.
+        s.setFlipX(dir > 0);
         if (s.x < 10)     s.setX(W - 10);
         if (s.x > W - 10) s.setX(10);
 
@@ -884,10 +892,7 @@ export class OverworldScene extends Phaser.Scene {
           this.crowdStepTimers[i] = 0;
           this.crowdStepFrames[i] = 1 - this.crowdStepFrames[i];   // 0 ↔ 1
         }
-        const crowdWalkFrame = dir > 0
-          ? 1 + this.crowdStepFrames[i]    // right: frames +1, +2
-          : 2 - this.crowdStepFrames[i];   // left:  frames +2, +1 (phase-corrected)
-        s.setFrame(this.crowdFrameBases[i] + crowdWalkFrame);
+        s.setFrame(this.crowdFrameBases[i] + 1 + this.crowdStepFrames[i]);
       } else {
         s.setVelocityX(0);
         s.setFrame(this.crowdFrameBases[i]);   // idle pose
@@ -1150,7 +1155,7 @@ export class OverworldScene extends Phaser.Scene {
 
   private createUI(): void {
     this.hud            = new HUD(this);
-    this.itemBar        = new ItemBar(this);
+    this.itemBar        = new ItemBar();
     this.dialogueBox    = new DialogueBox(this);
     this.dialogueSystem = new DialogueSystem(this.dialogueBox);
     this.dialogueSystem.onClose = () => this.syncMusic();

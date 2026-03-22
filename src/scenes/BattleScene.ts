@@ -194,7 +194,6 @@ export class BattleScene extends Phaser.Scene {
   };
 
   private endBattle(result: BattleResult | 'escaped'): void {
-    const state = stateManager.get();
     const enemyDef = (enemyData as Record<string, typeof enemyData[keyof typeof enemyData]>)[this.enemyId];
 
     if (result === 'victory') {
@@ -214,11 +213,11 @@ export class BattleScene extends Phaser.Scene {
       const msg = levelled ? localeManager.t('level_up') : `+${xpGain} XP`;
       this.showMessage(`${localeManager.t('victory')} ${msg}`);
     } else if (result === 'defeat') {
-      state.player.hp = 1;
+      stateManager.setHP(1);
       this.showMessage(localeManager.t('defeat'));
     }
 
-    stateManager.get().player.hp = this.combat.getState().player.hp;
+    stateManager.setHP(this.combat.getState().player.hp);
     stateManager.save();
 
     this.time.delayedCall(1200, () => {

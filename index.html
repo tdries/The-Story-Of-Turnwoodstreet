@@ -98,6 +98,66 @@
     }
   </style>
   <style>
+    /* ── HTML Inventory Panel ─────────────────────────────────────────────── */
+    #html-inventory {
+      background: rgba(10,10,18,0.85);
+      border-radius: 8px;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #html-inventory .inv-header {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #FFD700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .inv-slot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 2px;
+      border-radius: 4px;
+      position: relative;
+    }
+    .inv-slot.flash {
+      animation: inv-flash 0.5s ease-out;
+    }
+    @keyframes inv-flash {
+      0%   { background: rgba(255,215,0,0.4); }
+      100% { background: transparent; }
+    }
+    .inv-icon {
+      width: 32px;
+      height: 32px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background-image: url('/assets/Sprites/items/items_sheet.png');
+      background-size: 416px 32px; /* 13 frames × 32px = 416px at 2× scale */
+      background-repeat: no-repeat;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,215,0,0.2);
+      border-radius: 3px;
+    }
+    .inv-label {
+      font-family: "Press Start 2P", monospace;
+      font-size: 5px;
+      color: #CCCCCC;
+      line-height: 1.6;
+    }
+    .inv-badge {
+      font-family: "Press Start 2P", monospace;
+      font-size: 4px;
+      background: #FFD700;
+      color: #0A0A12;
+      border-radius: 2px;
+      padding: 0 2px;
+      margin-left: 2px;
+    }
+  </style>
+  <style>
     /* ── Feedback button & modal ─────────────────────────────────────────── */
     #feedback-btn, #radio-btn, #hint-btn {
       background: rgba(10,10,18,0.82);
@@ -974,6 +1034,8 @@
   <!-- Left panel -->
   <div id="left-panel">
     <div class="panel-top">
+      <!-- HTML Inventory — sharper rendering than canvas -->
+      <div id="html-inventory" style="display:none; width:100%; flex-direction:column; gap:4px;"></div>
       <div id="auth-panel">
         <div id="auth-user">
           <img id="auth-avatar" src="" alt="avatar" />
@@ -1566,9 +1628,13 @@
   <script>
     // ── Hint system ───────────────────────────────────────────────────────
     function getQuestHint() {
+      // If the game is running, delegate to the XState-driven hint (same source as nav arrow).
+      if (typeof window.__getNavHint === 'function') return window.__getNavHint();
+
+      // Fallback: read from saved state when game is not yet loaded.
       let flags = {};
       try {
-        const raw = localStorage.getItem('tbaan_save');
+        const raw = localStorage.getItem('tbaan_save_v2');
         if (raw) flags = JSON.parse(raw).questFlags ?? {};
       } catch (_) {}
 
@@ -1658,6 +1724,37 @@
     hintOverlay.addEventListener('click', (e) => {
       if (e.target === hintOverlay) document.getElementById('hint-close').click();
     });
+  </script>
+
+  <script>
+    // ── HTML Inventory ─────────────────────────────────────────────────────
+    (function () {
+      var invEl = document.getElementById('html-inventory');
+
+      window.__setInventory = function (items, flashIds) {
+        if (!invEl) return;
+
+        if (!items || items.length === 0) {
+          invEl.style.display = 'none';
+          return;
+        }
+
+        invEl.style.display = 'flex';
+        invEl.innerHTML =
+          '<div class="inv-header">RUGZAK</div>' +
+          items.map(function (item) {
+            var bx = -(item.frame * 32);
+            var badge = item.count > 1
+              ? '<span class="inv-badge">' + item.count + '</span>'
+              : '';
+            var flash = flashIds && flashIds.includes(item.id) ? ' flash' : '';
+            return '<div class="inv-slot' + flash + '">' +
+              '<div class="inv-icon" style="background-position:' + bx + 'px 0"></div>' +
+              '<div class="inv-label">' + item.name + badge + '</div>' +
+              '</div>';
+          }).join('');
+      };
+    })();
   </script>
 
   <script>

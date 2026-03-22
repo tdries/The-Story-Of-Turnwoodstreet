@@ -849,6 +849,96 @@ export function getNavTarget(snapshot: AnySnapshot): { x: number; label: string 
   return null; // all done!
 }
 
+/**
+ * getHintText — returns a Dutch hint string for the hint modal, derived from
+ * the same XState snapshot as getNavTarget so both systems always agree.
+ */
+export function getHintText(snapshot: AnySnapshot): string {
+  const v = snapshot.value;
+
+  const delivery  = getRegionState(v, 'delivery');
+  const fabric    = getRegionState(v, 'fabric');
+  const flour     = getRegionState(v, 'flour');
+  const oud       = getRegionState(v, 'oud');
+  const sigs      = getRegionState(v, 'signatures');
+  const bulldozer = getRegionState(v, 'bulldozer');
+  const geest     = getRegionState(v, 'geest');
+  const mayor     = getRegionState(v, 'mayor');
+
+  // ── Act 1: Delivery ──────────────────────────────────────────────────────────
+  if (delivery === 'idle') {
+    return 'Zoek Yusuf de koerier aan het begin van de Turnhoutsebaan. Hij heeft hulp nodig!';
+  }
+  if (delivery === 'met') {
+    return 'Yusuf heeft je hulp nodig met leveringen. Accepteer zijn opdracht.';
+  }
+  if (delivery === 'accepted') {
+    if (stateIs(v, 'delivery', 'accepted', 'pkg137', 'pending')) {
+      return 'Breng het pakje naar Indian Boutique (nr. 137) — Mevrouw Baert wacht.';
+    }
+    if (stateIs(v, 'delivery', 'accepted', 'pkg170', 'pending')) {
+      return 'Lever het pakje af bij Patisserie Aladdin (nr. 170) — Fatima staat achter de toonbank.';
+    }
+    if (fabric === 'idle') return 'Het derde pakje ligt voorbij de Reuzenpoort. Spreek eerst met Fatima (nr. 170).';
+    if (fabric === 'met' || fabric === 'accepted') return 'Haal de trouwstof op bij Mevrouw Baert (Indian Boutique, nr. 137).';
+    if (fabric === 'picked_up') return 'Breng de trouwstof naar Fatima — zij opent de weg naar de Reuzenpoort.';
+    return 'Breng het pakje naar Borger Hub (nr. 284) — het laatste adres op Yusuf\'s lijst.';
+  }
+  if (delivery === 'all_delivered') {
+    return 'Alle pakjes bezorgd! Keer terug naar Yusuf om je beloning op te halen.';
+  }
+
+  // ── Act 1→2: Fabric quest ────────────────────────────────────────────────────
+  if (fabric === 'idle') return 'Praat met Fatima (nr. 170) — ze heeft hulp nodig voor een bruiloft.';
+  if (fabric === 'met' || fabric === 'accepted') return 'Haal de trouwstof op bij Mevrouw Baert (Indian Boutique, nr. 137).';
+  if (fabric === 'picked_up') return 'Lever de stof af bij Fatima om het vertrouwen van de buurt te verdienen.';
+
+  // ── Act 2: Oud quest ─────────────────────────────────────────────────────────
+  if (oud === 'idle')     return 'Zoek Reza bij Theehuys Amal (nr. 215) — zijn oud is kapot.';
+  if (oud === 'accepted') return 'Zoek Aziz (nr. 239) — hij heeft een oud-snaar die Reza nodig heeft.';
+  if (oud === 'found')    return 'Je hebt de snaar! Breng hem terug naar Reza zodat hij weer kan spelen.';
+
+  // ── Act 2: Flour ─────────────────────────────────────────────────────────────
+  if (flour === 'accepted')  return 'Omar heeft bloem nodig. Haal het op bij de Budget Market verderop.';
+  if (flour === 'picked_up') return 'Je hebt de bloem! Breng hem naar Omar (Bakkerij Charif, nr. 189).';
+
+  // ── Act 2: Signatures ────────────────────────────────────────────────────────
+  if (sigs !== 'rewarded') {
+    if (!sigRegionIs(v, 'fatima_sig', 'done')) return 'Verzamel handtekeningen voor de petitie — vraag Fatima als eerste (nr. 170).';
+    if (!sigRegionIs(v, 'omar_sig',   'done')) return 'Verzamel handtekeningen — vraag Omar (Bakkerij Charif, nr. 189).';
+    if (!sigRegionIs(v, 'reza_sig',   'done')) return 'Verzamel handtekeningen — vraag Reza (Theehuys Amal, nr. 215).';
+    if (!sigRegionIs(v, 'baert_sig',  'done')) return 'Verzamel handtekeningen — vraag Mevrouw Baert (Indian Boutique, nr. 137).';
+    if (!sigRegionIs(v, 'aziz_sig',   'done')) return 'Verzamel handtekeningen — vraag Aziz (nr. 239).';
+  }
+
+  // ── Act 3: De Roma → Bulldozer ───────────────────────────────────────────────
+  if (bulldozer === 'idle')            return 'Ga naar De Roma (nr. 286) — de ziel van de Turnhoutsebaan.';
+  if (bulldozer === 'de_roma_visited') return 'De vastgoedspeculant bedreigt de buurt! Versla de Bureau-Bulldozer bij De Roma.';
+
+  // ── Act 3: Mayor ─────────────────────────────────────────────────────────────
+  if (mayor === 'idle') return 'Districtsvoorzitter El Osri wil je spreken bij Borger Hub (nr. 284).';
+
+  // ── Act 3: Geest ─────────────────────────────────────────────────────────────
+  if (geest !== 'completed') {
+    if (flour !== 'completed') return 'Help eerst Omar met zijn bloem — hij heeft je nodig in Bakkerij Charif (nr. 189).';
+    return "Er waart een Geest van '88 op straat. Vind hem en gebruik Samen Aan Tafel om hem te overwinnen.";
+  }
+
+  // ── Act 4: Factions ──────────────────────────────────────────────────────────
+  const factionCount = getFactionCount(snapshot);
+  if (factionCount < 7) {
+    if (!factionIs(v, 'moroccan')) return `${factionCount}/7 facties — overtuig Fatima voor de Marokkaanse vereniging.`;
+    if (!factionIs(v, 'turkish'))  return `${factionCount}/7 facties — praat met Tine over de Turkse sociale club.`;
+    if (!factionIs(v, 'flemish'))  return `${factionCount}/7 facties — vraag Mevrouw Baert om Bar Leon te overtuigen.`;
+    if (!factionIs(v, 'art'))      return `${factionCount}/7 facties — koppel De Roma aan het Borgerhub kunstenaarscollectief.`;
+    if (!factionIs(v, 'school'))   return `${factionCount}/7 facties — spreek met Hamza over zijn school.`;
+    if (!factionIs(v, 'mosque'))   return `${factionCount}/7 facties — bezoek de imam van De-Koepel Moskee.`;
+    if (!factionIs(v, 'frituur'))  return `${factionCount}/7 facties — help Frituur de Tram met de grootorde.`;
+  }
+
+  return 'Alle 7 facties zijn overtuigd! Ga naar de Grote 2km Tafel voor het finale feest!';
+}
+
 /** Convenience: get the numeric faction count from a snapshot. */
 export function getFactionCount(snapshot: AnySnapshot): number {
   const flags = flagBridge(snapshot);

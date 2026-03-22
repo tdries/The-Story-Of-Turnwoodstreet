@@ -255,6 +255,10 @@ class StateManager {
 
   // ── Coins / XP ─────────────────────────────────────────────────────────────
 
+  setHP(hp: number): void {
+    this.actor.send({ type: 'SET_HP', hp });
+  }
+
   addCoins(amount: number): void {
     if (amount >= 0) {
       this.actor.send({ type: 'ADD_COINS', amount });
