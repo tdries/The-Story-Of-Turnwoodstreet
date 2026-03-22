@@ -47,7 +47,7 @@ from PIL import Image, ImageDraw, ImageFont
 SCALE      = 8          # px per game pixel  (doubled → crisper fonts, sharper sprites)
 TW, TH     = 48, 112   # tile size in game pixels (unchanged — Phaser displays at 2× width)
 PW, PH     = TW * SCALE, TH * SCALE   # 384 × 896 px per tile
-NUM_TILES  = 20
+NUM_TILES  = 41
 
 OUT_DIR    = os.path.join(os.path.dirname(__file__), '..', 'assets', 'Sprites', 'buildings')
 OUT_FILE   = os.path.join(OUT_DIR, 'building_tiles.png')
@@ -945,6 +945,625 @@ def draw_vacant(img, d):
     plinth(d, 104)
 
 
+def draw_ornipa_parket(img, d):
+    """#257 Ornipa Parket — parquet flooring showroom. Warm ochre render, wood display."""
+    # Ochre/sandstone render — warm, earthy, fitting for a flooring shop
+    stone_render(d, 0, 16, TW, 50, C['cream_d'], C['cream_m'], C['ochre'])
+    HL(d, 0, TW, 16, C['ochre'])
+
+    # Upper floor: wide showcase window (parquet display up high)
+    R(d, 3, 20, TW - 3, 24, C['wood_d'])          # lintel
+    R(d, 3, 24, TW - 3, 44, C['stone_d'])          # window frame
+    R(d, 4, 25, TW - 4, 43, C['glass_l'])          # glass (bright interior)
+    HL(d, 4, TW - 4, 25, C['glass_m'])
+    # Herringbone floor sample visible in upper window (the shop's product!)
+    wood_cs = [C['wood_d'], C['wood_m'], C['wood_l'], C['ochre']]
+    for row in range(3):
+        for col in range(5):
+            bx, by = 5 + col * 7, 27 + row * 5
+            c = wood_cs[(row + col) % 4]
+            R(d, bx, by, bx + 6, by + 4, c)
+            HL(d, bx, bx + 6, by, C['wood_d'])     # plank joint
+
+    sign_band(d, img, 0, 50, TW, 64, C['wood_d'],
+              'Ornipa Parket', C['cream_l'], FONT_LG, '#257')
+
+    # Wooden louvre awning (no stripes — slat style)
+    for i in range(6):
+        R(d, 0, 65 + i, TW, 66 + i, C['wood_m'] if i % 2 == 0 else C['wood_d'])
+    HL(d, 0, TW, 70, C['wood_d'])
+
+    # Ground floor: wide display window of floor samples
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_m'])
+    # Parquet planks laid out as a floor display in strips
+    for sx in range(3, TW - 3, 5):
+        c = wood_cs[(sx // 5) % 4]
+        R(d, sx, 76, sx + 4, 92, c)
+        HL(d, sx, sx + 4, 76, C['wood_d'])
+
+    door(d, 18, 94, 12, 10, C['wood_d'])
+    plinth(d)
+
+
+def draw_eentje_meer(img, d):
+    """#343 Eéntje Meer — dienstencheques (Pluxee) service office. White + teal-green."""
+    # Clean white render — small functional office
+    R(d, 0, 18, TW, 50, C['white'])
+    for y in range(20, 50, 8):
+        HL(d, 0, TW, y, C['stone_p'])
+
+    # Pluxee/dienstencheques green accent band at top
+    R(d, 0, 16, TW, 20, C['teal_d'])
+    HL(d, 0, TW, 16, C['teal_m'])
+
+    # One small upper window (it's a service office, not a showroom)
+    window_rect(d, 10, 24, 28, 18, lit=True)
+
+    sign_band(d, img, 0, 50, TW, 64, C['teal_d'],
+              'Eéntje Meer', C['white'], FONT_LG, '#343 · Diensten')
+
+    # Functional canopy (teal — brand colour)
+    R(d, 4, 65, TW - 4, 69, C['teal_m'])
+    HL(d, 4, TW - 4, 65, C['teal_l'])
+    HL(d, 4, TW - 4, 68, C['teal_d'])
+
+    # Small service window — brochure stands and info posters inside
+    R(d, 1, 71, TW - 1, 94, C['stone_d'])
+    R(d, 2, 72, TW - 2, 93, C['glass_l'])
+    HL(d, 2, TW - 2, 72, C['teal_l'])
+    # Brochure rack + info posters (very typical of dienstencheques offices)
+    for bx in [4, 12, 22, 32, 38]:
+        R(d, bx, 76, bx + 7, 91, C['teal_d'])
+        R(d, bx + 1, 77, bx + 6, 87, C['white'])
+        HL(d, bx + 1, bx + 6, 79, C['teal_m'])
+        HL(d, bx + 1, bx + 6, 82, C['teal_m'])
+
+    door(d, 18, 94, 12, 10, C['teal_d'])
+    plinth(d)
+
+
+def draw_heiremans(img, d):
+    """#381 Hendrik Heiremans — uitvaartverzorging (funeral home). Dark, dignified."""
+    # Dark grey-green render — traditional Flemish funeral home gravitas
+    R(d, 0, 14, TW, 50, C['grey_d'])
+    # Subtle stone-block coursing
+    for y in range(16, 50, 7):
+        HL(d, 0, TW, y, C['grey_m'])
+    for x in range(0, TW, 12):
+        VL(d, x, 16, 50, C['grey_m'])
+
+    # Gold cornice — the only decorative touch (respectful, not ostentatious)
+    HL(d, 0, TW, 14, C['gold'])
+    HL(d, 0, TW, 15, C['stone_d'])
+
+    # Two tall somber upper windows with arched tops — classic funeral home
+    arch_win(d, 3, 18, 16, 30, C['glass_d'], C['grey_m'])
+    arch_win(d, 27, 18, 16, 30, C['glass_d'], C['grey_m'])
+    # Dark curtains partially drawn (very typical of Belgian rouwkamers)
+    R(d, 4, 20, 7, 46, C['night'])
+    R(d, 14, 20, 17, 46, C['night'])
+    R(d, 28, 20, 31, 46, C['night'])
+    R(d, 38, 20, 41, 46, C['night'])
+
+    # Sign: formal gold lettering on dark background
+    sign_band(d, img, 0, 50, TW, 66, C['night'],
+              'H. Heiremans', C['gold'], FONT_LG, '#381 · Uitvaart')
+
+    # No awning — just a simple stone lintel
+    R(d, 0, 67, TW, 70, C['stone_d'])
+    HL(d, 0, TW, 67, C['grey_l'])
+
+    # Formal shopfront: very dark, respectful window dressing
+    R(d, 1, 72, TW - 1, 94, C['night'])
+    R(d, 2, 73, TW - 2, 93, C['glass_d'])
+    # Flower arrangements (white lilies/chrysanthemums — funeral flowers)
+    for fx in [4, 14, 26, 36]:
+        # Vase
+        R(d, fx + 1, 85, fx + 5, 92, C['grey_m'])
+        R(d, fx + 2, 84, fx + 4, 86, C['stone_l'])
+        # Flowers: white blooms on dark stems
+        VL(d, fx + 3, 76, 85, C['grey_m'])          # stem
+        R(d, fx + 1, 76, fx + 5, 80, C['white'])    # white bloom
+        PX(d, fx + 3, 75, C['stone_p'])             # petal top
+        PX(d, fx + 1, 78, C['stone_p'])
+        PX(d, fx + 5, 78, C['stone_p'])
+
+    door(d, 18, 94, 12, 10, C['grey_d'])
+    plinth(d)
+
+
+def draw_audifoon(img, d):
+    """#410 Audifoon — hoorcentrum. Modern white & Audifoon-blue clinical facade."""
+    # Modern clinical white render — clean, accessible, professional
+    R(d, 0, 16, TW, 50, C['white'])
+    for y in range(18, 50, 10):
+        HL(d, 0, TW, y, C['stone_p'])
+
+    # Bold blue accent band (Audifoon brand is teal-blue)
+    R(d, 0, 14, TW, 18, C['blue_m'])
+    HL(d, 0, TW, 14, C['blue_l'])
+
+    # Stylised ear icon (simplified pixel art — the universal hearing-aid symbol)
+    # Outer arc of ear on upper facade
+    ex, ey = 19, 20
+    R(d, ex, ey, ex + 10, ey + 1, C['blue_m'])      # top arc
+    R(d, ex, ey, ex + 1, ey + 8, C['blue_m'])        # outer left
+    R(d, ex + 9, ey + 3, ex + 10, ey + 8, C['blue_m'])  # inner right
+    R(d, ex + 3, ey + 5, ex + 7, ey + 6, C['blue_m'])   # canal hint
+    HL(d, ex, ex + 10, ey + 8, C['blue_m'])          # lobe bottom
+
+    # Upper floor: large modern picture window (inviting, accessible)
+    R(d, 2, 30, TW - 2, 48, C['stone_d'])
+    R(d, 3, 31, TW - 3, 47, C['glass_l'])
+    HL(d, 3, TW - 3, 31, C['blue_l'])
+    # Reception visible inside: clean counter + chairs
+    R(d, 8, 39, 36, 41, C['white'])                  # reception desk
+    VL(d, 12, 39, 46, C['stone_l'])
+    VL(d, 32, 39, 46, C['stone_l'])
+
+    sign_band(d, img, 0, 50, TW, 64, C['blue_m'],
+              'Audifoon', C['white'], FONT_LG, '#410 · Hoorcentrum')
+
+    awning_stripe(d, 0, TW, 66, C['blue_m'], C['white'])
+
+    # Large accessible glass shopfront
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    HL(d, 2, TW - 2, 74, C['blue_l'])
+    # Display: hearing aid product boxes on backlit shelf
+    for hx in [4, 12, 22, 32, 38]:
+        R(d, hx, 80, hx + 7, 91, C['blue_m'])
+        R(d, hx + 1, 81, hx + 6, 87, C['blue_l'])
+        R(d, hx + 2, 82, hx + 5, 86, C['white'])    # device silhouette
+
+    door(d, 18, 94, 12, 10, C['stone_d'])
+    plinth(d)
+
+
+def draw_pluym(img, d):
+    """#1-3 Pluym — Deurne — meubels & interieur. Large furniture showroom."""
+    stone_render(d, 0, 14, TW, 50, C['stone_l'], C['off_white'], C['stone_m'])
+    HL(d, 0, TW, 14, C['stone_m'])
+    # Timber cladding band mid-facade
+    R(d, 0, 30, TW, 36, C['wood_m'])
+    for x in range(0, TW, 4):
+        HL(d, x, x + 3, 31, C['wood_l'])
+    window_rect(d, 2, 16, 20, 12, lit=True)
+    window_rect(d, 26, 16, 20, 12, lit=True)
+    sign_band(d, img, 0, 50, TW, 64, C['wood_d'],
+              'Pluym', C['cream_l'], FONT_LG, '#1-3 · Meubels')
+    awning_stripe(d, 0, TW, 66, C['wood_d'], C['cream_m'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    # Sofa silhouette
+    R(d, 4, 83, 22, 91, C['stone_m'])
+    R(d, 5, 80, 20, 84, C['stone_l'])
+    R(d, 4, 79, 7, 83, C['stone_l'])    # arm left
+    R(d, 17, 79, 20, 83, C['stone_l'])  # arm right
+    # Floor lamp
+    VL(d, 34, 74, 91, C['stone_d'])
+    R(d, 31, 74, 38, 77, C['glass_lit'])
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_svelta(img, d):
+    """#30 Svelta — Deurne — lingerie. Elegant pink & cream boutique facade."""
+    stone_render(d, 0, 16, TW, 50, C['pink'], C['cream_l'], C['cream_d'])
+    HL(d, 0, TW, 16, C['gold'])
+    # Decorative dentil cornice
+    for x in range(0, TW, 6):
+        R(d, x + 1, 14, x + 5, 18, C['cream_l'])
+    window_rect(d, 6, 20, 14, 22, lit=True)
+    window_rect(d, 28, 20, 14, 22, lit=True)
+    sign_band(d, img, 0, 50, TW, 64, C['pink'],
+              'Svelta', C['gold'], FONT_LG, '#30 · Lingerie')
+    awning_stripe(d, 0, TW, 66, C['pink'], C['cream_l'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    # Mannequin silhouettes
+    for mx in [8, 28]:
+        R(d, mx, 76, mx + 8, 92, C['stone_p'])
+        R(d, mx + 2, 74, mx + 6, 78, C['cream_m'])  # head
+        R(d, mx + 1, 80, mx + 7, 84, C['pink'])      # garment
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_optiek_vdb(img, d):
+    """#31-33 Optiek Frits Van Den Bosh — Deurne — optieker."""
+    stone_render(d, 0, 16, TW, 50, C['off_white'], C['cream_l'], C['stone_m'])
+    R(d, 0, 14, TW, 19, C['blue_d'])
+    HL(d, 0, TW, 14, C['blue_l'])
+    window_rect(d, 4, 22, 16, 20, lit=True)
+    window_rect(d, 28, 22, 16, 20, lit=True)
+    # Glasses icon (two rectangular frames + bridge)
+    for gx in [9, 33]:
+        R(d, gx - 4, 18, gx + 4, 22, C['blue_d'])
+        R(d, gx - 3, 19, gx + 3, 21, C['cream_l'])
+    HL(d, 13, 20, 20, C['blue_d'])  # bridge
+    sign_band(d, img, 0, 50, TW, 64, C['blue_d'],
+              'Optiek VDB', C['white'], FONT_LG, '#31-33')
+    awning_stripe(d, 0, TW, 66, C['blue_d'], C['white'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    # Display stands with glasses
+    for sx in [4, 12, 22, 32, 38]:
+        R(d, sx, 78, sx + 6, 91, C['white'])
+        HL(d, sx + 1, sx + 5, 80, C['blue_d'])
+        HL(d, sx + 1, sx + 5, 83, C['blue_d'])
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_inverko(img, d):
+    """#62-64 Inverko Parfumerie — Deurne — cosmetica & parfumerie."""
+    R(d, 0, 14, TW, 50, C['purple'])
+    for y in range(16, 50, 10):
+        HL(d, 0, TW, y, (min(C['purple'][0] + 30, 255),
+                         min(C['purple'][1] + 30, 255),
+                         min(C['purple'][2] + 30, 255)))
+    R(d, 0, 14, TW, 17, C['gold'])
+    HL(d, 0, TW, 14, C['cream_l'])
+    arch_win(d, 4, 20, 16, 28, C['glass_lit'], C['gold'])
+    arch_win(d, 28, 20, 16, 28, C['glass_lit'], C['gold'])
+    sign_band(d, img, 0, 50, TW, 64, C['purple'],
+              'Inverko', C['gold'], FONT_LG, '#62-64 · Parfum')
+    awning_stripe(d, 0, TW, 66, C['purple'], C['gold'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['night'])
+    HL(d, 2, TW - 2, 74, C['gold'])
+    # Perfume bottles (slender, gold-capped)
+    for bx in [5, 12, 20, 28, 36]:
+        R(d, bx, 80, bx + 5, 91, C['purple'])
+        R(d, bx + 1, 78, bx + 4, 81, C['gold'])     # cap
+        R(d, bx + 2, 81, bx + 3, 91, C['cream_l'])  # highlight
+    door(d, 18, 94, 12, 10, C['purple'])
+    plinth(d)
+
+
+def draw_schaeps(img, d):
+    """#92-94 Schaeps — Deurne — medische hulpmiddelen. Clinical orange accent."""
+    R(d, 0, 16, TW, 50, C['off_white'])
+    for y in range(18, 50, 8):
+        HL(d, 0, TW, y, C['stone_p'])
+    R(d, 0, 14, TW, 18, C['orange'])
+    HL(d, 0, TW, 14, C['cream_l'])
+    # Simplified cross symbol (medical)
+    R(d, 18, 20, 30, 24, C['orange'])
+    R(d, 22, 17, 26, 32, C['orange'])
+    window_rect(d, 2, 22, 12, 16, lit=True)
+    window_rect(d, 34, 22, 12, 16, lit=True)
+    sign_band(d, img, 0, 50, TW, 64, C['orange'],
+              'Schaeps', C['white'], FONT_LG, '#92-94 · Medisch')
+    awning_stripe(d, 0, TW, 66, C['orange'], C['white'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    HL(d, 2, TW - 2, 74, C['orange'])
+    # Walker/rollator silhouettes
+    for wx in [5, 26]:
+        R(d, wx, 78, wx + 2, 91, C['stone_m'])
+        R(d, wx + 12, 78, wx + 14, 91, C['stone_m'])
+        HL(d, wx, wx + 14, 78, C['stone_m'])
+        R(d, wx, 89, wx + 4, 92, C['grey_l'])
+        R(d, wx + 10, 89, wx + 14, 92, C['grey_l'])
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_cobra_keukens(img, d):
+    """#108 Cobra Keukens — Deurne — keukens & interieur. Dark modern showroom."""
+    R(d, 0, 14, TW, 50, C['grey_d'])
+    R(d, 0, 14, TW, 18, C['orange'])
+    HL(d, 0, TW, 14, C['cream_l'])
+    for y in range(20, 50, 8):
+        HL(d, 0, TW, y, C['grey_m'])
+    for x in range(0, TW, 12):
+        VL(d, x, 18, 50, C['grey_m'])
+    # Showroom window with kitchen unit silhouette
+    R(d, 3, 22, TW - 3, 46, C['stone_d'])
+    R(d, 4, 23, TW - 4, 45, C['glass_l'])
+    HL(d, 4, TW - 4, 23, C['orange'])
+    R(d, 5, 34, 43, 44, C['grey_d'])   # base cabinets
+    R(d, 5, 30, 43, 34, C['grey_m'])   # countertop
+    for cx in range(6, 42, 8):
+        VL(d, cx, 34, 44, C['grey_m'])
+    sign_band(d, img, 0, 50, TW, 64, C['orange'],
+              'Cobra Keukens', C['white'], FONT_LG, '#108')
+    R(d, 0, 65, TW, 69, C['grey_d'])
+    HL(d, 0, TW, 65, C['grey_m'])
+    R(d, 1, 71, TW - 1, 94, C['grey_d'])
+    R(d, 2, 72, TW - 2, 93, C['glass_m'])
+    HL(d, 2, TW - 2, 72, C['orange'])
+    door(d, 18, 94, 12, 10, C['grey_m'])
+    plinth(d)
+
+
+def draw_miss_sera(img, d):
+    """#115 Miss Sera — Deurne — dameskleding. Chic black & rose fashion boutique."""
+    R(d, 0, 14, TW, 50, C['black'])
+    R(d, 0, 14, TW, 18, C['pink'])
+    HL(d, 0, TW, 14, (min(C['pink'][0] + 40, 255),
+                      min(C['pink'][1] + 40, 255),
+                      min(C['pink'][2] + 40, 255)))
+    window_rect(d, 4, 22, 16, 24, lit=True)
+    window_rect(d, 28, 22, 16, 24, lit=True)
+    sign_band(d, img, 0, 50, TW, 64, C['black'],
+              'Miss Sera', C['pink'], FONT_LG, '#115 · Mode')
+    R(d, 4, 65, TW - 4, 70, C['pink'])
+    HL(d, 4, TW - 4, 65, C['cream_l'])
+    R(d, 1, 72, TW - 1, 94, C['black'])
+    R(d, 2, 73, TW - 2, 93, C['night'])
+    HL(d, 2, TW - 2, 73, C['pink'])
+    # Mannequins
+    for mx in [6, 24, 34]:
+        R(d, mx, 75, mx + 8, 92, C['stone_p'])
+        R(d, mx + 2, 73, mx + 6, 77, C['cream_m'])
+        R(d, mx, 80, mx + 8, 85, C['pink'])
+    door(d, 18, 94, 12, 10, C['grey_d'])
+    plinth(d)
+
+
+def draw_de_mont(img, d):
+    """#212 De Mont — Deurne — geschenken & huishoud. Warm terracotta gift shop."""
+    stone_render(d, 0, 16, TW, 50, C['terra'], C['terra_l'], C['cream_d'])
+    HL(d, 0, TW, 16, C['gold'])
+    window_rect(d, 4, 22, 16, 18, lit=True)
+    window_rect(d, 28, 22, 16, 18, lit=True)
+    sign_band(d, img, 0, 50, TW, 64, C['terra'],
+              'De Mont', C['gold'], FONT_LG, '#212 · Geschenken')
+    awning_stripe(d, 0, TW, 66, C['terra'], C['gold'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_lit'])
+    items = [C['teal_m'], C['gold'], C['red'], C['orange'], C['purple'], C['teal_l'], C['cream_l']]
+    for i, ix in enumerate(range(3, TW - 4, 6)):
+        R(d, ix, 78, ix + 4, 91, items[i % len(items)])
+        PX(d, ix + 2, 78, C['gold'])
+        R(d, ix + 1, 88, ix + 3, 91, C['cream_m'])
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_ter_rivierenhof(img, d):
+    """#247 Ter Rivierenhof — Deurne — brasserie / horeca. Classic brown café."""
+    brick_fill(d, 0, 16, TW, 50)
+    R(d, 0, 14, TW, 18, C['stone_d'])
+    for sx in range(0, TW, 4):
+        R(d, sx, 14, sx + 2, 18, C['stone_l'])
+    window_rect(d, 2, 20, 14, 24, lit=True)
+    window_rect(d, 32, 20, 14, 24, lit=True)
+    sign_band(d, img, 0, 50, TW, 65, C['wood_d'],
+              'Ter Rivierenhof', C['gold'], FONT_LG, '#247 · Brasserie')
+    awning_stripe(d, 0, TW, 67, C['wood_d'], C['cream_m'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_lit'])
+    # Café table + chairs
+    R(d, 8, 84, 22, 86, C['wood_d'])
+    VL(d, 13, 86, 92, C['wood_m'])
+    VL(d, 18, 86, 92, C['wood_m'])
+    for chairx in [6, 20]:
+        R(d, chairx, 80, chairx + 4, 85, C['wood_m'])
+        R(d, chairx, 85, chairx + 4, 92, C['stone_m'])
+    # Beer glass on table
+    R(d, 30, 78, 34, 86, C['glass_lit'])
+    R(d, 31, 79, 33, 83, C['yellow'])
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_wijnegem_sec(img, d):
+    """#5 Wijnegem Shop Eat Enjoy — groot winkelcentrum. Modern glass & steel."""
+    R(d, 0, 12, TW, 50, C['stone_m'])
+    for y in range(12, 50, 6):
+        R(d, 0, y, TW, y + 1, C['grey_l'])
+    # Large curtain-wall glass sections
+    R(d, 2, 14, 22, 48, C['stone_d'])
+    R(d, 3, 15, 21, 47, C['glass_l'])
+    HL(d, 3, 21, 15, C['glass_m'])
+    R(d, 26, 14, 46, 48, C['stone_d'])
+    R(d, 27, 15, 45, 47, C['glass_l'])
+    HL(d, 27, 45, 15, C['glass_m'])
+    # W identity mark
+    R(d, 18, 22, 30, 34, C['stone_d'])
+    for wy in [22, 26, 30]:
+        HL(d, 19, 29, wy, C['gold'])
+    sign_band(d, img, 0, 50, TW, 64, C['stone_d'],
+              'Wijnegem', C['gold'], FONT_LG, '#5 · Shop.Eat.Enjoy')
+    R(d, 0, 65, TW, 70, C['grey_d'])
+    HL(d, 0, TW, 65, C['grey_l'])
+    # Automatic glass entrance doors
+    R(d, 1, 72, TW - 1, 94, C['grey_d'])
+    R(d, 2, 73, TW // 2 - 1, 93, C['glass_l'])
+    R(d, TW // 2, 73, TW - 2, 93, C['glass_l'])
+    VL(d, TW // 2 - 1, 73, 93, C['grey_m'])
+    HL(d, 2, TW - 2, 73, C['grey_l'])
+    plinth(d)
+
+
+def draw_nada(img, d):
+    """#5 (unit 208) Nada — Wijnegem — schoenen. Clean white shoe boutique."""
+    R(d, 0, 16, TW, 50, C['white'])
+    for y in range(18, 50, 10):
+        HL(d, 0, TW, y, C['stone_p'])
+    R(d, 0, 14, TW, 19, C['black'])
+    HL(d, 0, TW, 14, C['grey_l'])
+    window_rect(d, 6, 22, 36, 22, lit=True)
+    sign_band(d, img, 0, 50, TW, 64, C['black'],
+              'Nada', C['white'], FONT_LG, '#5 · Schoenen')
+    R(d, 4, 65, TW - 4, 69, C['black'])
+    HL(d, 4, TW - 4, 65, C['grey_l'])
+    R(d, 1, 71, TW - 1, 94, C['stone_d'])
+    R(d, 2, 72, TW - 2, 93, C['glass_l'])
+    HL(d, 2, TW - 2, 72, C['black'])
+    # Shoe display pedestals
+    for sx in [4, 14, 24, 34]:
+        R(d, sx, 82, sx + 8, 91, C['stone_p'])
+        R(d, sx + 1, 78, sx + 7, 83, C['wood_m'])
+        R(d, sx + 3, 76, sx + 7, 79, C['stone_d'])
+    door(d, 18, 94, 12, 10, C['black'])
+    plinth(d)
+
+
+def draw_beeckman(img, d):
+    """#90 Beeckman & Co — Wijnegem — tuincentrum & machines. Green, earthy."""
+    stone_render(d, 0, 16, TW, 50, C['green_d'], C['green_m'], C['cream_d'])
+    HL(d, 0, TW, 16, C['green_l'])
+    R(d, 0, 14, TW, 18, C['wood_d'])
+    HL(d, 0, TW, 14, C['wood_l'])
+    # Greenhouse-style windows with pane dividers
+    for wx in [2, 26]:
+        R(d, wx, 20, wx + 18, 44, C['stone_d'])
+        R(d, wx + 1, 21, wx + 17, 43, C['glass_l'])
+        for py in range(23, 42, 7):
+            HL(d, wx + 1, wx + 17, py, C['stone_d'])
+        VL(d, wx + 9, 21, 43, C['stone_d'])
+    sign_band(d, img, 0, 50, TW, 64, C['green_d'],
+              'Beeckman & Co', C['cream_l'], FONT_LG, '#90 · Tuincentrum')
+    awning_stripe(d, 0, TW, 66, C['green_d'], C['green_l'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    HL(d, 2, TW - 2, 74, C['green_m'])
+    # Plant pots
+    for pot_x in [4, 10, 18, 26, 34, 40]:
+        R(d, pot_x, 84, pot_x + 5, 91, C['terra'])
+        R(d, pot_x + 1, 79, pot_x + 4, 85, C['green_m'])
+        PX(d, pot_x + 2, 77, C['green_l'])
+    door(d, 18, 94, 12, 10, C['wood_d'])
+    plinth(d)
+
+
+def draw_hillaert(img, d):
+    """#276-278 Hillaert — Wijnegem — sleutels & beveiliging. Dark, gold key."""
+    R(d, 0, 16, TW, 50, C['green_d'])
+    for y in range(18, 50, 8):
+        HL(d, 0, TW, y, (min(C['green_d'][0] + 20, 255),
+                         min(C['green_d'][1] + 20, 255),
+                         min(C['green_d'][2] + 20, 255)))
+    R(d, 0, 14, TW, 18, C['gold'])
+    HL(d, 0, TW, 14, C['cream_l'])
+    # Giant key icon — bow (circle) + shaft + teeth
+    kx, ky = 24, 28
+    for dy in range(-5, 6):
+        hw = int(math.sqrt(max(0, 25 - dy * dy)))
+        if hw:
+            HL(d, kx - hw, kx + hw, ky + dy, C['gold'])
+    R(d, kx - 2, ky - 2, kx + 2, ky + 2, C['green_d'])  # hole in bow
+    R(d, kx, ky + 5, kx + 2, ky + 18, C['gold'])         # shaft
+    R(d, kx, ky + 10, kx + 5, ky + 12, C['gold'])         # tooth 1
+    R(d, kx, ky + 14, kx + 4, ky + 16, C['gold'])         # tooth 2
+    sign_band(d, img, 0, 50, TW, 64, C['green_d'],
+              'Hillaert', C['gold'], FONT_LG, '#276-278 · Sleutels')
+    awning_stripe(d, 0, TW, 66, C['green_d'], C['gold'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_m'])
+    HL(d, 2, TW - 2, 74, C['gold'])
+    # Key copies on pegs
+    for kpx in [4, 10, 18, 26, 34, 40]:
+        VL(d, kpx, 76, 90, C['stone_d'])
+        R(d, kpx - 1, 78, kpx + 4, 82, C['gold'])
+        R(d, kpx + 1, 82, kpx + 2, 88, C['gold'])
+    door(d, 18, 94, 12, 10, C['green_d'])
+    plinth(d)
+
+
+def draw_optiek_brands(img, d):
+    """#339-341 Optiek Ann Brands — Wijnegem — optieker. Warm cream & brown."""
+    stone_render(d, 0, 16, TW, 50, C['cream_m'], C['cream_l'], C['cream_d'])
+    R(d, 0, 14, TW, 18, C['wood_d'])
+    HL(d, 0, TW, 14, C['wood_l'])
+    arch_win(d, 4, 20, 16, 26, C['glass_l'], C['wood_d'])
+    arch_win(d, 28, 20, 16, 26, C['glass_l'], C['wood_d'])
+    sign_band(d, img, 0, 50, TW, 64, C['wood_d'],
+              'Optiek Ann Brands', C['cream_l'], FONT_LG, '#339-341')
+    awning_stripe(d, 0, TW, 66, C['wood_d'], C['cream_l'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    HL(d, 2, TW - 2, 74, C['wood_d'])
+    # Glasses frames on backlit display
+    for gx in [4, 14, 26, 36]:
+        R(d, gx, 78, gx + 8, 88, C['cream_l'])
+        HL(d, gx + 1, gx + 3, 82, C['wood_d'])
+        HL(d, gx + 5, gx + 7, 82, C['wood_d'])
+        HL(d, gx + 3, gx + 5, 83, C['wood_m'])  # bridge
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_apotheek_meeussen(img, d):
+    """#351 Apotheek Meeussen — Wijnegem — apotheek. Ochre render, green cross."""
+    stone_render(d, 0, 14, TW, 50, C['ochre'], C['cream_l'], C['cream_d'])
+    HL(d, 0, TW, 14, C['cream_l'])
+    # Green cross
+    R(d, 18, 20, 30, 24, C['green_m'])
+    R(d, 22, 16, 26, 28, C['green_m'])
+    HL(d, 18, 30, 20, C['green_l'])
+    HL(d, 22, 26, 16, C['green_l'])
+    window_rect(d, 2, 28, 12, 16)
+    window_rect(d, 34, 28, 12, 16)
+    sign_band(d, img, 0, 50, TW, 64, C['green_d'],
+              'Apotheek Meeussen', C['white'], FONT_LG, '#351 Wijnegem')
+    awning_stripe(d, 0, TW, 66, C['green_d'], C['ochre'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_l'])
+    for mx in [4, 14, 28, 38]:
+        R(d, mx, 78, mx + 8, 92, C['green_d'])
+        R(d, mx + 1, 79, mx + 7, 84, C['green_l'])
+        VL(d, mx + 3, 80, 83, C['white'])
+        HL(d, mx + 1, mx + 7, 81, C['white'])
+    door(d, 18, 94)
+    plinth(d)
+
+
+def draw_tattoo_charis(img, d):
+    """#372 TattooCharis — Wijnegem — tattoo & piercing. Dark, edgy, neon pink."""
+    R(d, 0, 12, TW, 50, C['night'])
+    R(d, 0, 12, TW, 14, C['pink'])
+    HL(d, 0, TW, 12, C['cream_l'])
+    # Crossed diagonal lines — tattoo / alternative culture motif
+    for i in range(16):
+        PX(d, 14 + i, 16 + i, C['pink'])
+        PX(d, 34 - i, 16 + i, C['pink'])
+    sign_band(d, img, 0, 50, TW, 66, C['night'],
+              'TattooCharis', C['pink'], FONT_LG, '#372 · Tattoo')
+    R(d, 0, 50, 2, 66, C['pink'])
+    R(d, TW - 2, 50, TW, 66, C['pink'])
+    R(d, 1, 68, TW - 1, 94, C['night'])
+    R(d, 2, 69, TW - 2, 93, C['night'])
+    HL(d, 2, TW - 2, 69, C['pink'])
+    # Flash art sheets
+    for fx in [3, 12, 22, 32]:
+        R(d, fx, 72, fx + 8, 92, C['grey_d'])
+        for row in range(5):
+            R(d, fx + 2, 74 + row * 3, fx + 6, 77 + row * 3, C['pink'])
+    door(d, 18, 94, 12, 10, C['night'])
+    plinth(d)
+
+
+def draw_frituur_brug(img, d):
+    """#471 Frituur De Brug — Wijnegem — horeca / frituur. Yellow & red classic."""
+    R(d, 0, 14, TW, 50, C['yellow'])
+    for y in range(14, 50, 4):
+        HL(d, 0, TW, y, C['ochre'])
+    for x in range(0, TW, 4):
+        VL(d, x, 14, 50, C['ochre'])
+    # Chimney
+    R(d, 4, 6, 12, 16, C['stone_m'])
+    R(d, 3, 4, 13, 8, C['stone_l'])
+    sign_band(d, img, 0, 50, TW, 64, C['red'],
+              'De Brug', C['white'], FONT_LG, '#471 · Frituur')
+    awning_stripe(d, 0, TW, 66, C['red'], C['yellow'])
+    R(d, 1, 73, TW - 1, 94, C['stone_d'])
+    R(d, 2, 74, TW - 2, 93, C['glass_m'])
+    # Fry baskets
+    for bx in [4, 14, 24, 34]:
+        R(d, bx, 80, bx + 8, 92, C['yellow'])
+        for fy in range(82, 92, 2):
+            HL(d, bx, bx + 8, fy, C['ochre'])
+    door(d, 18, 94, 12, 10, C['stone_d'])
+    plinth(d)
+
+
 # ── Trapgevel color per tile (body colour for the stepped gable) ──────────────
 # Index matches TILES list order below.
 TRAPGEVEL_COL = [
@@ -970,6 +1589,30 @@ TRAPGEVEL_COL = [
     'brick_m',   # 17 brick_b
     'brick_m',   # 18 brick_c
     'brick_d',   # 19 vacant
+    # 20–23 missing Borgerhout buildings
+    'ochre',     # 20 ornipa_parket #257
+    'white',     # 21 eentje_meer   #343
+    'grey_d',    # 22 heiremans     #381
+    'white',     # 23 audifoon      #410
+    # 24–32 Deurne (2100)
+    'cream_m',   # 24 pluym           #1-3
+    'pink',      # 25 svelta          #30
+    'off_white', # 26 optiek_vdb      #31-33
+    'purple',    # 27 inverko         #62-64
+    'off_white', # 28 schaeps         #92-94
+    'grey_d',    # 29 cobra_keukens   #108
+    'night',     # 30 miss_sera       #115
+    'terra',     # 31 de_mont         #212
+    'brick_m',   # 32 ter_rivierenhof #247
+    # 33–40 Wijnegem (2110)
+    'stone_m',   # 33 wijnegem_sec    #5
+    'white',     # 34 nada            #5 unit 208
+    'green_d',   # 35 beeckman        #90
+    'green_d',   # 36 hillaert        #276-278
+    'cream_m',   # 37 optiek_brands   #339-341
+    'ochre',     # 38 apotheek_meeussen #351
+    'night',     # 39 tattoo_charis   #372
+    'yellow',    # 40 frituur_brug    #471
 ]
 
 # ── Tile registry (order = house-number sequence along street) ────────────────
@@ -994,6 +1637,29 @@ TILES = [
     ('brick_b',           draw_brick_b),             # generic rowhouse B
     ('brick_c',           draw_brick_c),             # rowhouse with bay window
     ('vacant',            draw_vacant),              # vacant/boarded-up
+    ('ornipa',            draw_ornipa_parket),       # #257 Ornipa Parket
+    ('eentje_meer',       draw_eentje_meer),         # #343 Eéntje Meer
+    ('heiremans',         draw_heiremans),           # #381 Hendrik Heiremans
+    ('audifoon',          draw_audifoon),            # #410 Audifoon
+    # Deurne (2100)
+    ('pluym',             draw_pluym),               # #1-3
+    ('svelta',            draw_svelta),              # #30
+    ('optiek_vdb',        draw_optiek_vdb),          # #31-33
+    ('inverko',           draw_inverko),             # #62-64
+    ('schaeps',           draw_schaeps),             # #92-94
+    ('cobra_keukens',     draw_cobra_keukens),       # #108
+    ('miss_sera',         draw_miss_sera),           # #115
+    ('de_mont',           draw_de_mont),             # #212
+    ('ter_rivierenhof',   draw_ter_rivierenhof),     # #247
+    # Wijnegem (2110)
+    ('wijnegem_sec',      draw_wijnegem_sec),        # #5
+    ('nada',              draw_nada),                # #5 unit 208
+    ('beeckman',          draw_beeckman),            # #90
+    ('hillaert',          draw_hillaert),            # #276-278
+    ('optiek_brands',     draw_optiek_brands),       # #339-341
+    ('apotheek_meeussen', draw_apotheek_meeussen),   # #351
+    ('tattoo_charis',     draw_tattoo_charis),       # #372
+    ('frituur_brug',      draw_frituur_brug),        # #471
 ]
 
 assert len(TILES) == NUM_TILES, f"Expected {NUM_TILES} tiles, got {len(TILES)}"

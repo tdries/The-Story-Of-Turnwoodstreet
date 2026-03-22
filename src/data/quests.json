@@ -92,13 +92,13 @@
   "q_oud_string": {
     "id":           "q_oud_string",
     "title":        "Reza's Gebroken Snaar",
-    "description":  "Reza's oud heeft een gebroken snaar. Hij kan niet spelen tot je er een vindt bij Oxfam Wereldwinkel.",
+    "description":  "Reza's oud heeft een gebroken snaar. Hij kan niet spelen tot je er een vindt bij Aziz verderop in de straat.",
     "zone":         2,
     "requiredFlags": ["has_community_trust"],
     "objectives": [
       {
         "id":          "find_string",
-        "description": "Vind een oud-snaar bij Mimoun (nr.239)",
+        "description": "Vind een oud-snaar bij Aziz (nr.239)",
         "checkFlag":   "has_oud_string_item",
         "checkValue":  true
       },
@@ -122,7 +122,7 @@
   "q_signatures": {
     "id":           "q_signatures",
     "title":        "Handtekeningen Tegen Uitzetting",
-    "description":  "De vastgoedspeculant dreigt drie panden te kopen en bewoners te zetten. Verzamel 5 handtekeningen voor de petitie.",
+    "description":  "De vastgoedspeculant dreigt drie panden te kopen en bewoners te zetten. Verzamel 5 handtekeningen voor de petitie. Let op: Reza tekent alleen na de oud-snarenzoektocht.",
     "zone":         2,
     "requiredFlags": ["has_community_trust"],
     "objectives": [
@@ -167,36 +167,6 @@
     "completionFlag": "q_signatures_done"
   },
 
-  "q_beno_repair": {
-    "id":           "q_beno_repair",
-    "title":        "Bakfiets Kapot",
-    "description":  "Je bakfiets heeft schade. Ben bij Costermans Wielersport (nr.332) kan hem repareren.",
-    "zone":         2,
-    "requiredFlags": ["has_community_trust"],
-    "objectives": [
-      {
-        "id":          "visit_beno",
-        "description": "Ga naar Costermans Wielersport (nr.332)",
-        "checkFlag":   "met_beno",
-        "checkValue":  true
-      },
-      {
-        "id":          "repair_done",
-        "description": "Betaal voor de reparatie (20 munten)",
-        "checkFlag":   "bakfiets_repaired",
-        "checkValue":  true
-      }
-    ],
-    "reward": {
-      "flags":  { "bakfiets_repaired": true },
-      "items":  [],
-      "coins":  0,
-      "xp":     15,
-      "skills": ["bakfiets_charge"]
-    },
-    "completionFlag": "q_beno_repair_done"
-  },
-
   "q_bulldozer_fight": {
     "id":           "q_bulldozer_fight",
     "title":        "De Bulldozer-Bureaucraat",
@@ -206,7 +176,7 @@
     "objectives": [
       {
         "id":          "enter_zone3",
-        "description": "Ga naar Borger Hub (nr.284)",
+        "description": "Bezoek De Roma concertzaal (nr.286)",
         "checkFlag":   "visited_de_roma",
         "checkValue":  true
       },

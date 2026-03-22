@@ -33,6 +33,15 @@ export class BattleScene extends Phaser.Scene {
   private messageText!: Phaser.GameObjects.Text;
   private playerHpBar!: Phaser.GameObjects.Rectangle;
   private enemyHpBar!:  Phaser.GameObjects.Rectangle;
+  // Maps enemyId → frame index in battle_sprites sheet
+  private static readonly ENEMY_FRAMES: Record<string, number> = {
+    straatvechter:    1,
+    pickpocket:       2,
+    bulldozer_bureau: 3,
+    speculant:        4,
+    tram_geest:       5,
+    vlok_geest:       6,
+  };
 
   // Menu labels resolved at create() time; indices: 0=attack 1=skill 2=item 3=run
   private readonly MENU_ACTIONS = ['attack', 'skill', 'item', 'run'] as const;
@@ -91,9 +100,12 @@ export class BattleScene extends Phaser.Scene {
     // Background
     this.add.rectangle(W / 2, H / 2, W, H, 0x1a0a0a);
 
-    // Enemy placeholder
-    this.add.rectangle(W * 0.35, H * 0.35, 40, 40, 0xC1440E);   // enemy placeholder
-    this.add.rectangle(W * 0.65, H * 0.5,  32, 32, 0x4A90D9);  // player placeholder
+    // Battle sprites — enemy faces right (flipX), player faces left (flipX)
+    const enemyFrame = BattleScene.ENEMY_FRAMES[this.enemyId] ?? 1;
+    this.add.image(W * 0.32, H * 0.33, 'battle_sprites', enemyFrame)
+      .setDisplaySize(44, 56).setFlipX(true);
+    this.add.image(W * 0.68, H * 0.42, 'battle_sprites', 0)
+      .setDisplaySize(36, 48).setFlipX(true);
 
     // HP bars
     const p = stateManager.get().player;
@@ -174,11 +186,31 @@ export class BattleScene extends Phaser.Scene {
     this.messageText.setText(msg);
   }
 
+  // Items that grant a companion quest flag when received as loot
+  private static readonly LOOT_FLAGS: Record<string, string> = {
+    permit_doc:       'has_permit_doc',
+    oud_string:       'has_oud_string_item',
+    reuzenpoort_key:  'has_reuzenpoort_key',
+  };
+
   private endBattle(result: BattleResult | 'escaped'): void {
     const state = stateManager.get();
+    const enemyDef = (enemyData as Record<string, typeof enemyData[keyof typeof enemyData]>)[this.enemyId];
+
     if (result === 'victory') {
-      const xpGain = 20;
+      const xpGain   = enemyDef?.xp    ?? 20;
+      const coinGain  = enemyDef?.coins ?? 0;
+      const loot      = (enemyDef as any)?.loot as string[] ?? [];
+
       const levelled = stateManager.gainXP(xpGain);
+      if (coinGain > 0) stateManager.addCoins(coinGain);
+
+      for (const itemId of loot) {
+        stateManager.addItem(itemId);
+        const flagKey = BattleScene.LOOT_FLAGS[itemId];
+        if (flagKey) stateManager.setFlag(flagKey, true);
+      }
+
       const msg = levelled ? localeManager.t('level_up') : `+${xpGain} XP`;
       this.showMessage(`${localeManager.t('victory')} ${msg}`);
     } else if (result === 'defeat') {
