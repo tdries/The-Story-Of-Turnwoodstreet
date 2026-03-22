@@ -863,7 +863,7 @@
 
   "reza_after_concert": {
     "npc": "reza", "priority": 110,
-    "conditions": { "flags": { "reza_quest_done": true, "visited_de_roma": true } },
+    "conditions": { "flags": { "reza_quest_done": true, "visited_de_roma": true, "sig_reza": true } },
     "lines": [
       { "speaker": "Reza", "text": "Je was er vanavond. In De Roma. Je hebt het gehoord." },
       { "speaker": "Reza", "text": "Die zaal... Art Deco, 1927, twee keer gered van de sloop. Elk concert is een overwinning op het vergeten." },
@@ -874,7 +874,7 @@
 
   "omar_samen_tafel_prep": {
     "npc": "omar", "priority": 85,
-    "conditions": { "flags": { "met_mayor": true, "omar_flour_done": true } },
+    "conditions": { "flags": { "met_mayor": true, "omar_flour_done": true, "sig_omar": true } },
     "lines": [
       { "speaker": "Omar", "text": "Ik heb de oven op zes uur gezet. Voor 7000 mensen — dat is 350 kilogram deeg, reken maar mee." },
       { "speaker": "Omar", "text": "Khobz, msemmen, pistolets — alles gemengd op één tafel. Zo hoort het. Niemand mag honger hebben op de Turnhoutsebaan." },
