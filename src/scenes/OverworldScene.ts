@@ -39,6 +39,7 @@ export class OverworldScene extends Phaser.Scene {
   }> = [];
 
   private lastPlayerX = 0;
+  private locationTriggers: Array<{ x: number; width: number; dialogueId: string; onceFlag: string }> = [];
   private playtimeSyncTimer = 0;
 
   // ── Day/Night cycle ───────────────────────────────────────────────────────
@@ -85,6 +86,7 @@ export class OverworldScene extends Phaser.Scene {
     this.setupCamera();
     this.setupCollisions();
     this.setupZoneTriggers();
+    this.setupLocationTriggers();
     this.createUI();
     this.initDayCycle();
 
@@ -138,6 +140,18 @@ export class OverworldScene extends Phaser.Scene {
       }
     }
     this.lastPlayerX = this.player.sprite.x;
+
+    // ── Location triggers (one-shot walk-in events) ────────────────────────
+    if (!this.dialogueSystem.isOpen) {
+      const flags = stateManager.get().questFlags;
+      for (const trigger of this.locationTriggers) {
+        if (flags[trigger.onceFlag]) continue;
+        if (px >= trigger.x && px <= trigger.x + trigger.width) {
+          this.dialogueSystem.open(trigger.dialogueId);
+          break;
+        }
+      }
+    }
 
     // ── Interaction ────────────────────────────────────────────────────────
     if (this.controls.actionJustPressed) {
@@ -405,7 +419,7 @@ export class OverworldScene extends Phaser.Scene {
       { id: 'aziz',     texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_signature'   }, // Mimoun #239
       { id: 'tine',     texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_faction'      }, // Nacht Winkel #240
       { id: 'el_osri',  texture: 'npc_el_osri', x: 1550, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284
-      { id: 'sofia',    texture: 'npc_sofia',   x: 1650, y: sw,     dialogue: 'de_roma_keeper'   }, // De Roma #286
+      // De Roma #286 handled by location trigger → de_roma_keeper dialogue
       { id: 'yusuf',    texture: 'npc_yusuf',   x: 1840, y: sw,     dialogue: 'yusuf_delivery'    }, // Budget Market #326
     ];
 
@@ -974,6 +988,15 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
+  // ── Location triggers (one-shot walk-in events) ───────────────────────────
+
+  private setupLocationTriggers(): void {
+    this.locationTriggers = [
+      // De Roma concert hall #286 — auto-fires when player walks through entrance
+      { x: 1630, width: 60, dialogueId: 'de_roma_keeper', onceFlag: 'visited_de_roma' },
+    ];
+  }
+
   // ── Zone gate triggers ────────────────────────────────────────────────────
 
   private setupZoneTriggers(): void {
@@ -1032,7 +1055,7 @@ export class OverworldScene extends Phaser.Scene {
     }
     // Zone 3
     if (!f('met_mayor'))       return { x: 1550, label: 'El Osri' };
-    if (!f('visited_de_roma')) return { x: 1650, label: 'De Roma'  };
+    if (!f('visited_de_roma')) return { x: 1660, label: 'De Roma'  };
     return null;
   }
 

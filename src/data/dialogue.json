@@ -411,7 +411,7 @@
   },
 
   "de_roma_keeper": {
-    "npc": "sofia", "priority": 0, "conditions": {},
+    "priority": 0, "conditions": {},
     "lines": [
       { "speaker": "De Roma", "text": "Dit gebouw is Art Deco, gebouwd in 1927. Alphonse Pauwels ontwierp het voor 2000 toeschouwers.", "flag": "visited_de_roma", "flagVal": true },
       { "speaker": "De Roma", "text": "Na jaren leegstand werden wij in 2003 gered door Paul Schyvens en 400 vrijwilligers." },
