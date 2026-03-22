@@ -5,7 +5,10 @@ import questData from '@data/quests.json';
  * QuestSystem — tracks quest state, checks objectives, fires rewards.
  *
  * Pure TypeScript — no Phaser imports.
- * All state lives in StateManager.questFlags.
+ *
+ * State is read via stateManager.getFlag(), which now queries the XState
+ * GameMachine snapshot via the flagBridge. setFlag() translates known keys
+ * into machine events automatically.
  *
  * Usage:
  *   QuestSystem.checkAll()          — call after every dialogue end / battle end
@@ -46,7 +49,10 @@ export class QuestSystem {
 
   // ── Queries ────────────────────────────────────────────────────────────────
 
-  /** Returns true if the quest's completion flag is set. */
+  /**
+   * Returns true if the quest's completion flag is set.
+   * Reads from the XState machine via flagBridge.
+   */
   static isComplete(questId: string): boolean {
     const q = QUESTS[questId];
     if (!q) return false;
@@ -81,7 +87,10 @@ export class QuestSystem {
     return { done, total: q.objectives.length };
   }
 
-  /** How many faction quests are complete (0–7). */
+  /**
+   * How many faction quests are complete (0–7).
+   * Reads machine state via flagBridge for accuracy.
+   */
   static getFactionCount(): number {
     return [
       'q_faction_moroccan_done',
@@ -99,7 +108,7 @@ export class QuestSystem {
   /**
    * Check every active quest for completion.
    * Should be called after:
-   *   - Any dialogue end (new flags may have been set)
+   *   - Any dialogue end (new flags may have been set / events sent to machine)
    *   - Any battle end
    *   - Any item pickup
    *
@@ -122,7 +131,7 @@ export class QuestSystem {
       }
     }
 
-    // Keep samen_tafel_faction_N in sync
+    // Keep samen_tafel_faction_N in sync (numeric flag for UI display)
     stateManager.setFlag('samen_tafel_faction_N', QuestSystem.getFactionCount());
 
     return newlyDone;
@@ -131,7 +140,7 @@ export class QuestSystem {
   // ── Internals ──────────────────────────────────────────────────────────────
 
   private static _complete(q: QuestDef): void {
-    // Apply flag rewards
+    // Apply flag rewards — setFlag() translates machine-known keys to events
     for (const [key, val] of Object.entries(q.reward.flags)) {
       stateManager.setFlag(key, val);
     }
@@ -151,13 +160,13 @@ export class QuestSystem {
       stateManager.gainXP(q.reward.xp);
     }
 
-    // Apply skill unlocks (skills are gated by flags in SkillSystem;
-    // we just set the unlock flag here)
+    // Apply skill unlocks
     for (const skillId of q.reward.skills) {
       stateManager.setFlag(`skill_unlocked_${skillId}`, true);
     }
 
-    // Mark quest complete
+    // Mark quest complete — completionFlag is in flagBridge so it also
+    // updates machine state where applicable
     stateManager.setFlag(q.completionFlag, true);
 
     // Persist
