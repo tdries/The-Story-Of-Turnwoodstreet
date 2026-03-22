@@ -14,7 +14,8 @@
     "express": "^4.22.1",
     "nodemailer": "^8.0.3",
     "phaser": "^3.87.0",
-    "serve": "^14.2.6"
+    "serve": "^14.2.6",
+    "xstate": "^5.28.0"
   },
   "engines": {
     "node": ">=20"
