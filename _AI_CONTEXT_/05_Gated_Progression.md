@@ -106,13 +106,12 @@ rooted in the real culture and history of Borgerhout.
 | Entry gate | `has_community_trust` — vouched for by Fatima |
 | Acquired capability | Muziek van de Straat |
 | Narrative theme | Taking root. Finding the street's hidden culture. |
-| Key locations | Old Town Hall (no.110), Oxfam Wereldwinkel (no.94 — side entry), Beno Cycling (no.203), Reza's corner |
+| Key locations | Old Town Hall (no.110), Reza's corner, Aziz (#239) |
 | Tone | Deeper. The street reveals its history. The speculator's first threats emerge. |
 
 **Available quests in Zone 2:**
-- `q_oud_string` — Reza's broken string (earns Muziek van de Straat)
-- `q_signatures` — Collect 5 signatures against eviction
-- `q_beno_repair` — Get bakfiets repaired (unlocks Bakfiets-aanval skill)
+- `q_oud_string` — Reza's broken string → get from Aziz (#239) (earns Muziek van de Straat)
+- `q_signatures` — Collect 5 signatures against eviction (Reza only signs after oud quest done)
 
 ---
 
@@ -233,8 +232,8 @@ Zone 5 — ENDING: 2km Table cutscene, credits
 ```
 
 **Backtracking moments (deliberate design):**
-- Oxfam Wereldwinkel (no.94) is technically in Zone 1/2 boundary — oud_string is found
-  there after entering Zone 2, requiring return to the Zone 1 edge.
+- Aziz (#239) is at x=1060 (Zone 1 with current boundaries) — oud_string is obtained
+  there after the oud quest is accepted from Reza (x=880, also Zone 1).
 - After earning has_community_trust, Fatima also reveals Omar's flour shortage
   quest (q_flour_shortage) back in Zone 1 — pulling player back.
 - The `q_faction_flemish` quest requires visiting Bar Leon on Krugerplein (side street
@@ -278,25 +277,28 @@ Arrival (curious, uncertain)
 
 ## 5. GATE HINT MESSAGES (SHOWN TO PLAYER AT BLOCKED ZONES)
 
-| Gate | Dutch hint message |
-|------|--------------------|
-| Zone 1→2 (Reuzenpoort) | *"De poort blijft gesloten voor vreemden. Spreek eerst met Fatima aan het begin van de straat."* |
-| Zone 2→3 (De Roma) | *"De deur van De Roma opent alleen voor wie de taal van de straat begrijpt. Zoek Reza's oud-snaar."* |
-| Zone 3→4 (Deurne checkpoint) | *"De grenswachter vraagt naar uw papieren. Versla de Bulldozer-bureaucraat en draag zijn vergunning."* |
-| Zone 4→5 (Grote Tafel) | *"Je hebt nog [N] facties nodig. De tafel is pas compleet als iedereen zit."* |
+| Gate | x=  | Dutch hint message |
+|------|-----|--------------------|
+| Zone 1→2 | 1152 | *"De poort blijft gesloten voor vreemden. Spreek eerst met Fatima aan het begin van de straat."* |
+| Zone 2→3 | 2304 | *"De deur van De Roma opent alleen voor wie de taal van de straat begrijpt. Zoek Reza's oud-snaar."* |
+| Zone 3→4 | 3456 | *"De grenswachter vraagt naar uw papieren. Versla de Bulldozer-bureaucraat en draag zijn vergunning."* |
+| Zone 4→5 | 4608 | *"Je hebt nog [N] facties nodig. De tafel is pas compleet als iedereen zit."* |
 
 ---
 
 ## 6. IMPLEMENTATION NOTES
 
 ### Zone Boundaries (world pixel x-coordinates)
+WORLD_W = GAME_WIDTH × 12 = **5760 px** (street extended to cover Borgerhout → Deurne → Wijnegem).
 ```
-Zone 1:  x =    0 – 576   (nos.   1–110)
-Zone 2:  x =  576 – 1152  (nos. 110–200)
-Zone 3:  x = 1152 – 1728  (nos. 200–300)
-Zone 4:  x = 1728 – 2304  (nos. 300–400)
-Zone 5:  x = 2304 – 2880  (nos. 400–471+)
+Zone 1:  x =    0 – 1152  (nos.   1–110)   no gate
+Zone 2:  x = 1152 – 2304  (nos. 110–200)   gate: has_community_trust
+Zone 3:  x = 2304 – 3456  (nos. 200–300)   gate: reza_quest_done
+Zone 4:  x = 3456 – 4608  (nos. 300–400)   gate: has_permit_doc
+Zone 5:  x = 4608 – 5760  (nos. 400–471+)  gate: 7 factions
 ```
+> ⚠️ Updated 2026-03-22. All NPC x-positions (210–1664) and story triggers (1728–1920) fall in Zones 1–2.
+> Zones 3–5 (x > 2304) are the extended Deurne/Wijnegem area — building tiles only, no story NPCs yet.
 
 ### Key File Locations
 - Quest definitions:     `src/data/quests.json`
