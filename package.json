@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "tsc && vite build && cp -r assets dist/",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node server.js",
+    "viz": "node scripts/generate-quest-viz.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
