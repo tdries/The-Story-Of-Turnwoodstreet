@@ -884,7 +884,7 @@
 
   "fatima_nora_wedding": {
     "npc": "fatima", "priority": 105,
-    "conditions": { "flags": { "stunt_quest_done": true } },
+    "conditions": { "flags": { "stunt_quest_done": true, "sig_fatima": true } },
     "lines": [
       { "speaker": "Fatima", "text": "Nora's trouwdag was prachtig. Die stof — je had haar gezicht moeten zien." },
       { "speaker": "Fatima", "text": "Ze heeft je naam vermeld in haar speech. De hele familie klapt. Ga zo door." }
