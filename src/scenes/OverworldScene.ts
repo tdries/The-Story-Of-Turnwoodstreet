@@ -40,6 +40,8 @@ export class OverworldScene extends Phaser.Scene {
   }> = [];
 
   private lastPlayerX = 0;
+  /** Per-NPC visibility conditions: checked each update, toggles NPC.setVisible(). */
+  private npcVisibility: Array<{ npc: NPC; showFlag?: string; hideFlag?: string }> = [];
   private locationTriggers: Array<
     | { type: 'dialogue'; x: number; width: number; dialogueId: string; onceFlag: string; requiredFlags?: Record<string, boolean> }
     | { type: 'battle';   x: number; width: number; enemyId: string;    onceFlag: string; requiredFlags?: Record<string, boolean> }
@@ -127,6 +129,7 @@ export class OverworldScene extends Phaser.Scene {
     }
 
     this.npcs.forEach(npc => npc.update(delta));
+    this.updateNPCVisibility();
     this.updateCrowd(delta);
     this.updateTram(delta);
     this.updateVehicles(delta);
@@ -502,25 +505,51 @@ export class OverworldScene extends Phaser.Scene {
     // NPC x-positions aligned with their associated buildings (tile width = 96):
     //   #137 Indian Boutique  → x≈210   #170 Patisserie Aladdin → x≈400
     //   #189 Bakkerij Charif  → x≈590   #215 Theehuys Amal      → x≈880
-    //   #239 Mimoun           → x≈1060  #260 Hammam Borgerhout  → x≈1360
-    //   #284 Borger Hub       → x≈1550  #326 Budget Market      → x≈1840
-    //   #332 Costermans       → x≈1940
-    const seed: Array<{ id: string; texture: string; x: number; y: number; dialogue: string }> = [
-      { id: 'baert',    texture: 'npc_baert',   x:  210, y: sw,     dialogue: 'stunt_baert'       }, // Indian Boutique #137
-      { id: 'fatima',   texture: 'npc_fatima',  x:  400, y: sw,     dialogue: 'fatima_intro'      }, // Patisserie Aladdin #170
-      { id: 'hamza',    texture: 'npc_hamza',   x:  500, y: sw + 2, dialogue: 'hamza_marbles'     }, // between #170 and #189
-      { id: 'omar',     texture: 'npc_omar',    x:  590, y: sw - 2, dialogue: 'omar_bakker'       }, // Bakkerij Charif #189
-      { id: 'reza',     texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'        }, // Theehuys Amal #215
-      { id: 'aziz',     texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_signature'   }, // Mimoun #239
-      { id: 'tine',     texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_faction'      }, // Nacht Winkel #240
-      { id: 'el_osri',  texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284 (tile 17, x=1632)
-      // De Roma #286 handled by location trigger at x=1728 → de_roma_keeper dialogue
-      { id: 'yusuf',    texture: 'npc_yusuf',   x:  300, y: sw,     dialogue: 'yusuf_delivery'    }, // near start of street — courier with flat tyre
+    //   #239 Aziz             → x≈1060  #284 Borger Hub         → x≈1664
+    // showFlag: NPC starts invisible and appears once this flag is set
+    type NPCDef = { id: string; texture: string; x: number; y: number; dialogue: string; showFlag?: string };
+    const seed: NPCDef[] = [
+      { id: 'baert',       texture: 'npc_baert',   x:  210, y: sw,     dialogue: 'stunt_baert'         }, // Indian Boutique #137
+      { id: 'fatima',      texture: 'npc_fatima',  x:  400, y: sw,     dialogue: 'fatima_intro'        }, // Patisserie Aladdin #170
+      { id: 'yusuf',       texture: 'npc_yusuf',   x:  300, y: sw,     dialogue: 'yusuf_delivery'      }, // courier near start
+      { id: 'hamza',       texture: 'npc_hamza',   x:  500, y: sw + 2, dialogue: 'hamza_marbles'       }, // between #170 and #189
+      { id: 'omar',        texture: 'npc_omar',    x:  590, y: sw - 2, dialogue: 'omar_bakker'         }, // Bakkerij Charif #189
+      { id: 'reza',        texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'          }, // Theehuys Amal #215
+      { id: 'aziz',        texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_oud_string'     }, // #239
+      { id: 'tine',        texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_intro'          }, // Nacht Winkel #240
+      { id: 'el_osri',     texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor'      }, // Borger Hub #284
+      // De Roma #286 handled by location trigger at x=1728
+
+      // ── 5 new NPCs with Dutch names ──────────────────────────────────────────
+      // Lotte Verbeke — jonge moeder/activiste, verschijnt na de bezorgtaak
+      { id: 'lotte',        texture: 'npc_sofia',   x:  450, y: sw + 1, dialogue: 'lotte_intro',        showFlag: 'delivery_done'       },
+      // Kevin — skater tiener, altijd aanwezig, questrelevant na mayorgesprek
+      { id: 'kevin',        texture: 'npc_hamza',   x:  640, y: sw + 2, dialogue: 'kevin_intro'                                         },
+      // Mevrouw Van den Berg — gepensioneerde lerares, verschijnt met community trust
+      { id: 'van_den_berg', texture: 'npc_baert',   x: 1095, y: sw,     dialogue: 'van_den_berg_intro', showFlag: 'has_community_trust' },
+      // Bram Desmedt — barman Bar Leon, verschijnt met community trust
+      { id: 'bram',         texture: 'npc_omar',    x: 1540, y: sw - 1, dialogue: 'bram_intro',         showFlag: 'has_community_trust' },
+      // Nathalie Claes — maatschappelijk werkster OCMW, verschijnt na mayorgesprek
+      { id: 'nathalie',     texture: 'npc_tine',    x:  730, y: sw,     dialogue: 'nathalie_intro',     showFlag: 'met_mayor'           },
     ];
 
-    this.npcs = seed.map(d =>
-      new NPC(this, d.x, d.y, d.texture, 0, d.id, d.dialogue),
-    );
+    this.npcs = seed.map(d => {
+      const startVisible = !d.showFlag;
+      const npc = new NPC(this, d.x, d.y, d.texture, 0, d.id, d.dialogue, startVisible);
+      if (d.showFlag) this.npcVisibility.push({ npc, showFlag: d.showFlag });
+      return npc;
+    });
+  }
+
+  /** Toggle NPC visibility based on quest flags (checked once per frame). */
+  private updateNPCVisibility(): void {
+    if (this.npcVisibility.length === 0) return;
+    const flags = stateManager.get().questFlags;
+    for (const entry of this.npcVisibility) {
+      const shouldShow = entry.showFlag ? (flags[entry.showFlag] === true) : true;
+      const isVisible = entry.npc.sprite.visible;
+      if (shouldShow !== isVisible) entry.npc.setVisible(shouldShow);
+    }
   }
 
   // ── Crowd NPCs (anonymous pedestrians + vehicles) ─────────────────────────

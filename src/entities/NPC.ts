@@ -24,6 +24,10 @@ export class NPC {
   private readonly STEP_MS  = 210; // ms per walk frame
   private readonly WALK_SPD = 18;  // px / s
 
+  // Visibility helpers (name tag + arrow stored so setVisible() can toggle them)
+  private nameTag!: Phaser.GameObjects.Text;
+  private arrow!:   Phaser.GameObjects.Text;
+
   constructor(
     scene:      Phaser.Scene,
     x:          number,
@@ -32,6 +36,7 @@ export class NPC {
     _frame:     number,            // ignored — always starts idle (frame 0)
     id:         string,
     dialogueId: string,
+    startVisible = true,
   ) {
     this.id         = id;
     this.dialogueId = dialogueId;
@@ -47,7 +52,7 @@ export class NPC {
     this.sprite.setOffset(5, 20);
 
     // Name tag (fixed at spawn position — fine for short wanders)
-    scene.add.text(x, y - 40, id.charAt(0).toUpperCase() + id.slice(1), {
+    this.nameTag = scene.add.text(x, y - 40, id.charAt(0).toUpperCase() + id.slice(1), {
       fontFamily: '"Press Start 2P"',
       fontSize:   '8px',
       color:      '#FFD700',
@@ -56,7 +61,7 @@ export class NPC {
     }).setOrigin(0.5).setDepth(y + 1);
 
     // Bouncing interaction arrow above name tag
-    const arrow = scene.add.text(x, y - 54, '▼', {
+    this.arrow = scene.add.text(x, y - 54, '▼', {
       fontFamily: '"Press Start 2P"',
       fontSize:   '5px',
       color:      '#FFD700',
@@ -64,7 +69,7 @@ export class NPC {
       strokeThickness: 2,
     }).setOrigin(0.5).setDepth(y + 2);
     scene.tweens.add({
-      targets:  arrow,
+      targets:  this.arrow,
       y:        y - 49,
       duration: 600,
       ease:     'Sine.easeInOut',
@@ -73,6 +78,17 @@ export class NPC {
     });
 
     this.idleTimer = Phaser.Math.Between(500, 2500);
+
+    if (!startVisible) this.setVisible(false);
+  }
+
+  /** Show or hide the NPC and disable/enable its physics body. */
+  setVisible(visible: boolean): void {
+    this.sprite.setVisible(visible);
+    this.nameTag.setVisible(visible);
+    this.arrow.setVisible(visible);
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+    if (body) body.enable = visible;
   }
 
   update(delta: number): void {
