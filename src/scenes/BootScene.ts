@@ -119,6 +119,14 @@ export class BootScene extends Phaser.Scene {
       'assets/Sprites/cats/cats_sheet.png',
       { frameWidth: 32, frameHeight: 32 });
 
+    // ── Battle sprites (7 frames: player + 6 enemies, 48×64 game-px each) ──
+    // Sheet: 336×64 game-px × out_scale=8 → 2688×512 px
+    // Frames: 0=player, 1=straatvechter, 2=pickpocket, 3=bulldozer_bureau,
+    //         4=speculant, 5=tram_geest, 6=vlok_geest
+    this.load.spritesheet('battle_sprites',
+      'assets/Sprites/battle/battle_sprites.png',
+      { frameWidth: 384, frameHeight: 512 });
+
     // ── Item icons (13 icons × 16×16 px, horizontal strip) ───────────────
     // Order: fabric_bolt(0) delivery_package(1) flour(2) oud_string(3)
     //        tram_ticket(4) harira(5) baklava(6) samen_flyer(7) permit_doc(8)

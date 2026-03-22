@@ -39,7 +39,10 @@ export class OverworldScene extends Phaser.Scene {
   }> = [];
 
   private lastPlayerX = 0;
-  private locationTriggers: Array<{ x: number; width: number; dialogueId: string; onceFlag: string }> = [];
+  private locationTriggers: Array<
+    | { type: 'dialogue'; x: number; width: number; dialogueId: string; onceFlag: string; requiredFlags?: Record<string, boolean> }
+    | { type: 'battle';   x: number; width: number; enemyId: string;    onceFlag: string; requiredFlags?: Record<string, boolean> }
+  > = [];
   private playtimeSyncTimer = 0;
 
   // ── Day/Night cycle ───────────────────────────────────────────────────────
@@ -63,7 +66,7 @@ export class OverworldScene extends Phaser.Scene {
   ];
 
   // World dimensions (pixels)
-  static readonly WORLD_W = GAME_WIDTH * 6;   // 2880 px
+  static readonly WORLD_W = GAME_WIDTH * 12;  // 5760 px (full Borgerhout→Wijnegem street)
   static readonly WORLD_H = GAME_HEIGHT;      // 270 px
 
   constructor() {
@@ -146,8 +149,17 @@ export class OverworldScene extends Phaser.Scene {
       const flags = stateManager.get().questFlags;
       for (const trigger of this.locationTriggers) {
         if (flags[trigger.onceFlag]) continue;
+        if (trigger.requiredFlags) {
+          const allMet = Object.entries(trigger.requiredFlags).every(([k, v]) => (flags[k] ?? false) === v);
+          if (!allMet) continue;
+        }
         if (px >= trigger.x && px <= trigger.x + trigger.width) {
-          this.dialogueSystem.open(trigger.dialogueId);
+          if (trigger.type === 'battle') {
+            this.scene.pause(SCENE.OVERWORLD);
+            this.scene.launch(SCENE.BATTLE, { enemyId: trigger.enemyId });
+          } else {
+            this.dialogueSystem.open(trigger.dialogueId);
+          }
           break;
         }
       }
@@ -255,21 +267,33 @@ export class OverworldScene extends Phaser.Scene {
 
   /**
    * Building tiles (generated from Streetdata.md, house-number order):
-   * Tile index map:
-   *  0=Indian Boutique#137  1=Patisserie Aladdin#170  2=Brasserie 't Center#180
-   *  3=Bakkerij Charif#189  4=Frituur de Tram#200      5=Theehuys Amal#215
-   *  6=Mimoun#239           7=Nacht Winkel#240          8=Hammam Borgerhout#260
-   *  9=Borger Hub#284       10=Apotheek Praats#317      11=Budget Market#326
-   *  12=Costermans#332      13=Basic-Fit#360            14=New Star Kebab#370
-   *  15=Carrefour Market    16=brick_a  17=brick_b  18=brick_c  19=vacant
+   * Tile index map — Borgerhout (2140):
+   *  0=Indian Boutique#137   1=Patisserie Aladdin#170  2=Brasserie 't Center#180
+   *  3=Bakkerij Charif#189   4=Frituur de Tram#200     5=Theehuys Amal#215
+   *  6=Mimoun#239            7=Nacht Winkel#240         8=Hammam Borgerhout#260
+   *  9=Borger Hub#284        10=Apotheek Praats#317    11=Budget Market#326
+   *  12=Costermans#332       13=Basic-Fit#360          14=New Star Kebab#370
+   *  15=Carrefour Market     16=brick_a  17=brick_b   18=brick_c  19=vacant
+   *  20=Ornipa Parket#257    21=Eéntje Meer#343        22=Heiremans#381
+   *  23=Audifoon#410
+   * Deurne (2100):
+   *  24=Pluym#1-3            25=Svelta#30              26=Optiek VDB#31-33
+   *  27=Inverko#62-64        28=Schaeps#92-94          29=Cobra Keukens#108
+   *  30=Miss Sera#115        31=De Mont#212            32=Ter Rivierenhof#247
+   * Wijnegem (2110):
+   *  33=Wijnegem SEC#5       34=Nada#5u208             35=Beeckman#90
+   *  36=Hillaert#276-278     37=Optiek Ann Brands#339  38=Apotheek Meeussen#351
+   *  39=TattooCharis#372     40=Frituur De Brug#471
    */
   private placeBuildingFacades(W: number, H: number): void {
     const TW = 96;   // tile display width in Phaser game-units (2× the 48 game-px tile)
     const buildingBottom = Math.floor(H * 0.52);
 
-    // Real house-number sequence approximation (west → east)
+    // Real house-number sequence (west → east), all shops from streetdata.md
+    // Borgerhout → Deurne → Wijnegem
     const streetLayout = [
       16, 17,                          // brick (west edge)
+      // ── Borgerhout (2140) ──────────────────────────────
       0,                               // Indian Boutique #137
       16,
       1,                               // Patisserie Aladdin #170
@@ -281,6 +305,7 @@ export class OverworldScene extends Phaser.Scene {
       18,
       6,                               // Mimoun #239
       7,                               // Nacht Winkel #240
+      20,                              // Ornipa Parket #257
       17,
       8,                               // Hammam Borgerhout #260
       16,
@@ -289,29 +314,98 @@ export class OverworldScene extends Phaser.Scene {
       10,                              // Apotheek Praats #317
       11,                              // Budget Market #326
       12,                              // Costermans Wielersport #332
-      17,
+      21,                              // Eéntje Meer #343
       19,                              // Vacant
       13,                              // Basic-Fit #360
       14,                              // New Star Kebab #370
+      22,                              // Hendrik Heiremans #381
       16,
+      23,                              // Audifoon #410
       15,                              // Carrefour Market
-      17, 18, 16,
+      17, 18,                          // brick filler
+      // ── Deurne (2100) ─────────────────────────────────
+      24,                              // Pluym #1-3
+      16,
+      25,                              // Svelta #30
+      26,                              // Optiek Frits Van Den Bosh #31-33
+      16,
+      27,                              // Inverko Parfumerie #62-64
+      16,
+      28,                              // Schaeps Medische Hulpmiddelen #92-94
+      29,                              // Cobra Keukens #108
+      30,                              // Miss Sera #115
+      16,
+      31,                              // De Mont #212
+      16,
+      32,                              // Ter Rivierenhof #247
+      17,
+      // ── Wijnegem (2110) ───────────────────────────────
+      33,                              // Wijnegem Shop Eat Enjoy #5
+      34,                              // Nada #5 unit 208
+      16,
+      35,                              // Beeckman & Co #90
+      17,
+      36,                              // Hillaert #276-278
+      17,
+      37,                              // Optiek Ann Brands #339-341
+      38,                              // Apotheek Meeussen #351
+      39,                              // TattooCharis #372
+      16,
+      40,                              // Frituur De Brug #471
+      17, 18,                          // brick (east edge)
     ];
 
+    // Height variation per tile frame — buildings differ in stories/prominence.
+    // Default display height: 130 Phaser units. All share dH_src=108 game-px crop.
+    const TILE_HEIGHTS: Record<number, number> = {
+      4:  114,  // Frituur de Tram         — low 1-storey shed
+      7:  116,  // Nacht Winkel            — compact night shop
+      8:  148,  // Hammam Borgerhout       — ornate 3-storey landmark
+      9:  144,  // Borger Hub              — renovated 3-storey community hub
+      11: 154,  // Budget Market           — 4-storey corner block
+      13: 150,  // Basic-Fit               — large industrial gym volume
+      15: 146,  // Carrefour               — wide supermarket
+      16: 140,  // brick_a rowhouse        — standard 3-storey residence
+      18: 142,  // brick_c (bay window)    — slightly taller gable
+      20: 118,  // Ornipa Parket           — small 2-storey shop
+      21: 112,  // Eéntje Meer             — tiny service office
+      22: 138,  // Heiremans               — dignified 3-storey funeral home
+      23: 124,  // Audifoon                — modern 2-storey clinic
+      // Deurne
+      24: 136,  // Pluym                   — large 3-storey furniture showroom
+      25: 118,  // Svelta                  — small boutique
+      26: 126,  // Optiek VDB              — mid-size optician
+      27: 128,  // Inverko Parfumerie      — elegant 2-storey
+      28: 122,  // Schaeps                 — small medical shop
+      29: 132,  // Cobra Keukens           — medium showroom
+      30: 120,  // Miss Sera               — boutique
+      31: 124,  // De Mont                 — small gifts shop
+      32: 136,  // Ter Rivierenhof         — brasserie, tall ceilings
+      // Wijnegem
+      33: 148,  // Wijnegem SEC            — large shopping centre
+      34: 116,  // Nada                    — small shoe shop
+      35: 130,  // Beeckman                — garden centre
+      36: 120,  // Hillaert                — small specialist shop
+      37: 126,  // Optiek Ann Brands       — optician
+      38: 122,  // Apotheek Meeussen       — pharmacy
+      39: 114,  // TattooCharis            — small tattoo studio
+      40: 116,  // Frituur De Brug         — frituur
+    };
+
     // All tiles: SCALE=8, plinth at game-y=104, show top 108 game-px of tile.
-    // Displayed at TW=96 (2× wide) and dH_display=130 (20% taller) for readability.
-    const PNG_W      = 384;   // PNG frame width  (SCALE=8, TW=48 → 384 px)
-    const dH_src     = 108;   // source game-px to show (108 × 8 = 864 PNG px)
-    const dH_display = 130;   // display height in Phaser game-units (20% taller)
+    // Displayed at TW=96 (2× wide); height varies per tile for skyline interest.
+    const PNG_W  = 384;   // PNG frame width  (SCALE=8, TW=48 → 384 px)
+    const dH_src = 108;   // source game-px to show (108 × 8 = 864 PNG px)
 
     let tileX = 0;
     let idx   = 0;
     while (tileX < W) {
-      const frame = streetLayout[idx % streetLayout.length];
+      const frame      = streetLayout[idx % streetLayout.length];
+      const dH_display = TILE_HEIGHTS[frame] ?? 130;
       this.add.image(tileX, buildingBottom, 'buildings', frame)
         .setOrigin(0, 1)
         .setCrop(0, 0, PNG_W, dH_src * 8)      // show top 108 game-px (864 PNG px)
-        .setDisplaySize(TW, dH_display)         // render at 96×130 Phaser units
+        .setDisplaySize(TW, dH_display)
         .setDepth(1);
       tileX += TW;
       idx++;
@@ -418,9 +512,9 @@ export class OverworldScene extends Phaser.Scene {
       { id: 'reza',     texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'        }, // Theehuys Amal #215
       { id: 'aziz',     texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_signature'   }, // Mimoun #239
       { id: 'tine',     texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_faction'      }, // Nacht Winkel #240
-      { id: 'el_osri',  texture: 'npc_el_osri', x: 1550, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284
-      // De Roma #286 handled by location trigger → de_roma_keeper dialogue
-      { id: 'yusuf',    texture: 'npc_yusuf',   x: 1840, y: sw,     dialogue: 'yusuf_delivery'    }, // Budget Market #326
+      { id: 'el_osri',  texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284 (tile 17, x=1632)
+      // De Roma #286 handled by location trigger at x=1728 → de_roma_keeper dialogue
+      { id: 'yusuf',    texture: 'npc_yusuf',   x: 1952, y: sw,     dialogue: 'yusuf_delivery'    }, // Budget Market #326 (tile 20, x=1920)
     ];
 
     this.npcs = seed.map(d =>
@@ -992,8 +1086,21 @@ export class OverworldScene extends Phaser.Scene {
 
   private setupLocationTriggers(): void {
     this.locationTriggers = [
-      // De Roma concert hall #286 — auto-fires when player walks through entrance
-      { x: 1630, width: 60, dialogueId: 'de_roma_keeper', onceFlag: 'visited_de_roma' },
+      // ── Delivery quest — player must physically visit each address ─────────
+      { type: 'dialogue', x: 192, width: 96, dialogueId: 'delivery_indian',
+        onceFlag: 'delivered_137', requiredFlags: { delivery_packages_received: true } },
+      { type: 'dialogue', x: 384, width: 96, dialogueId: 'delivery_aladdin',
+        onceFlag: 'delivered_170', requiredFlags: { delivery_packages_received: true } },
+      { type: 'dialogue', x: 1632, width: 96, dialogueId: 'delivery_borgerhub',
+        onceFlag: 'delivered_284', requiredFlags: { delivery_packages_received: true } },
+      // ── Budget Market flour pickup (bug 5 fix — not an NPC, location trigger) ─
+      { type: 'dialogue', x: 1920, width: 96, dialogueId: 'budget_market_flour',
+        onceFlag: 'has_flour', requiredFlags: { flour_quest_accepted: true } },
+      // ── De Roma concert hall #286 — brick_c tile at x=1728 ────────────────
+      { type: 'dialogue', x: 1728, width: 60, dialogueId: 'de_roma_keeper', onceFlag: 'visited_de_roma' },
+      // ── Bureau-Bulldozer fight — guards zone 4 gate ───────────────────────
+      { type: 'battle', x: 1810, width: 50, enemyId: 'bulldozer_bureau', onceFlag: 'has_permit_doc',
+        requiredFlags: { visited_de_roma: true, speculator_threatened: true } },
     ];
   }
 
@@ -1036,7 +1143,7 @@ export class OverworldScene extends Phaser.Scene {
     const f = (k: string) => (flags[k] ?? false) === true;
 
     // Zone 1 — delivery
-    if (!f('met_yusuf') || !f('delivery_done')) return { x: 1840, label: 'Yusuf'   };
+    if (!f('met_yusuf') || !f('delivery_done')) return { x: 1952, label: 'Yusuf'   };
     // Zone 1 — fabric quest
     if (!f('met_fatima') || !f('stunt_quest_active'))                    return { x:  400, label: 'Fatima'  };
     if (!stateManager.hasItem('fabric_bolt') && !f('stunt_quest_done'))  return { x:  210, label: 'Baert'   };
@@ -1054,8 +1161,9 @@ export class OverworldScene extends Phaser.Scene {
       if (!f('sig_aziz'))   return { x: 1060, label: 'Aziz'   };
     }
     // Zone 3
-    if (!f('met_mayor'))       return { x: 1550, label: 'El Osri' };
-    if (!f('visited_de_roma')) return { x: 1660, label: 'De Roma'  };
+    if (!f('met_mayor'))       return { x: 1664, label: 'El Osri'   };
+    if (!f('visited_de_roma')) return { x: 1758, label: 'De Roma'   };
+    if (!f('has_permit_doc'))  return { x: 1835, label: 'Bulldozer' };
     return null;
   }
 

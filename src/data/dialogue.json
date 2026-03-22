@@ -128,8 +128,7 @@
   },
 
   "budget_market_flour": {
-    "npc": "yusuf", "priority": 110,
-    "conditions": { "flags": { "flour_quest_accepted": true, "has_flour": false, "omar_flour_done": false } },
+    "priority": 0, "conditions": {},
     "lines": [
       { "speaker": "Budget Market", "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.", "flag": "has_flour", "flagVal": true, "item": "flour" },
       { "speaker": "Budget Market", "text": "Groetjes aan Omar. Hij is een vaste klant al 15 jaar." }
@@ -186,7 +185,7 @@
     "lines": [
       { "speaker": "Reza", "text": "Psst. Hoor je dat? Die klanken komen uit De Roma. Elke week iets anders — gnawa, jazz, rap." },
       { "speaker": "Reza", "text": "Paul McCartney heeft hier ooit gespeeld. Echt waar. Turnhoutsebaan 286, augustus '72." },
-      { "speaker": "Reza", "text": "Mijn oud heeft een snaar gebroken. Als je er een vindt bij Mimoun, nr.239, speel ik vanavond een liedje voor jou.",
+      { "speaker": "Reza", "text": "Mijn oud heeft een snaar gebroken. Als je er een vindt bij Aziz verderop in de straat, speel ik vanavond een liedje voor jou.",
         "choice": [
           { "label": "Ik zoek die snaar voor je.", "flag": "oud_quest_accepted", "flagVal": true, "next": "reza_oud_accept" },
           { "label": "Vertel me meer over De Roma.", "next": "reza_de_roma_lore" }
@@ -199,7 +198,7 @@
     "npc": "reza", "priority": 40,
     "conditions": { "flags": { "oud_quest_accepted": true } },
     "lines": [
-      { "speaker": "Reza", "text": "Mimoun, nr.239 — verderop in de straat. Ze hebben soms muziekaccessoires. Vraag naar snaren voor een oud." }
+      { "speaker": "Reza", "text": "Aziz — verderop in de straat, vlak bij Mimoun. Hij heeft soms muziekaccessoires liggen. Vraag naar snaren voor een oud." }
     ]
   },
 
@@ -266,7 +265,7 @@
 
   "yusuf_delivery_done": {
     "npc": "yusuf", "priority": 60,
-    "conditions": { "flags": { "delivery_accepted": true, "delivery_packages_received": true } },
+    "conditions": { "flags": { "delivery_packages_received": true, "delivered_137": true, "delivered_170": true, "delivered_284": true, "delivery_done": false } },
     "lines": [
       { "speaker": "Yusuf", "text": "Alles geleverd? Fantastisch! Hier — een tramticket. Moge je bakfiets nooit een lekke band krijgen.", "flag": "delivery_done", "flagVal": true, "item": "tram_ticket", "removeItem": "delivery_package" }
     ]
@@ -283,7 +282,7 @@
 
   "aziz_signature": {
     "npc": "aziz", "priority": 40,
-    "conditions": { "flags": { "sig_aziz": false } },
+    "conditions": { "flags": { "has_community_trust": true, "sig_aziz": false } },
     "lines": [
       { "speaker": "Aziz", "text": "Ik ben hier al 40 jaar. Ik heb gezien hoe ze ons eerst uitsloten, toen tolereerden, nu misschien... accepteren.", "flag": "sig_aziz", "flagVal": true },
       { "speaker": "Aziz", "text": "Mijn handtekening? Ja. Voor deze straat teken ik alles.", "flag": "met_aziz", "flagVal": true }
@@ -428,7 +427,7 @@
   },
 
   "imam_mosque": {
-    "priority": 0, "conditions": {},
+    "priority": 0, "conditions": { "flags": { "met_mayor": true, "kracht_van_gemeenschap": true } },
     "lines": [
       { "speaker": "Imam", "text": "Vrede. Ik heb gehoord van uw tafel. Als de iftar-maaltijd gerespecteerd wordt — als er geen alcohol naast onze borden staat — dan doen wij mee.", "flag": "met_imam", "flagVal": true,
         "choice": [
@@ -454,7 +453,7 @@
   },
 
   "frituur_faction": {
-    "priority": 0, "conditions": {},
+    "priority": 0, "conditions": { "flags": { "met_mayor": true, "delivery_done": true } },
     "lines": [
       { "speaker": "Frituur de Tram", "text": "7000 zakjes friet? Dat is... heel veel aardappelen. Maar als jij de bestelling regelt bij de groothandel, doen wij mee.",
         "choice": [
@@ -480,7 +479,7 @@
   },
 
   "borgerhub_faction": {
-    "priority": 0, "conditions": {},
+    "priority": 0, "conditions": { "flags": { "met_mayor": true, "visited_de_roma": true } },
     "lines": [
       { "speaker": "Borgerhub", "text": "Een kunstenaarscollectief aan de Samen Aan Tafel? Als De Roma ook meedoet — absoluut. Kunst en buurt horen samen.", "flag": "art_faction_convinced", "flagVal": true }
     ]
@@ -515,6 +514,27 @@
     "lines": [
       { "speaker": "Geest van '88", "text": "Ik... ik heb al die jaren nooit... aan tafel gezeten met...", "flag": "kracht_van_gemeenschap", "flagVal": true },
       { "speaker": "Geest van '88", "text": "*verdwijnt langzaam* ...smakelijk." }
+    ]
+  },
+
+  "delivery_indian": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Indian Boutique", "text": "Ah, een pakje van Yusuf! Bedankt hè. Groetjes van de Turnhoutsebaan.", "flag": "delivered_137", "flagVal": true }
+    ]
+  },
+
+  "delivery_aladdin": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Patisserie Aladdin", "text": "Merci! We wachtten hierop. Yusuf stuurt altijd de beste mensen.", "flag": "delivered_170", "flagVal": true }
+    ]
+  },
+
+  "delivery_borgerhub": {
+    "priority": 0, "conditions": {},
+    "lines": [
+      { "speaker": "Borger Hub", "text": "Geleverd! Alle drie pakjes zijn nu weg. Ga maar terug naar Yusuf — hij is je een tramticket schuldig.", "flag": "delivered_284", "flagVal": true }
     ]
   }
 }
