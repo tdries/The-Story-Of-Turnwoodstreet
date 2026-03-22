@@ -330,7 +330,7 @@
     "npc": "el_osri", "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "El Osri", "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.", "flag": "met_mayor", "flagVal": true, "flag2": "visited_de_roma", "flagVal2": true },
+      { "speaker": "El Osri", "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.", "flag": "met_mayor", "flagVal": true },
       { "speaker": "El Osri", "text": "Ik heb gehoord wat je gedaan hebt — de stof, de petitie, de snaar. Deze straat heeft je nodig." },
       { "speaker": "El Osri", "text": "Ik organiseer de Samen Aan Tafel: 2 kilometer tafel, 7000 mensen, Easter en Iftar samen. Maar ik heb 7 facties nodig. Wil je helpen?", "flag": "act4_briefed", "flagVal": true,
         "choice": [
@@ -411,7 +411,7 @@
   },
 
   "de_roma_keeper": {
-    "priority": 0, "conditions": {},
+    "npc": "sofia", "priority": 0, "conditions": {},
     "lines": [
       { "speaker": "De Roma", "text": "Dit gebouw is Art Deco, gebouwd in 1927. Alphonse Pauwels ontwierp het voor 2000 toeschouwers.", "flag": "visited_de_roma", "flagVal": true },
       { "speaker": "De Roma", "text": "Na jaren leegstand werden wij in 2003 gered door Paul Schyvens en 400 vrijwilligers." },

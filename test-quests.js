@@ -353,10 +353,15 @@ talk('omar', 'Omar post-sig → bakker fallback', {
 // ── Zone 3: El Osri ───────────────────────────────────────────────────────────
 console.log(`\n${DIM}── Zone 3: El Osri / Borger Hub ────────────────────────────${X}`);
 
-talk('el_osri', 'Talk to El Osri → visited_de_roma + met_mayor', {
+talk('el_osri', 'Talk to El Osri → met_mayor (Borger Hub)', {
   expectNode:  'district_mayor',
   choicePath:  [0],   // "Ja. Ik doe mee."
-  expectFlags: { met_mayor: true, visited_de_roma: true, act4_started: true },
+  expectFlags: { met_mayor: true, act4_started: true },
+});
+
+talk('sofia', 'Talk to Sofia → visited_de_roma (De Roma keeper)', {
+  expectNode:  'de_roma_keeper',
+  expectFlags: { visited_de_roma: true },
 });
 
 // ── Regression: met_mayor before all sigs ────────────────────────────────────

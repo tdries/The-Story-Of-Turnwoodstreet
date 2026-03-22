@@ -405,7 +405,7 @@ export class OverworldScene extends Phaser.Scene {
       { id: 'aziz',     texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_signature'   }, // Mimoun #239
       { id: 'tine',     texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_faction'      }, // Nacht Winkel #240
       { id: 'el_osri',  texture: 'npc_el_osri', x: 1550, y: sw,     dialogue: 'district_mayor'    }, // Borger Hub #284
-      { id: 'sofia',    texture: 'npc_sofia',   x: 1650, y: sw,     dialogue: 'reza_music'        }, // between #284 and #317
+      { id: 'sofia',    texture: 'npc_sofia',   x: 1650, y: sw,     dialogue: 'de_roma_keeper'   }, // De Roma #286
       { id: 'yusuf',    texture: 'npc_yusuf',   x: 1840, y: sw,     dialogue: 'yusuf_delivery'    }, // Budget Market #326
     ];
 
@@ -1031,7 +1031,8 @@ export class OverworldScene extends Phaser.Scene {
       if (!f('sig_aziz'))   return { x: 1060, label: 'Aziz'   };
     }
     // Zone 3
-    if (!f('visited_de_roma')) return { x: 1550, label: 'El Osri' };
+    if (!f('met_mayor'))       return { x: 1550, label: 'El Osri' };
+    if (!f('visited_de_roma')) return { x: 1650, label: 'De Roma'  };
     return null;
   }
 
