@@ -161,6 +161,11 @@ class StateManager {
     this.actor.send(event);
   }
 
+  /** Raw machine snapshot — used by getNavTarget and the debug logger. */
+  getSnapshot(): { value: unknown; context: GameContext } {
+    return this.actor.getSnapshot() as { value: unknown; context: GameContext };
+  }
+
   // ── PlayerState facade ──────────────────────────────────────────────────────
 
   /** Returns current player stats derived from actor context. */

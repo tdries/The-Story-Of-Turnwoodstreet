@@ -9,6 +9,7 @@ import { ItemBar }        from '@ui/ItemBar';
 import { DialogueBox }    from '@ui/DialogueBox';
 import { DialogueSystem, DIALOGUES, DialogueConditions } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS } from '@systems/GateSystem';
+import { getNavTarget }            from '@systems/GameMachine';
 import { QuestSystem }    from '@systems/QuestSystem';
 import { playtimeTracker } from '@core/PlaytimeTracker';
 import { TimeManager }    from '@core/TimeManager';
@@ -1137,34 +1138,9 @@ export class OverworldScene extends Phaser.Scene {
 
   // ── Navigation arrow ──────────────────────────────────────────────────────
 
-  /** Returns the world-x of the next quest objective and a short NPC label. */
+  /** Returns the world-x of the next quest objective, driven by XState machine state. */
   private getNextTarget(): { x: number; label: string } | null {
-    const flags = stateManager.get().questFlags;
-    const f = (k: string) => (flags[k] ?? false) === true;
-
-    // Zone 1 — delivery
-    if (!f('met_yusuf') || !f('delivery_done')) return { x:  300, label: 'Yusuf'   };
-    // Zone 1 — fabric quest
-    if (!f('met_fatima') || !f('stunt_quest_active'))                    return { x:  400, label: 'Fatima'  };
-    if (!stateManager.hasItem('fabric_bolt') && !f('stunt_quest_done'))  return { x:  210, label: 'Baert'   };
-    if (stateManager.hasItem('fabric_bolt'))                             return { x:  400, label: 'Fatima'  };
-    // Zone 2 — oud quest
-    if (!f('oud_quest_accepted'))   return { x:  880, label: 'Reza'    };
-    if (!f('has_oud_string_item'))  return { x: 1060, label: 'Aziz'    };
-    if (!f('reza_quest_done'))      return { x:  880, label: 'Reza'    };
-    // Zone 2 — signatures (guide to first missing one)
-    if (f('has_community_trust') && !f('speculator_threatened')) {
-      if (!f('sig_fatima')) return { x:  400, label: 'Fatima' };
-      if (!f('sig_omar'))   return { x:  590, label: 'Omar'   };
-      if (!f('sig_reza'))   return { x:  880, label: 'Reza'   };
-      if (!f('sig_baert'))  return { x:  210, label: 'Baert'  };
-      if (!f('sig_aziz'))   return { x: 1060, label: 'Aziz'   };
-    }
-    // Zone 3
-    if (!f('met_mayor'))       return { x: 1664, label: 'El Osri'   };
-    if (!f('visited_de_roma')) return { x: 1758, label: 'De Roma'   };
-    if (!f('has_permit_doc'))  return { x: 1835, label: 'Bulldozer' };
-    return null;
+    return getNavTarget(stateManager.getSnapshot());
   }
 
   private updateNavArrow(delta: number): void {

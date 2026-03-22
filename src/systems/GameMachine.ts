@@ -716,6 +716,139 @@ export function flagBridge(snapshot: AnySnapshot): Record<string, boolean> {
   };
 }
 
+// ── Nav target ───────────────────────────────────────────────────────────────
+
+/** World-x of each named NPC / location, mirroring OverworldScene seed. */
+const NAV_X = {
+  baert:      210,
+  fatima:     400,
+  hamza:      500,
+  omar:       590,
+  reza:       880,
+  aziz:      1060,
+  tine:      1160,
+  el_osri:   1664,
+  de_roma:   1728,
+  bulldozer: 1810,
+  budget:    1920,
+  yusuf:      300,
+  // Act 4 locations (extended world)
+  imam:      2400,   // De-Koepel Moskee
+  frituur:   2300,   // Frituur de Tram
+} as const;
+
+/** Returns the active state name of a top-level parallel region. */
+function getRegionState(value: unknown, region: string): string | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const regionVal = (value as Record<string, unknown>)[region];
+  if (typeof regionVal === 'string') return regionVal;
+  if (typeof regionVal === 'object' && regionVal !== null) {
+    return Object.keys(regionVal as Record<string, unknown>)[0] ?? null;
+  }
+  return null;
+}
+
+/**
+ * getNavTarget — derives the single most logical world destination from the
+ * current machine snapshot, following the canonical story sequence:
+ *   Act 1: Delivery → Fabric → (third delivery) → return Yusuf
+ *   Act 2: Oud → Flour (if accepted) → Signatures
+ *   Act 3: De Roma → Bulldozer → Mayor
+ *   Act 3: Geest (needs flour + bulldozer done)
+ *   Act 4: Factions (7 parallel)
+ */
+export function getNavTarget(snapshot: AnySnapshot): { x: number; label: string } | null {
+  const v = snapshot.value;
+
+  const delivery   = getRegionState(v, 'delivery');
+  const fabric     = getRegionState(v, 'fabric');
+  const flour      = getRegionState(v, 'flour');
+  const oud        = getRegionState(v, 'oud');
+  const sigs       = getRegionState(v, 'signatures');
+  const bulldozer  = getRegionState(v, 'bulldozer');
+  const geest      = getRegionState(v, 'geest');
+  const mayor      = getRegionState(v, 'mayor');
+
+  // ── Act 1: Delivery ────────────────────────────────────────────────────────
+  if (delivery === 'idle' || delivery === 'met') {
+    return { x: NAV_X.yusuf, label: 'Yusuf' };
+  }
+
+  if (delivery === 'accepted') {
+    // Deliver in address order; third delivery needs community trust first
+    if (stateIs(v, 'delivery', 'accepted', 'pkg137', 'pending')) {
+      return { x: NAV_X.baert, label: '#137 Indian Boutique' };
+    }
+    if (stateIs(v, 'delivery', 'accepted', 'pkg170', 'pending')) {
+      return { x: NAV_X.fatima, label: '#170 Aladdin' };
+    }
+    // pkg284 pending — need community trust (Zone 2) first
+    if (fabric === 'idle') return { x: NAV_X.fatima, label: 'Fatima' };
+    if (fabric === 'met' || fabric === 'accepted') return { x: NAV_X.baert, label: 'Baert' };
+    if (fabric === 'picked_up') return { x: NAV_X.fatima, label: 'Fatima' };
+    return { x: 1632, label: '#284 Borgerhub' };
+  }
+
+  if (delivery === 'all_delivered') {
+    return { x: NAV_X.yusuf, label: 'Yusuf' };
+  }
+
+  // delivery === 'rewarded' (done) — fall through
+
+  // ── Act 1→2: Fabric quest (if still running) ──────────────────────────────
+  if (fabric === 'idle') return { x: NAV_X.fatima, label: 'Fatima' };
+  if (fabric === 'met' || fabric === 'accepted') return { x: NAV_X.baert, label: 'Baert' };
+  if (fabric === 'picked_up') return { x: NAV_X.fatima, label: 'Fatima' };
+
+  // fabric === 'completed' → has_community_trust → Zone 2 open
+
+  // ── Act 2: Oud quest (unlocks Zone 3 + Reza's signature) ──────────────────
+  if (oud === 'idle')     return { x: NAV_X.reza, label: 'Reza' };
+  if (oud === 'accepted') return { x: NAV_X.aziz, label: 'Aziz' };
+  if (oud === 'found')    return { x: NAV_X.reza, label: 'Reza' };
+
+  // oud === 'completed' → reza_quest_done → Zone 3 open
+
+  // ── Act 2: Flour quest — guide if already accepted (parallel, player-initiated) ─
+  if (flour === 'accepted')   return { x: NAV_X.budget, label: 'Budget Market' };
+  if (flour === 'picked_up')  return { x: NAV_X.omar,   label: 'Omar' };
+
+  // ── Act 2: Signatures (5 sigs, in NPC order) ──────────────────────────────
+  if (sigs !== 'rewarded') {
+    if (!sigRegionIs(v, 'fatima_sig', 'done')) return { x: NAV_X.fatima, label: 'Fatima' };
+    if (!sigRegionIs(v, 'omar_sig',   'done')) return { x: NAV_X.omar,   label: 'Omar'   };
+    if (!sigRegionIs(v, 'reza_sig',   'done')) return { x: NAV_X.reza,   label: 'Reza'   };
+    if (!sigRegionIs(v, 'baert_sig',  'done')) return { x: NAV_X.baert,  label: 'Baert'  };
+    if (!sigRegionIs(v, 'aziz_sig',   'done')) return { x: NAV_X.aziz,   label: 'Aziz'   };
+  }
+
+  // ── Act 3: De Roma → Bulldozer ────────────────────────────────────────────
+  if (bulldozer === 'idle')             return { x: NAV_X.de_roma,   label: 'De Roma'    };
+  if (bulldozer === 'de_roma_visited')  return { x: NAV_X.bulldozer, label: 'Bulldozer'  };
+
+  // bulldozer === 'completed' → has_permit_doc → Zone 4 open
+
+  // ── Act 3: Mayor meeting ──────────────────────────────────────────────────
+  if (mayor === 'idle') return { x: NAV_X.el_osri, label: 'Districtsvoorzitter' };
+
+  // ── Act 3: Geest (needs flour + bulldozer) ────────────────────────────────
+  if (geest !== 'completed') {
+    if (flour !== 'completed') return { x: NAV_X.omar, label: 'Omar' };
+    return { x: 2200, label: "Geest van '88" };   // TODO: exact trigger x
+  }
+
+  // ── Act 4: Factions ───────────────────────────────────────────────────────
+  if (!factionIs(v, 'moroccan')) return { x: NAV_X.fatima,  label: 'Fatima'          };
+  if (!factionIs(v, 'turkish'))  return { x: NAV_X.tine,    label: 'Tine'            };
+  if (!factionIs(v, 'flemish'))  return { x: NAV_X.baert,   label: 'Baert'           };
+  if (!factionIs(v, 'art'))      return { x: NAV_X.de_roma, label: 'De Roma'         };
+  if (!factionIs(v, 'school'))   return { x: NAV_X.hamza,   label: 'Hamza'           };
+  if (!factionIs(v, 'mosque'))   return { x: NAV_X.imam,    label: 'Imam'            };
+  if (!factionIs(v, 'frituur'))  return { x: NAV_X.frituur, label: 'Frituur de Tram' };
+
+  return null; // all done!
+}
+
 /** Convenience: get the numeric faction count from a snapshot. */
 export function getFactionCount(snapshot: AnySnapshot): number {
   const flags = flagBridge(snapshot);
