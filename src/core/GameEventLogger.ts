@@ -155,9 +155,17 @@ class GameEventLogger {
   private snapshotGetter: (() => AnySnapshot) | null = null;
 
   constructor() {
-    // Resolve auth user once; logging silently skipped for guests
+    // Resolve auth user; events are buffered until this resolves.
     supabase.auth.getUser().then(({ data }) => {
       this.userId = data.user?.id ?? null;
+      if (this.userId) {
+        // Stamp userId on any events that arrived before auth resolved
+        for (const row of this.queue) row.user_id = this.userId;
+        void this.flush();
+      } else {
+        // Not logged in — discard buffer
+        this.queue = [];
+      }
     });
   }
 
@@ -210,17 +218,16 @@ class GameEventLogger {
   }
 
   private push(rawType: string, notation: string, rawData: Record<string, unknown>): void {
-    // Only log when user is authenticated (debug tool, not for guests)
-    if (!this.userId) return;
     this.queue.push({
-      user_id:    this.userId,
+      user_id:    this.userId,   // may be null if auth not yet resolved; stamped later
       session_id: this.sessionId,
       seq:        this.seq++,
       notation,
       raw_type:   rawType,
       raw_data:   rawData,
     });
-    this.scheduleFlush();
+    // Only schedule a flush once we know the user (otherwise auth resolution flushes)
+    if (this.userId) this.scheduleFlush();
   }
 
   private scheduleFlush(): void {
@@ -235,9 +242,11 @@ class GameEventLogger {
     if (this.queue.length === 0) return;
     const batch = this.queue.splice(0, 100);
     try {
-      await supabase.from('game_events').insert(batch);
-    } catch {
+      const { error } = await supabase.from('game_events').insert(batch);
+      if (error) console.error('[GameEventLogger] insert error:', error);
+    } catch (err) {
       // Network unavailable — drop batch (debug telemetry, not save data)
+      console.error('[GameEventLogger] network error:', err);
     }
   }
 }
