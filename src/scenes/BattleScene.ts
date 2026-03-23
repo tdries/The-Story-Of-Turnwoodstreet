@@ -4,6 +4,7 @@ import { stateManager }  from '@core/StateManager';
 import { InputHandler }  from '@core/InputHandler';
 import { CombatSystem, BattleResult } from '@systems/CombatSystem';
 import { localeManager } from '@i18n/LocaleManager';
+import { gameEventLogger } from '@core/GameEventLogger';
 import enemyData from '@data/enemies.json';
 
 export interface BattleSceneData {
@@ -201,6 +202,8 @@ export class BattleScene extends Phaser.Scene {
       const coinGain  = enemyDef?.coins ?? 0;
       const loot      = (enemyDef as any)?.loot as string[] ?? [];
 
+      gameEventLogger.logBattle(this.enemyId, result, xpGain, coinGain);
+
       const levelled = stateManager.gainXP(xpGain);
       if (coinGain > 0) stateManager.addCoins(coinGain);
 
@@ -213,8 +216,11 @@ export class BattleScene extends Phaser.Scene {
       const msg = levelled ? localeManager.t('level_up') : `+${xpGain} XP`;
       this.showMessage(`${localeManager.t('victory')} ${msg}`);
     } else if (result === 'defeat') {
+      gameEventLogger.logBattle(this.enemyId, result);
       stateManager.setHP(1);
       this.showMessage(localeManager.t('defeat'));
+    } else if (result === 'escaped') {
+      gameEventLogger.logBattle(this.enemyId, result);
     }
 
     stateManager.setHP(this.combat.getState().player.hp);

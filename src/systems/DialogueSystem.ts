@@ -1,5 +1,6 @@
 import { InputHandler }  from '@core/InputHandler';
 import { stateManager }  from '@core/StateManager';
+import { gameEventLogger } from '@core/GameEventLogger';
 import { QuestSystem }   from '@systems/QuestSystem';
 import { DialogueBox }   from '@ui/DialogueBox';
 import { localeManager } from '@i18n/LocaleManager';
@@ -82,6 +83,7 @@ export class DialogueSystem {
     const node = DIALOGUES[dialogueId];
     if (!node || node.lines.length === 0) return;
 
+    gameEventLogger.logDialogue(dialogueId);
     this.dialogueId     = dialogueId;
     this.lines          = node.lines;
     this.lineIdx        = 0;

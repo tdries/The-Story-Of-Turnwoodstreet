@@ -3,6 +3,7 @@ import type { SnapshotFrom }      from 'xstate';
 import { supabase }               from '@core/SupabaseClient';
 import { GameMachine, flagBridge } from '@systems/GameMachine';
 import type { GameEvent, GameContext } from '@systems/GameMachine';
+import { gameEventLogger }        from '@core/GameEventLogger';
 
 /** The persisted snapshot type for GameMachine. */
 type GameSnapshot = SnapshotFrom<typeof GameMachine>;
@@ -130,6 +131,9 @@ class StateManager {
     }
     this.actor.start();
     this._attachDebugLogger();
+    gameEventLogger.attachSnapshotGetter(
+      () => this.actor.getSnapshot() as { value: unknown; context: GameContext },
+    );
   }
 
   private _attachDebugLogger(): void {
@@ -156,9 +160,10 @@ class StateManager {
     // Actor started in constructor; exposed here for explicit callers.
   }
 
-  /** Send a typed event directly to the machine. */
+  /** Send a typed event directly to the machine (and log it). */
   send(event: GameEvent): void {
     this.actor.send(event);
+    gameEventLogger.logXStateEvent(event.type);
   }
 
   /** Raw machine snapshot — used by getNavTarget and the debug logger. */
@@ -229,6 +234,7 @@ class StateManager {
       const event = FLAG_TO_EVENT[key];
       if (event !== null) {
         this.actor.send(event);
+        gameEventLogger.logXStateEvent(event.type);
       }
       // Don't store in extraFlags — machine state is the source of truth
       return;
@@ -245,11 +251,13 @@ class StateManager {
 
   addItem(itemId: string): void {
     this.actor.send({ type: 'ADD_ITEM', itemId });
+    gameEventLogger.logItemAdd(itemId);
   }
 
   removeItem(itemId: string): boolean {
     if (!this.hasItem(itemId)) return false;
     this.actor.send({ type: 'REMOVE_ITEM', itemId });
+    gameEventLogger.logItemRemove(itemId);
     return true;
   }
 
