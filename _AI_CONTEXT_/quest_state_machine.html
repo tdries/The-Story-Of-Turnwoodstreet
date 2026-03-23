@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quest State Machine — Turnhoutsebaan RPG</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0a12;
+      color: #f0ead6;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 32px 24px;
+    }
+    h1 {
+      font-size: 22px;
+      color: #ffd700;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 40px;
+    }
+    section {
+      margin-bottom: 56px;
+      border-top: 1px solid #222;
+      padding-top: 28px;
+    }
+    h2 {
+      font-size: 16px;
+      color: #ffd700;
+      margin-bottom: 16px;
+    }
+    p { margin: 8px 0; color: #ccc; }
+    blockquote {
+      border-left: 3px solid #444;
+      padding-left: 12px;
+      color: #aaa;
+      margin: 8px 0;
+    }
+    code {
+      background: #1a1a2e;
+      color: #a8d8a8;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    strong { color: #f0ead6; }
+    .table-row {
+      font-family: monospace;
+      font-size: 12px;
+      color: #aaa;
+      border-bottom: 1px solid #1a1a2e;
+      padding: 3px 0;
+    }
+    .mermaid {
+      background: #111122;
+      border: 1px solid #2a2a3e;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    svg { max-width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Quest State Machine</h1>
+  <p class="subtitle">Turnhoutsebaan RPG — auto-generated from src/systems/GameMachine.ts · regenerate: npm run viz</p>
+
+  
+    <section>
+      <h2>Quest State Machine</h2>
+      <p># Quest State Machine — Turnhoutsebaan RPG</p><p>Auto-generated from <code>src/systems/GameMachine.ts</code>.
+Regenerate with: <code>npm run viz</code></p><p><blockquote><strong>How to read this diagram</strong></blockquote>
+<blockquote>- Each arc runs in <strong>parallel</strong> — all arcs progress independently.</blockquote>
+<blockquote>- Transitions are triggered by XState events (e.g. <code>MET_YUSUF</code>).</blockquote>
+<blockquote>- <code>[*]</code> = entry/exit point. <code>✓</code> = final state.</blockquote>
+<blockquote>- Grey boxes inside <code>accepted</code>/<code>collecting</code> are <strong>nested parallel</strong> sub-states.</blockquote></p><p></p>
+    </section>
+
+    <section>
+      <h2>Full Machine — Parallel Arcs Overview</h2>
+      
+<pre class="mermaid">flowchart LR
+    delivery["🚴 Delivery\nAct 1"]
+    fabric["🧵 Fabric\nAct 1→2"]
+    flour["🌾 Flour\nAct 2"]
+    oud["🎸 Oud\nAct 2"]
+    signatures["✍️ Signatures\nAct 2"]
+    bulldozer["🏗️ Bulldozer\nAct 3"]
+    geest["👻 Geest\nAct 3"]
+    mayor["🏛️ Mayor\nAct 3→4"]
+    factions["🤝 Factions\nAct 4"]
+
+    delivery -.-&gt;|community trust| fabric
+    fabric -.-&gt;|trust unlocks| signatures
+    flour -.-&gt;|samen tafel| geest
+    signatures -.-&gt;|speculator| bulldozer
+    bulldozer -.-&gt;|permit| mayor
+    mayor -.-&gt;|briefed| factions
+</pre>
+<p></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 1 — Delivery Arc</h2>
+      
+<pre class="mermaid">flowchart TD
+    D_START([idle])
+    D1([met])
+    D_ACC([accepted])
+    D_ALL([all_delivered])
+    D_DONE(["rewarded ✓"])
+
+    D_START --&gt;|MET_YUSUF| D1
+    D1 --&gt;|DELIVERY_ACCEPTED| D_ACC
+
+    D_ACC --&gt; P137
+    D_ACC --&gt; P170
+    D_ACC --&gt; P284
+
+    subgraph parallel["parallel packages"]
+        P137["📦 #137\npending"] --&gt;|DELIVERED_137| P137D["#137 ✓"]
+        P170["📦 #170\npending"] --&gt;|DELIVERED_170| P170D["#170 ✓"]
+        P284["📦 #284\npending"] --&gt;|DELIVERED_284| P284D["#284 ✓"]
+    end
+
+    P137D &amp; P170D &amp; P284D --&gt;|all done| D_ALL
+    D_ALL --&gt;|DELIVERY_REWARDED| D_DONE
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>met_yusuf</code> · <code>delivery_accepted</code> · <code>delivered_137/170/284</code> · <code>delivery_done</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 1→2 — Fabric Arc (Fatima's Wedding)</h2>
+      
+<pre class="mermaid">flowchart LR
+    F0([idle]) --&gt;|MET_FATIMA| F1([met])
+    F1 --&gt;|FABRIC_ACCEPTED| F2([accepted])
+    F2 --&gt;|FABRIC_PICKED_UP| F3([picked_up])
+    F3 --&gt;|FABRIC_DELIVERED| F4(["completed ✓"])
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>met_fatima</code> · <code>fabric_quest_accepted</code> · <code>stunt_quest_active</code> · <code>stunt_quest_done</code> · <code>has_community_trust</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 2 — Flour Arc (Omar's Bakery)</h2>
+      
+<pre class="mermaid">flowchart LR
+    FL0([idle]) --&gt;|FLOUR_ACCEPTED| FL1([accepted])
+    FL1 --&gt;|FLOUR_PICKED_UP| FL2([picked_up])
+    FL2 --&gt;|FLOUR_DELIVERED| FL3(["completed ✓"])
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>flour_quest_accepted</code> · <code>has_flour</code> · <code>omar_flour_done</code> · <code>knows_samen_tafel</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 2 — Oud Arc (Reza's String)</h2>
+      
+<pre class="mermaid">flowchart LR
+    O0([idle]) --&gt;|OUD_ACCEPTED| O1([accepted])
+    O1 --&gt;|OUD_FOUND| O2([found])
+    O2 --&gt;|OUD_DELIVERED| O3(["completed ✓"])
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>oud_quest_accepted</code> · <code>has_oud_string_item</code> · <code>reza_quest_done</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 2 — Signatures Arc (Petition)</h2>
+      
+<pre class="mermaid">flowchart TD
+    S0([idle])
+    S_COL([collecting])
+    S_COMP([completed])
+    S_DONE(["rewarded ✓"])
+
+    S0 --&gt;|any SIG_* event| S_COL
+
+    S_COL --&gt; SF
+    S_COL --&gt; SO
+    S_COL --&gt; SR
+    S_COL --&gt; SB
+    S_COL --&gt; SA
+
+    subgraph sigs["parallel signatures"]
+        SF["Fatima\npending"] --&gt;|SIG_FATIMA| SFD["Fatima ✓"]
+        SO["Omar\npending"]   --&gt;|SIG_OMAR|   SOD["Omar ✓"]
+        SR["Reza\npending"]   --&gt;|SIG_REZA|   SRD["Reza ✓"]
+        SB["Baert\npending"]  --&gt;|SIG_BAERT|  SBD["Baert ✓"]
+        SA["Aziz\npending"]   --&gt;|SIG_AZIZ|   SAD["Aziz ✓"]
+    end
+
+    SFD &amp; SOD &amp; SRD &amp; SBD &amp; SAD --&gt;|all signed| S_COMP
+    S_COMP --&gt;|SIGNATURES_DONE\nspeculator threatened| S_DONE
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>sig_fatima</code> · <code>sig_omar</code> · <code>sig_reza</code> · <code>sig_baert</code> · <code>sig_aziz</code> · <code>speculator_threatened</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 3 — Bulldozer Arc (De Roma)</h2>
+      
+<pre class="mermaid">flowchart LR
+    B0([idle]) --&gt;|VISITED_DE_ROMA| B1([de_roma_visited])
+    B1 --&gt;|BULLDOZER_DEFEATED| B2(["completed ✓"])
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>visited_de_roma</code> · <code>has_permit_doc</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 3 — Geest Arc (Ghost of '88)</h2>
+      
+<pre class="mermaid">flowchart LR
+    G0([idle]) --&gt;|GEEST_ENCOUNTERED| G1([encountered])
+    G1 --&gt;|GEEST_DEFEATED| G2(["completed ✓"])
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>geest_encountered</code> · <code>kracht_van_gemeenschap</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 3→4 — Mayor Arc</h2>
+      
+<pre class="mermaid">flowchart LR
+    M0([idle]) --&gt;|MET_MAYOR| M1([met])
+    M1 --&gt;|MAYOR_BRIEFED| M2(["briefed ✓"])
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>met_mayor</code> · <code>act4_briefed</code> · <code>act4_started</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Act 4 — Factions (7 parallel)</h2>
+      
+<pre class="mermaid">flowchart TD
+    subgraph factions["factions — all run in parallel"]
+        direction LR
+        MOR_I([moroccan\nidle]) --&gt;|FACTION_MOROCCAN| MOR_D(["moroccan ✓"])
+        TUR_I([turkish\nidle])  --&gt;|FACTION_TURKISH|  TUR_D(["turkish ✓"])
+        FLE_I([flemish\nidle])  --&gt;|FACTION_FLEMISH|  FLE_D(["flemish ✓"])
+        ART_I([art\nidle])      --&gt;|FACTION_ART|      ART_D(["art ✓"])
+        SCH_I([school\nidle])   --&gt;|FACTION_SCHOOL|   SCH_D(["school ✓"])
+        MOS_I([mosque\nidle])   --&gt;|FACTION_MOSQUE|   MOS_D(["mosque ✓"])
+        FRI_I([frituur\nidle])  --&gt;|FACTION_FRITUUR|  FRI_D(["frituur ✓"])
+    end
+
+    MOR_D &amp; TUR_D &amp; FLE_D &amp; ART_D &amp; SCH_D &amp; MOS_D &amp; FRI_D --&gt;|all 7 done| FINALE["🎉 Grote 2km Tafel"]
+</pre>
+<p></p><p><strong>Flags set:</strong> <code>fatima_convinced</code> · <code>tine_faction_convinced</code> · <code>baert_faction_convinced</code> · <code>art_faction_convinced</code> · <code>school_faction_convinced</code> · <code>mosque_faction_convinced</code> · <code>frituur_faction_convinced</code></p><p></p>
+    </section>
+
+    <section>
+      <h2>Event → Flag Bridge</h2>
+      <p><div class="table-row">| XState Event | Flag(s) Set |</div>
+|---|---|
+<div class="table-row">| <code>MET_YUSUF</code> | <code>met_yusuf</code> |</div>
+<div class="table-row">| <code>DELIVERY_ACCEPTED</code> | <code>delivery_accepted</code>, <code>delivery_packages_received</code> |</div>
+<div class="table-row">| <code>DELIVERED_137/170/284</code> | <code>delivered_137/170/284</code> |</div>
+<div class="table-row">| <code>DELIVERY_REWARDED</code> | <code>delivery_done</code> |</div>
+<div class="table-row">| <code>MET_FATIMA</code> | <code>met_fatima</code> |</div>
+<div class="table-row">| <code>FABRIC_ACCEPTED</code> | <code>fabric_quest_accepted</code>, <code>knows_stunt_location</code> |</div>
+<div class="table-row">| <code>FABRIC_PICKED_UP</code> | <code>stunt_quest_active</code> |</div>
+<div class="table-row">| <code>FABRIC_DELIVERED</code> | <code>stunt_quest_done</code>, <code>has_community_trust</code> |</div>
+<div class="table-row">| <code>FLOUR_ACCEPTED</code> | <code>omar_flour_asked</code>, <code>flour_quest_accepted</code> |</div>
+<div class="table-row">| <code>FLOUR_PICKED_UP</code> | <code>has_flour</code> |</div>
+<div class="table-row">| <code>FLOUR_DELIVERED</code> | <code>omar_flour_done</code>, <code>knows_samen_tafel</code> |</div>
+<div class="table-row">| <code>OUD_ACCEPTED</code> | <code>oud_quest_accepted</code> |</div>
+<div class="table-row">| <code>OUD_FOUND</code> | <code>has_oud_string_item</code> |</div>
+<div class="table-row">| <code>OUD_DELIVERED</code> | <code>reza_quest_done</code> |</div>
+<div class="table-row">| <code>SIG_FATIMA/OMAR/REZA/BAERT/AZIZ</code> | <code>sig_fatima/omar/reza/baert/aziz</code> |</div>
+<div class="table-row">| <code>SIGNATURES_DONE</code> | <code>speculator_threatened</code> |</div>
+<div class="table-row">| <code>VISITED_DE_ROMA</code> | <code>visited_de_roma</code> |</div>
+<div class="table-row">| <code>BULLDOZER_DEFEATED</code> | <code>has_permit_doc</code> |</div>
+<div class="table-row">| <code>GEEST_ENCOUNTERED</code> | <code>geest_encountered</code> |</div>
+<div class="table-row">| <code>GEEST_DEFEATED</code> | <code>kracht_van_gemeenschap</code> |</div>
+<div class="table-row">| <code>MET_MAYOR</code> | <code>met_mayor</code>, <code>act4_briefed</code> |</div>
+<div class="table-row">| <code>MAYOR_BRIEFED</code> | <code>act4_started</code> |</div>
+<div class="table-row">| <code>FACTION_MOROCCAN</code> | <code>fatima_convinced</code>, <code>samen_tafel_faction_1</code> |</div>
+<div class="table-row">| <code>FACTION_TURKISH</code> | <code>tine_faction_convinced</code>, <code>samen_tafel_faction_2</code> |</div>
+<div class="table-row">| <code>FACTION_FLEMISH</code> | <code>baert_faction_convinced</code>, <code>samen_tafel_faction_3</code> |</div>
+<div class="table-row">| <code>FACTION_ART</code> | <code>art_faction_convinced</code>, <code>samen_tafel_faction_4</code> |</div>
+<div class="table-row">| <code>FACTION_SCHOOL</code> | <code>school_faction_convinced</code>, <code>samen_tafel_faction_5</code> |</div>
+<div class="table-row">| <code>FACTION_MOSQUE</code> | <code>mosque_faction_convinced</code>, <code>met_imam</code>, <code>samen_tafel_faction_6</code> |</div>
+<div class="table-row">| <code>FACTION_FRITUUR</code> | <code>frituur_faction_convinced</code>, <code>samen_tafel_faction_7</code> |</div></p><p></p>
+    </section>
+
+    <section>
+      <h2>Dialogue Priority Rules</h2>
+      <p>When adding new dialogue nodes, follow these guards to avoid blocking active quests:</p><p><div class="table-row">| Situation | Required condition |</div>
+|---|---|
+<div class="table-row">| Post-quest node after Fatima wedding | <code>"sig_fatima": true</code> if priority > 95 |</div>
+<div class="table-row">| Post-quest node after Reza concert | <code>"sig_reza": true</code> if priority > 95 |</div>
+<div class="table-row">| Post-quest node after Omar flour | <code>"sig_omar": true</code> if priority > 80 |</div>
+<div class="table-row">| Any "memory" dialogue after delivery | <code>"delivery_done": true</code> |</div>
+<div class="table-row">| Faction dialogue | <code>"has_community_trust": true</code> |</div></p><p></p>
+    </section>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#1a1a2e',
+        primaryTextColor: '#f0ead6',
+        primaryBorderColor: '#ffd700',
+        lineColor: '#888',
+        secondaryColor: '#0d0d1a',
+        tertiaryColor: '#111122',
+      }
+    });
+  </script>
+</body>
+</html>

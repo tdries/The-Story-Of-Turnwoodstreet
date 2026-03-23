@@ -266,4 +266,149 @@ When adding new dialogue nodes, follow these guards to avoid blocking active que
 `;
 
 writeFileSync(OUT, content, 'utf8');
-console.log(`✅ Quest state machine diagram written to:\n   ${OUT}`);
+
+// ── Generate standalone HTML viewer ─────────────────────────────────────────
+
+const HTML_OUT = join(__dirname, '..', '_AI_CONTEXT_', 'quest_state_machine.html');
+
+// Extract sections: split on `---` horizontal rules, keep heading + mermaid block
+const sections = [];
+let current = { title: 'Quest State Machine', body: '' };
+
+for (const line of content.split('\n')) {
+  if (line.startsWith('## ')) {
+    if (current.body.trim()) sections.push(current);
+    current = { title: line.replace(/^## /, ''), body: '' };
+  } else if (line === '---') {
+    // skip dividers
+  } else {
+    current.body += line + '\n';
+  }
+}
+if (current.body.trim()) sections.push(current);
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function sectionToHtml(sec) {
+  // Split body into mermaid blocks and plain text blocks
+  const parts = sec.body.split(/(```mermaid[\s\S]*?```)/g);
+  const inner = parts.map(part => {
+    if (part.startsWith('```mermaid')) {
+      const code = part.replace(/^```mermaid\n/, '').replace(/```$/, '');
+      return `<pre class="mermaid">${escapeHtml(code)}</pre>`;
+    }
+    // Convert **bold**, `code`, and strip markdown table pipes
+    const html = part
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/^\| .+/gm, m => `<div class="table-row">${m}</div>`)
+      .replace(/\n{2,}/g, '</p><p>')
+      .trim();
+    return html ? `<p>${html}</p>` : '';
+  }).join('\n');
+
+  return `
+    <section>
+      <h2>${escapeHtml(sec.title)}</h2>
+      ${inner}
+    </section>`;
+}
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quest State Machine — Turnhoutsebaan RPG</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0a12;
+      color: #f0ead6;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 32px 24px;
+    }
+    h1 {
+      font-size: 22px;
+      color: #ffd700;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 40px;
+    }
+    section {
+      margin-bottom: 56px;
+      border-top: 1px solid #222;
+      padding-top: 28px;
+    }
+    h2 {
+      font-size: 16px;
+      color: #ffd700;
+      margin-bottom: 16px;
+    }
+    p { margin: 8px 0; color: #ccc; }
+    blockquote {
+      border-left: 3px solid #444;
+      padding-left: 12px;
+      color: #aaa;
+      margin: 8px 0;
+    }
+    code {
+      background: #1a1a2e;
+      color: #a8d8a8;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    strong { color: #f0ead6; }
+    .table-row {
+      font-family: monospace;
+      font-size: 12px;
+      color: #aaa;
+      border-bottom: 1px solid #1a1a2e;
+      padding: 3px 0;
+    }
+    .mermaid {
+      background: #111122;
+      border: 1px solid #2a2a3e;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    svg { max-width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Quest State Machine</h1>
+  <p class="subtitle">Turnhoutsebaan RPG — auto-generated from src/systems/GameMachine.ts · regenerate: npm run viz</p>
+
+  ${sections.map(sectionToHtml).join('\n')}
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#1a1a2e',
+        primaryTextColor: '#f0ead6',
+        primaryBorderColor: '#ffd700',
+        lineColor: '#888',
+        secondaryColor: '#0d0d1a',
+        tertiaryColor: '#111122',
+      }
+    });
+  </script>
+</body>
+</html>`;
+
+writeFileSync(HTML_OUT, html, 'utf8');
+console.log(`✅ Markdown → ${OUT}`);
+console.log(`✅ HTML     → ${HTML_OUT}`);
