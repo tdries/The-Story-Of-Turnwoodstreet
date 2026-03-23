@@ -202,8 +202,6 @@ export class BattleScene extends Phaser.Scene {
       const coinGain  = enemyDef?.coins ?? 0;
       const loot      = (enemyDef as any)?.loot as string[] ?? [];
 
-      gameEventLogger.logBattle(this.enemyId, result, xpGain, coinGain);
-
       const levelled = stateManager.gainXP(xpGain);
       if (coinGain > 0) stateManager.addCoins(coinGain);
 
@@ -213,17 +211,23 @@ export class BattleScene extends Phaser.Scene {
         if (flagKey) stateManager.setFlag(flagKey, true);
       }
 
+      stateManager.setHP(this.combat.getState().player.hp);
+      gameEventLogger.logBattle(this.enemyId, result, xpGain, coinGain); // after HP/XP/loot so state is accurate
+
       const msg = levelled ? localeManager.t('level_up') : `+${xpGain} XP`;
       this.showMessage(`${localeManager.t('victory')} ${msg}`);
     } else if (result === 'defeat') {
-      gameEventLogger.logBattle(this.enemyId, result);
       stateManager.setHP(1);
+      gameEventLogger.logBattle(this.enemyId, result);
       this.showMessage(localeManager.t('defeat'));
     } else if (result === 'escaped') {
       gameEventLogger.logBattle(this.enemyId, result);
     }
 
-    stateManager.setHP(this.combat.getState().player.hp);
+    if (result !== 'victory' && result !== 'defeat') {
+      // victory and defeat already called setHP above; escaped still needs it
+      stateManager.setHP(this.combat.getState().player.hp);
+    }
     stateManager.save();
 
     this.time.delayedCall(1200, () => {

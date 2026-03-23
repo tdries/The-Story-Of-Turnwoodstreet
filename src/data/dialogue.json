@@ -134,7 +134,8 @@
         "has_community_trust": true,
         "sig_fatima": true,
         "met_mayor": true,
-        "fatima_convinced": false
+        "fatima_convinced": false,
+        "has_permit_doc": true
       }
     },
     "lines": [
@@ -372,7 +373,8 @@
     "conditions": {
       "flags": {
         "met_mayor": true,
-        "baert_faction_convinced": false
+        "baert_faction_convinced": false,
+        "has_permit_doc": true
       }
     },
     "lines": [
@@ -714,7 +716,8 @@
     "conditions": {
       "flags": {
         "met_mayor": true,
-        "school_faction_convinced": false
+        "school_faction_convinced": false,
+        "has_permit_doc": true
       }
     },
     "lines": [
@@ -823,7 +826,8 @@
     "conditions": {
       "flags": {
         "met_mayor": true,
-        "tine_faction_convinced": false
+        "tine_faction_convinced": false,
+        "has_permit_doc": true
       }
     },
     "lines": [
@@ -1467,7 +1471,8 @@
     "conditions": {
       "flags": {
         "met_mayor": true,
-        "baert_faction_convinced": true
+        "baert_faction_convinced": true,
+        "has_permit_doc": true
       }
     },
     "lines": [

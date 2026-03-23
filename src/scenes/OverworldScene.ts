@@ -1130,7 +1130,7 @@ export class OverworldScene extends Phaser.Scene {
         onceFlag: 'delivered_284', requiredFlags: { delivery_packages_received: true } },
       // ── Budget Market flour pickup (bug 5 fix — not an NPC, location trigger) ─
       { type: 'dialogue', x: 1920, width: 96, dialogueId: 'budget_market_flour',
-        onceFlag: 'has_flour', requiredFlags: { flour_quest_accepted: true } },
+        onceFlag: 'has_flour', requiredFlags: { flour_quest_accepted: true, omar_flour_done: false } },
       // ── De Roma concert hall #286 — brick_c tile at x=1728 ────────────────
       { type: 'dialogue', x: 1728, width: 60, dialogueId: 'de_roma_keeper', onceFlag: 'visited_de_roma' },
       // ── Bureau-Bulldozer fight — guards zone 4 gate ───────────────────────
