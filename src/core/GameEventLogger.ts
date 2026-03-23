@@ -30,6 +30,7 @@
 
 import { supabase } from '@core/SupabaseClient';
 import type { GameContext } from '@systems/GameMachine';
+import { getNavTarget, getHintText } from '@systems/GameMachine';
 
 type AnySnapshot = { value: unknown; context: GameContext };
 
@@ -109,6 +110,7 @@ function factionsEnc(v: unknown): number {
 export function encodeState(snapshot: AnySnapshot): string {
   const v   = snapshot.value;
   const ctx = snapshot.context;
+  const nav = getNavTarget(snapshot);
   const seg = [
     deliveryEnc(v),
     `FA:${regionStr(v, 'fabric')}`,
@@ -122,6 +124,7 @@ export function encodeState(snapshot: AnySnapshot): string {
     `hp:${ctx.hp}/${ctx.maxHp}`,
     `lv:${ctx.level}`,
     `c:${ctx.coins}`,
+    `N:${nav ? nav.label.replace(/\s+/g, '_') : 'nil'}`,
   ];
   return `[${seg.join('·')}]`;
 }
@@ -218,13 +221,17 @@ class GameEventLogger {
   }
 
   private push(rawType: string, notation: string, rawData: Record<string, unknown>): void {
+    const snap = this.snapshotGetter?.();
+    const nav  = snap ? getNavTarget(snap) : null;
+    const hint = snap ? getHintText(snap)  : null;
+
     this.queue.push({
       user_id:    this.userId,   // may be null if auth not yet resolved; stamped later
       session_id: this.sessionId,
       seq:        this.seq++,
       notation,
       raw_type:   rawType,
-      raw_data:   rawData,
+      raw_data:   { ...rawData, nav: nav?.label ?? null, hint },
     });
     // Only schedule a flush once we know the user (otherwise auth resolution flushes)
     if (this.userId) this.scheduleFlush();
