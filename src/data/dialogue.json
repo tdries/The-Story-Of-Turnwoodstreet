@@ -1,893 +1,1757 @@
 {
   "fatima_intro": {
-    "npc": "fatima", "priority": 0,
+    "npc": "fatima",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Fatima", "text": "Salam! Ben je nieuw op de Turnhoutsebaan? Welkom in de mooiste straat van Antwerpen.", "flag": "met_fatima", "flagVal": true },
-      { "speaker": "Fatima", "text": "Ik woon hier al 22 jaar. Mijn vader kwam als gastarbeider in '72. Hij werkte in de textielfabriek." },
-      { "speaker": "Fatima", "text": "Nu runt mijn nicht Nora een hamamschool verderop. Ze trouwt volgende maand — maar ze heeft nog stof nodig voor haar jurk.",
+      {
+        "speaker": "Fatima",
+        "text": "Salam! Ben je nieuw op de Turnhoutsebaan? Welkom in de mooiste straat van Antwerpen.",
+        "flag": "met_fatima",
+        "flagVal": true
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Ik woon hier al 22 jaar. Mijn vader kwam als gastarbeider in '72. Hij werkte in de textielfabriek."
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Nu runt mijn nicht Nora een hamamschool verderop. Ze trouwt volgende maand — maar ze heeft nog stof nodig voor haar jurk.",
         "choice": [
-          { "label": "Ik kan die stof voor je halen.", "flag": "fabric_quest_accepted", "flagVal": true, "next": "fatima_fabric_accept" },
-          { "label": "Waar kan ik stof vinden?", "next": "fatima_fabric_hint" }
+          {
+            "label": "Ik kan die stof voor je halen.",
+            "flag": "fabric_quest_accepted",
+            "flagVal": true,
+            "next": "fatima_fabric_accept"
+          },
+          {
+            "label": "Waar kan ik stof vinden?",
+            "next": "fatima_fabric_hint"
+          }
         ]
       }
     ]
   },
-
   "fatima_fabric_accept": {
-    "npc": "fatima", "priority": 50,
-    "conditions": { "flags": { "fabric_quest_accepted": true, "stunt_quest_active": false } },
+    "npc": "fatima",
+    "priority": 50,
+    "conditions": {
+      "flags": {
+        "fabric_quest_accepted": true,
+        "stunt_quest_active": false
+      }
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "Dat zou geweldig zijn! Mevrouw Baert bij de Indian Boutique — nr.137 — heeft altijd mooie restjes. Zeg dat ik je stuur.", "flag": "knows_stunt_location", "flagVal": true }
+      {
+        "speaker": "Fatima",
+        "text": "Dat zou geweldig zijn! Mevrouw Baert bij de Indian Boutique — nr.137 — heeft altijd mooie restjes. Zeg dat ik je stuur.",
+        "flag": "knows_stunt_location",
+        "flagVal": true
+      }
     ]
   },
-
   "fatima_fabric_hint": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Fatima", "text": "Indian Boutique! Nummer 137. Al open sinds 1985. Mevrouw Baert kent elke stof. Ze is Vlaams, maar haar beste klanten zijn Marokkaans — ze begrijpt ons.", "flag": "knows_stunt_location", "flagVal": true }
+      {
+        "speaker": "Fatima",
+        "text": "Indian Boutique! Nummer 137. Al open sinds 1985. Mevrouw Baert kent elke stof. Ze is Vlaams, maar haar beste klanten zijn Marokkaans — ze begrijpt ons.",
+        "flag": "knows_stunt_location",
+        "flagVal": true
+      }
     ]
   },
-
   "fatima_after_fabric": {
-    "npc": "fatima", "priority": 100,
-    "conditions": { "flags": { "stunt_quest_done": false }, "items": ["fabric_bolt"] },
+    "npc": "fatima",
+    "priority": 100,
+    "conditions": {
+      "flags": {
+        "stunt_quest_done": false
+      },
+      "items": [
+        "fabric_bolt"
+      ]
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "De stof! Shukran, shukran! Nora zal zo blij zijn.", "flag": "stunt_quest_done", "flagVal": true, "removeItem": "fabric_bolt" },
-      { "speaker": "Fatima", "text": "Je bent een goed mens. De buurt heeft mensen als jij nodig. Als je ooit ergens hulp mee nodig hebt — ik ben hier.", "flag": "has_community_trust", "flagVal": true }
+      {
+        "speaker": "Fatima",
+        "text": "De stof! Shukran, shukran! Nora zal zo blij zijn.",
+        "flag": "stunt_quest_done",
+        "flagVal": true,
+        "removeItem": "fabric_bolt"
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Je bent een goed mens. De buurt heeft mensen als jij nodig. Als je ooit ergens hulp mee nodig hebt — ik ben hier.",
+        "flag": "has_community_trust",
+        "flagVal": true
+      }
     ]
   },
-
   "fatima_signature": {
-    "npc": "fatima", "priority": 60,
-    "conditions": { "flags": { "has_community_trust": true, "sig_fatima": false } },
+    "npc": "fatima",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "sig_fatima": false
+      }
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "Een petitie! Eindelijk. Geef hier. Naam, adres en datum — klaar. Ga nu naar Omar, Reza, Mevrouw Baert en Aziz.", "flag": "sig_fatima", "flagVal": true }
+      {
+        "speaker": "Fatima",
+        "text": "Een petitie! Eindelijk. Geef hier. Naam, adres en datum — klaar. Ga nu naar Omar, Reza, Mevrouw Baert en Aziz.",
+        "flag": "sig_fatima",
+        "flagVal": true
+      }
     ]
   },
-
   "fatima_post_trust": {
-    "npc": "fatima", "priority": 30,
-    "conditions": { "flags": { "has_community_trust": true } },
+    "npc": "fatima",
+    "priority": 30,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true
+      }
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "Heb je al gehoord dat er een speculator drie panden wil kopen? Iedereen is ongerust." },
-      { "speaker": "Fatima", "text": "Omar de bakker heeft trouwens ook problemen — hij heeft geen meel meer voor morgenochtend. Misschien kun je helpen?" }
+      {
+        "speaker": "Fatima",
+        "text": "Heb je al gehoord dat er een speculator drie panden wil kopen? Iedereen is ongerust."
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Omar de bakker heeft trouwens ook problemen — hij heeft geen meel meer voor morgenochtend. Misschien kun je helpen?"
+      }
     ]
   },
-
   "fatima_faction": {
-    "npc": "fatima", "priority": 80,
-    "conditions": { "flags": { "has_community_trust": true, "sig_fatima": true, "met_mayor": true, "fatima_convinced": false } },
+    "npc": "fatima",
+    "priority": 80,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "sig_fatima": true,
+        "met_mayor": true,
+        "fatima_convinced": false
+      }
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "De Samen Aan Tafel... ja. Als iedereen meedoet, dan ja. Ik zal de Marokkaanse vereniging bellen.", "flag": "fatima_convinced", "flagVal": true }
+      {
+        "speaker": "Fatima",
+        "text": "De Samen Aan Tafel... ja. Als iedereen meedoet, dan ja. Ik zal de Marokkaanse vereniging bellen.",
+        "flag": "fatima_convinced",
+        "flagVal": true
+      }
     ]
   },
-
   "fatima_all_done": {
-    "npc": "fatima", "priority": 70,
-    "conditions": { "flags": { "sig_fatima": true, "fatima_convinced": true } },
+    "npc": "fatima",
+    "priority": 70,
+    "conditions": {
+      "flags": {
+        "sig_fatima": true,
+        "fatima_convinced": true
+      }
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "Kijk hoe ver we al gekomen zijn. De tafel staat er bijna. Dankzij mensen als jij." },
-      { "speaker": "Fatima", "text": "Nora is zo blij met de stof. Ze vraagt of jij op de bruiloft komt. Ik heb ja gezegd." }
+      {
+        "speaker": "Fatima",
+        "text": "Kijk hoe ver we al gekomen zijn. De tafel staat er bijna. Dankzij mensen als jij."
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Nora is zo blij met de stof. Ze vraagt of jij op de bruiloft komt. Ik heb ja gezegd."
+      }
     ]
   },
-
   "omar_bakker": {
-    "npc": "omar", "priority": 0,
+    "npc": "omar",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Omar", "text": "Khobz? Msemmen? Vers van vanmorgen vijf uur! Mijn oven staat nooit stil op de Turnhoutsebaan." },
-      { "speaker": "Omar", "text": "Tijdens de Ramadan bak ik soms tot middernacht. Dan staat de hele buurt voor mijn deur." },
-      { "speaker": "Omar", "text": "Heb je al gehoord van de 2-kilometer tafel? Wij hebben er brood voor 7000 mensen gebakken.", "flag": "knows_samen_tafel", "flagVal": true }
+      {
+        "speaker": "Omar",
+        "text": "Khobz? Msemmen? Vers van vanmorgen vijf uur! Mijn oven staat nooit stil op de Turnhoutsebaan."
+      },
+      {
+        "speaker": "Omar",
+        "text": "Tijdens de Ramadan bak ik soms tot middernacht. Dan staat de hele buurt voor mijn deur."
+      },
+      {
+        "speaker": "Omar",
+        "text": "Heb je al gehoord van de 2-kilometer tafel? Wij hebben er brood voor 7000 mensen gebakken.",
+        "flag": "knows_samen_tafel",
+        "flagVal": true
+      }
     ]
   },
-
   "omar_flour_request": {
-    "npc": "omar", "priority": 60,
-    "conditions": { "flags": { "met_fatima": true, "omar_flour_asked": false } },
+    "npc": "omar",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "met_fatima": true,
+        "omar_flour_asked": false
+      }
+    },
     "lines": [
-      { "speaker": "Omar", "text": "Aiwa, groot probleem! Mijn leverancier is ziek. Geen meel voor morgen. Budget Market heeft het — maar ik kan de winkel niet verlaten.", "flag": "omar_flour_asked", "flagVal": true,
+      {
+        "speaker": "Omar",
+        "text": "Aiwa, groot probleem! Mijn leverancier is ziek. Geen meel voor morgen. Budget Market heeft het — maar ik kan de winkel niet verlaten.",
+        "flag": "omar_flour_asked",
+        "flagVal": true,
         "choice": [
-          { "label": "Ik haal het voor je.", "flag": "flour_quest_accepted", "flagVal": true, "next": "omar_flour_thanks" },
-          { "label": "Hoeveel bloem?", "next": "omar_flour_detail" }
+          {
+            "label": "Ik haal het voor je.",
+            "flag": "flour_quest_accepted",
+            "flagVal": true,
+            "next": "omar_flour_thanks"
+          },
+          {
+            "label": "Hoeveel bloem?",
+            "next": "omar_flour_detail"
+          }
         ]
       }
     ]
   },
-
   "omar_flour_thanks": {
-    "npc": "omar", "priority": 40,
-    "conditions": { "flags": { "flour_quest_accepted": true, "omar_flour_done": false } },
+    "npc": "omar",
+    "priority": 40,
+    "conditions": {
+      "flags": {
+        "flour_quest_accepted": true,
+        "omar_flour_done": false
+      }
+    },
     "lines": [
-      { "speaker": "Omar", "text": "Barakallahu fik! Budget Market, nr.326. Twee zakken van 5 kilo. Zeg maar dat het voor Omar is." }
+      {
+        "speaker": "Omar",
+        "text": "Barakallahu fik! Budget Market, nr.326. Twee zakken van 5 kilo. Zeg maar dat het voor Omar is."
+      }
     ]
   },
-
   "omar_flour_detail": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Omar", "text": "Twee zakken, 5 kilo elk. Bloem van goede kwaliteit — type 45 als ze het hebben. Budget Market, nr.326.", "flag": "flour_quest_accepted", "flagVal": true }
+      {
+        "speaker": "Omar",
+        "text": "Twee zakken, 5 kilo elk. Bloem van goede kwaliteit — type 45 als ze het hebben. Budget Market, nr.326.",
+        "flag": "flour_quest_accepted",
+        "flagVal": true
+      }
     ]
   },
-
   "omar_flour_done": {
-    "npc": "omar", "priority": 100,
-    "conditions": { "flags": { "has_flour": true, "omar_flour_done": false } },
+    "npc": "omar",
+    "priority": 100,
+    "conditions": {
+      "flags": {
+        "has_flour": true,
+        "omar_flour_done": false
+      }
+    },
     "lines": [
-      { "speaker": "Omar", "text": "De bloem! Perfekt. Hier — harira en baklava voor jou. En als je ooit brood nodig hebt: gratis, altijd.", "flag": "omar_flour_done", "flagVal": true, "removeItem": "flour", "item": "harira" },
-      { "speaker": "Omar", "text": "Neem ook dit mee.", "item": "baklava" }
+      {
+        "speaker": "Omar",
+        "text": "De bloem! Perfekt. Hier — harira en baklava voor jou. En als je ooit brood nodig hebt: gratis, altijd.",
+        "flag": "omar_flour_done",
+        "flagVal": true,
+        "removeItem": "flour",
+        "item": "harira"
+      },
+      {
+        "speaker": "Omar",
+        "text": "Neem ook dit mee.",
+        "item": "baklava"
+      }
     ]
   },
-
   "omar_signature": {
-    "npc": "omar", "priority": 30,
-    "conditions": { "flags": { "has_community_trust": true, "sig_omar": false } },
+    "npc": "omar",
+    "priority": 30,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "sig_omar": false
+      }
+    },
     "lines": [
-      { "speaker": "Omar", "text": "Die speculant? Hij probeerde vorig jaar ook al mijn bakkerij te kopen. Hier — handtekening. En neem een broodje mee.", "flag": "sig_omar", "flagVal": true }
+      {
+        "speaker": "Omar",
+        "text": "Die speculant? Hij probeerde vorig jaar ook al mijn bakkerij te kopen. Hier — handtekening. En neem een broodje mee.",
+        "flag": "sig_omar",
+        "flagVal": true
+      }
     ]
   },
-
   "budget_market_flour": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Budget Market", "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.", "flag": "has_flour", "flagVal": true, "item": "flour" },
-      { "speaker": "Budget Market", "text": "Groetjes aan Omar. Hij is een vaste klant al 15 jaar." }
+      {
+        "speaker": "Budget Market",
+        "text": "Ah, voor Omar de bakker! Zijn bloem staat altijd klaar. Twee zakken van 5 kilo — type 45, het beste.",
+        "flag": "has_flour",
+        "flagVal": true,
+        "item": "flour"
+      },
+      {
+        "speaker": "Budget Market",
+        "text": "Groetjes aan Omar. Hij is een vaste klant al 15 jaar."
+      }
     ]
   },
-
   "stunt_baert": {
-    "npc": "baert", "priority": 0,
+    "npc": "baert",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Stunt Solderie, al open sinds '85! Ik heb de hele wijk zien veranderen." },
-      { "speaker": "Mevrouw Baert", "text": "Vroeger was dit een Vlaamse arbeiderswijk. Nu hoor ik vijf talen als ik mijn deur opendoe." },
-      { "speaker": "Mevrouw Baert", "text": "Maar weet je? Mijn beste klanten zijn de Marokkaanse vrouwen. Ze kennen stoffen beter dan wie ook." }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Stunt Solderie, al open sinds '85! Ik heb de hele wijk zien veranderen."
+      },
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Vroeger was dit een Vlaamse arbeiderswijk. Nu hoor ik vijf talen als ik mijn deur opendoe."
+      },
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Maar weet je? Mijn beste klanten zijn de Marokkaanse vrouwen. Ze kennen stoffen beter dan wie ook."
+      }
     ]
   },
-
   "stunt_baert_fabric": {
-    "npc": "baert", "priority": 90,
-    "conditions": { "flags": { "knows_stunt_location": true, "stunt_quest_active": false } },
+    "npc": "baert",
+    "priority": 90,
+    "conditions": {
+      "flags": {
+        "knows_stunt_location": true,
+        "stunt_quest_active": false,
+        "stunt_quest_done": false
+      }
+    },
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Voor Fatima's nicht! Natuurlijk. Ik had al een stukje apart gelegd — ik wist dat ze iemand zou sturen.", "flag": "stunt_quest_active", "flagVal": true, "item": "fabric_bolt" },
-      { "speaker": "Mevrouw Baert", "text": "Zeg aan Fatima dat de stof een geschenk is van Stunt Solderie. Na al die jaren." }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Voor Fatima's nicht! Natuurlijk. Ik had al een stukje apart gelegd — ik wist dat ze iemand zou sturen.",
+        "flag": "stunt_quest_active",
+        "flagVal": true,
+        "item": "fabric_bolt"
+      },
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Zeg aan Fatima dat de stof een geschenk is van Stunt Solderie. Na al die jaren."
+      }
     ]
   },
-
   "stunt_baert_signature": {
-    "npc": "baert", "priority": 60,
-    "conditions": { "flags": { "has_community_trust": true, "sig_baert": false } },
+    "npc": "baert",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "sig_baert": false
+      }
+    },
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Een petitie? Tegen die speculant? Geef hier. Ik teken als eerste. Mijn winkel staat hier al 40 jaar.", "flag": "sig_baert", "flagVal": true }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Een petitie? Tegen die speculant? Geef hier. Ik teken als eerste. Mijn winkel staat hier al 40 jaar.",
+        "flag": "sig_baert",
+        "flagVal": true
+      }
     ]
   },
-
   "stunt_baert_faction": {
-    "npc": "baert", "priority": 50,
-    "conditions": { "flags": { "met_mayor": true, "baert_faction_convinced": false } },
+    "npc": "baert",
+    "priority": 50,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "baert_faction_convinced": false
+      }
+    },
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Bar Leon? Die jongens zijn niet gemakkelijk. Maar als ik erheen ga en uitleg wat het is... ze kennen mij. Ik doe het.", "flag": "baert_faction_convinced", "flagVal": true }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Bar Leon? Die jongens zijn niet gemakkelijk. Maar als ik erheen ga en uitleg wat het is... ze kennen mij. Ik doe het.",
+        "flag": "baert_faction_convinced",
+        "flagVal": true
+      }
     ]
   },
-
   "baert_done": {
-    "npc": "baert", "priority": 40,
-    "conditions": { "flags": { "baert_faction_convinced": true } },
+    "npc": "baert",
+    "priority": 40,
+    "conditions": {
+      "flags": {
+        "baert_faction_convinced": true
+      }
+    },
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Bar Leon is overtuigd. Het kostte me een fles Duvel en een half uur uitleg, maar ze doen mee." },
-      { "speaker": "Mevrouw Baert", "text": "Zestig jaar Borgerhout, en dit is het mooiste wat ik heb meegemaakt." }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Bar Leon is overtuigd. Het kostte me een fles Duvel en een half uur uitleg, maar ze doen mee."
+      },
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Zestig jaar Borgerhout, en dit is het mooiste wat ik heb meegemaakt."
+      }
     ]
   },
-
   "reza_music": {
-    "npc": "reza", "priority": 0,
+    "npc": "reza",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Reza", "text": "Psst. Hoor je dat? Die klanken komen uit De Roma. Elke week iets anders — gnawa, jazz, rap." },
-      { "speaker": "Reza", "text": "Paul McCartney heeft hier ooit gespeeld. Echt waar. Turnhoutsebaan 286, augustus '72." },
-      { "speaker": "Reza", "text": "Mijn oud heeft een snaar gebroken. Als je er een vindt bij Aziz verderop in de straat, speel ik vanavond een liedje voor jou.",
+      {
+        "speaker": "Reza",
+        "text": "Psst. Hoor je dat? Die klanken komen uit De Roma. Elke week iets anders — gnawa, jazz, rap."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Paul McCartney heeft hier ooit gespeeld. Echt waar. Turnhoutsebaan 286, augustus '72."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Mijn oud heeft een snaar gebroken. Als je er een vindt bij Aziz verderop in de straat, speel ik vanavond een liedje voor jou.",
         "choice": [
-          { "label": "Ik zoek die snaar voor je.", "flag": "oud_quest_accepted", "flagVal": true, "next": "reza_oud_accept" },
-          { "label": "Vertel me meer over De Roma.", "next": "reza_de_roma_lore" }
+          {
+            "label": "Ik zoek die snaar voor je.",
+            "flag": "oud_quest_accepted",
+            "flagVal": true,
+            "next": "reza_oud_accept"
+          },
+          {
+            "label": "Vertel me meer over De Roma.",
+            "next": "reza_de_roma_lore"
+          }
         ]
       }
     ]
   },
-
   "reza_oud_accept": {
-    "npc": "reza", "priority": 40,
-    "conditions": { "flags": { "oud_quest_accepted": true } },
+    "npc": "reza",
+    "priority": 40,
+    "conditions": {
+      "flags": {
+        "oud_quest_accepted": true
+      }
+    },
     "lines": [
-      { "speaker": "Reza", "text": "Aziz — verderop in de straat, vlak bij Mimoun. Hij heeft soms muziekaccessoires liggen. Vraag naar snaren voor een oud." }
+      {
+        "speaker": "Reza",
+        "text": "Aziz — verderop in de straat, vlak bij Mimoun. Hij heeft soms muziekaccessoires liggen. Vraag naar snaren voor een oud."
+      }
     ]
   },
-
   "reza_de_roma_lore": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Reza", "text": "De Roma is Art Deco, 1927. Alphonse Pauwels bouwde hem voor 2000 mensen. Na jaren leegstand gered door 400 vrijwilligers in 2003." },
-      { "speaker": "Reza", "text": "Nu komen gnawa uit Marrakech, hiphop uit Borgerhout, jazz uit overal. Dat IS de Turnhoutsebaan.", "flag": "oud_quest_accepted", "flagVal": true }
+      {
+        "speaker": "Reza",
+        "text": "De Roma is Art Deco, 1927. Alphonse Pauwels bouwde hem voor 2000 mensen. Na jaren leegstand gered door 400 vrijwilligers in 2003."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Nu komen gnawa uit Marrakech, hiphop uit Borgerhout, jazz uit overal. Dat IS de Turnhoutsebaan.",
+        "flag": "oud_quest_accepted",
+        "flagVal": true
+      }
     ]
   },
-
   "reza_oud_found": {
-    "npc": "reza", "priority": 90,
-    "conditions": { "flags": { "oud_quest_accepted": true }, "items": ["oud_string"] },
+    "npc": "reza",
+    "priority": 90,
+    "conditions": {
+      "flags": {
+        "oud_quest_accepted": true
+      },
+      "items": [
+        "oud_string"
+      ]
+    },
     "lines": [
-      { "speaker": "Reza", "text": "De snaar... perfect. Wacht.", "flag": "reza_quest_done", "flagVal": true, "removeItem": "oud_string" },
-      { "speaker": "Reza", "text": "*speelt* ... Hoor je dat? Dat is de taal van deze straat. Jij begrijpt haar nu ook." }
+      {
+        "speaker": "Reza",
+        "text": "De snaar... perfect. Wacht.",
+        "flag": "reza_quest_done",
+        "flagVal": true,
+        "removeItem": "oud_string"
+      },
+      {
+        "speaker": "Reza",
+        "text": "*speelt* ... Hoor je dat? Dat is de taal van deze straat. Jij begrijpt haar nu ook."
+      }
     ]
   },
-
   "reza_signature": {
-    "npc": "reza", "priority": 60,
-    "conditions": { "flags": { "has_community_trust": true, "reza_quest_done": true, "sig_reza": false } },
+    "npc": "reza",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "reza_quest_done": true,
+        "sig_reza": false
+      }
+    },
     "lines": [
-      { "speaker": "Reza", "text": "Die speculant? Ik ken hem. Hij wil ook mijn studio kopen. Hier is mijn handtekening, en die van mijn twee buren erbij.", "flag": "sig_reza", "flagVal": true }
+      {
+        "speaker": "Reza",
+        "text": "Die speculant? Ik ken hem. Hij wil ook mijn studio kopen. Hier is mijn handtekening, en die van mijn twee buren erbij.",
+        "flag": "sig_reza",
+        "flagVal": true
+      }
     ]
   },
-
   "reza_done": {
-    "npc": "reza", "priority": 100,
-    "conditions": { "flags": { "reza_quest_done": true, "sig_reza": true } },
+    "npc": "reza",
+    "priority": 100,
+    "conditions": {
+      "flags": {
+        "reza_quest_done": true,
+        "sig_reza": true
+      }
+    },
     "lines": [
-      { "speaker": "Reza", "text": "Hoor je dat? Dat is de snaar die jij gevonden hebt. Elke noot is een bedankje." },
-      { "speaker": "Reza", "text": "Vanavond De Roma — het nieuwe nummer. Je bent uitgenodigd. Geen excuses." }
+      {
+        "speaker": "Reza",
+        "text": "Hoor je dat? Dat is de snaar die jij gevonden hebt. Elke noot is een bedankje."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Vanavond De Roma — het nieuwe nummer. Je bent uitgenodigd. Geen excuses."
+      }
     ]
   },
-
   "yusuf_delivery": {
-    "npc": "yusuf", "priority": 0,
+    "npc": "yusuf",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Yusuf", "text": "Nee nee nee! Lekke band en nog 12 pakjes! Meneer, mevrouw — kunt u mij helpen?", "flag": "met_yusuf", "flagVal": true,
+      {
+        "speaker": "Yusuf",
+        "text": "Nee nee nee! Lekke band en nog 12 pakjes! Meneer, mevrouw — kunt u mij helpen?",
+        "flag": "met_yusuf",
+        "flagVal": true,
         "choice": [
-          { "label": "Ik help je met de laatste drie.", "flag": "delivery_accepted", "flagVal": true, "next": "yusuf_delivery_accept" },
-          { "label": "Waar moeten ze naartoe?", "next": "yusuf_delivery_info" }
+          {
+            "label": "Ik help je met de laatste drie.",
+            "flag": "delivery_accepted",
+            "flagVal": true,
+            "next": "yusuf_delivery_accept"
+          },
+          {
+            "label": "Waar moeten ze naartoe?",
+            "next": "yusuf_delivery_info"
+          }
         ]
       }
     ]
   },
-
   "yusuf_delivery_accept": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Yusuf", "text": "Echt? Top! Pakje 1 → nr.170 (Patisserie Aladdin). Pakje 2 → nr.137 (Indian Boutique). Pakje 3 → nr.284 (Borger Hub). Alstublieft!", "flag": "delivery_packages_received", "flagVal": true, "item": "delivery_package" }
+      {
+        "speaker": "Yusuf",
+        "text": "Echt? Top! Pakje 1 → nr.170 (Patisserie Aladdin). Pakje 2 → nr.137 (Indian Boutique). Pakje 3 → nr.284 (Borger Hub). Alstublieft!",
+        "flag": "delivery_packages_received",
+        "flagVal": true,
+        "item": "delivery_package"
+      }
     ]
   },
-
   "yusuf_delivery_info": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Yusuf", "text": "Nr.170, nr.137 en nr.284. Drie adressen, één straat. Niet ver! Ik geef je een tramticket als beloning.", "flag": "delivery_accepted", "flagVal": true, "flag2": "delivery_packages_received", "flagVal2": true, "item": "delivery_package" }
+      {
+        "speaker": "Yusuf",
+        "text": "Nr.170, nr.137 en nr.284. Drie adressen, één straat. Niet ver! Ik geef je een tramticket als beloning.",
+        "flag": "delivery_accepted",
+        "flagVal": true,
+        "flag2": "delivery_packages_received",
+        "flagVal2": true,
+        "item": "delivery_package"
+      }
     ]
   },
-
   "yusuf_delivery_done": {
-    "npc": "yusuf", "priority": 60,
-    "conditions": { "flags": { "delivery_packages_received": true, "delivered_137": true, "delivered_170": true, "delivered_284": true, "delivery_done": false } },
+    "npc": "yusuf",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "delivery_packages_received": true,
+        "delivered_137": true,
+        "delivered_170": true,
+        "delivered_284": true,
+        "delivery_done": false
+      }
+    },
     "lines": [
-      { "speaker": "Yusuf", "text": "Alles geleverd? Fantastisch! Hier — een tramticket. Moge je bakfiets nooit een lekke band krijgen.", "flag": "delivery_done", "flagVal": true, "item": "tram_ticket", "removeItem": "delivery_package" }
+      {
+        "speaker": "Yusuf",
+        "text": "Alles geleverd? Fantastisch! Hier — een tramticket. Moge je bakfiets nooit een lekke band krijgen.",
+        "flag": "delivery_done",
+        "flagVal": true,
+        "item": "tram_ticket",
+        "removeItem": "delivery_package"
+      }
     ]
   },
-
   "yusuf_done": {
-    "npc": "yusuf", "priority": 100,
-    "conditions": { "flags": { "delivery_done": true } },
+    "npc": "yusuf",
+    "priority": 100,
+    "conditions": {
+      "flags": {
+        "delivery_done": true
+      }
+    },
     "lines": [
-      { "speaker": "Yusuf", "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou." },
-      { "speaker": "Yusuf", "text": "Als je ooit iets wil laten bezorgen op de Turnhoutsebaan — zeg het maar. Voor vrienden: gratis." }
+      {
+        "speaker": "Yusuf",
+        "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou."
+      },
+      {
+        "speaker": "Yusuf",
+        "text": "Als je ooit iets wil laten bezorgen op de Turnhoutsebaan — zeg het maar. Voor vrienden: gratis."
+      }
     ]
   },
-
   "aziz_signature": {
-    "npc": "aziz", "priority": 40,
-    "conditions": { "flags": { "has_community_trust": true, "sig_aziz": false } },
+    "npc": "aziz",
+    "priority": 40,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "sig_aziz": false
+      }
+    },
     "lines": [
-      { "speaker": "Aziz", "text": "Ik ben hier al 40 jaar. Ik heb gezien hoe ze ons eerst uitsloten, toen tolereerden, nu misschien... accepteren.", "flag": "sig_aziz", "flagVal": true },
-      { "speaker": "Aziz", "text": "Mijn handtekening? Ja. Voor deze straat teken ik alles.", "flag": "met_aziz", "flagVal": true }
+      {
+        "speaker": "Aziz",
+        "text": "Ik ben hier al 40 jaar. Ik heb gezien hoe ze ons eerst uitsloten, toen tolereerden, nu misschien... accepteren.",
+        "flag": "sig_aziz",
+        "flagVal": true
+      },
+      {
+        "speaker": "Aziz",
+        "text": "Mijn handtekening? Ja. Voor deze straat teken ik alles.",
+        "flag": "met_aziz",
+        "flagVal": true
+      }
     ]
   },
-
   "aziz_oud_string": {
-    "npc": "aziz", "priority": 80,
-    "conditions": { "flags": { "oud_quest_accepted": true, "has_oud_string_item": false } },
+    "npc": "aziz",
+    "priority": 80,
+    "conditions": {
+      "flags": {
+        "oud_quest_accepted": true,
+        "has_oud_string_item": false
+      }
+    },
     "lines": [
-      { "speaker": "Aziz", "text": "Een oud-snaar? Wacht... ik denk dat ik er ergens nog eentje heb liggen.", "flag": "has_oud_string_item", "flagVal": true, "item": "oud_string" },
-      { "speaker": "Aziz", "text": "Hier. Zeg maar aan Reza dat die van Aziz komt. Dan speelt hij er dubbel zo goed op." }
+      {
+        "speaker": "Aziz",
+        "text": "Een oud-snaar? Wacht... ik denk dat ik er ergens nog eentje heb liggen.",
+        "flag": "has_oud_string_item",
+        "flagVal": true,
+        "item": "oud_string"
+      },
+      {
+        "speaker": "Aziz",
+        "text": "Hier. Zeg maar aan Reza dat die van Aziz komt. Dan speelt hij er dubbel zo goed op."
+      }
     ]
   },
-
   "reuzenpoort_legend": {
-    "npc": "aziz", "priority": 0,
+    "npc": "aziz",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Gids", "text": "De Reuzenpoort dateert uit 1713. Ze bouwden hem voor het Reuzenhuis — lang voor het stadhuis hier stond." },
-      { "speaker": "Gids", "text": "In 1833 braken ze het Reuzenhuis af voor het nieuwe stadhuis van Josephus Hoefnagels. Maar de poort bleef." },
-      { "speaker": "Gids", "text": "Borgerhout was eeuwenlang zelfstandig. Pas op 1 januari 1983 werden wij Antwerpen. Velen betreuren dat nog." }
+      {
+        "speaker": "Gids",
+        "text": "De Reuzenpoort dateert uit 1713. Ze bouwden hem voor het Reuzenhuis — lang voor het stadhuis hier stond."
+      },
+      {
+        "speaker": "Gids",
+        "text": "In 1833 braken ze het Reuzenhuis af voor het nieuwe stadhuis van Josephus Hoefnagels. Maar de poort bleef."
+      },
+      {
+        "speaker": "Gids",
+        "text": "Borgerhout was eeuwenlang zelfstandig. Pas op 1 januari 1983 werden wij Antwerpen. Velen betreuren dat nog."
+      }
     ]
   },
-
   "hamza_marbles": {
-    "npc": "hamza", "priority": 0,
+    "npc": "hamza",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Hamza", "text": "Yo! Knikkers? Altijd. Maar ik wil ook iets vragen — voor school. Weet jij wat de Reuzenpoort is?" },
-      { "speaker": "Hamza", "text": "Ons juf zegt dat het een historische poort is. Maar waarom staat hij hier op de Turnhoutsebaan?", "flag": "met_hamza", "flagVal": true }
+      {
+        "speaker": "Hamza",
+        "text": "Yo! Knikkers? Altijd. Maar ik wil ook iets vragen — voor school. Weet jij wat de Reuzenpoort is?"
+      },
+      {
+        "speaker": "Hamza",
+        "text": "Ons juf zegt dat het een historische poort is. Maar waarom staat hij hier op de Turnhoutsebaan?",
+        "flag": "met_hamza",
+        "flagVal": true
+      }
     ]
   },
-
   "hamza_school_faction": {
-    "npc": "hamza", "priority": 50,
-    "conditions": { "flags": { "met_mayor": true, "school_faction_convinced": false } },
+    "npc": "hamza",
+    "priority": 50,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "school_faction_convinced": false
+      }
+    },
     "lines": [
-      { "speaker": "Hamza", "text": "De school meedoen aan de Samen Aan Tafel? Ik ga het vragen aan juffrouw De Smedt. Ze is cool, ze zegt zeker ja.", "flag": "school_faction_convinced", "flagVal": true }
+      {
+        "speaker": "Hamza",
+        "text": "De school meedoen aan de Samen Aan Tafel? Ik ga het vragen aan juffrouw De Smedt. Ze is cool, ze zegt zeker ja.",
+        "flag": "school_faction_convinced",
+        "flagVal": true
+      }
     ]
   },
-
   "district_mayor": {
-    "npc": "el_osri", "priority": 0,
+    "npc": "el_osri",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "El Osri", "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.", "flag": "met_mayor", "flagVal": true },
-      { "speaker": "El Osri", "text": "Ik heb gehoord wat je gedaan hebt — de stof, de petitie, de snaar. Deze straat heeft je nodig." },
-      { "speaker": "El Osri", "text": "Ik organiseer de Samen Aan Tafel: 2 kilometer tafel, 7000 mensen, Easter en Iftar samen. Maar ik heb 7 facties nodig. Wil je helpen?", "flag": "act4_briefed", "flagVal": true,
+      {
+        "speaker": "El Osri",
+        "text": "Goedemiddag. Ik ben Mariam El Osri, districtsvoorzitter van Borgerhout.",
+        "flag": "met_mayor",
+        "flagVal": true
+      },
+      {
+        "speaker": "El Osri",
+        "text": "Ik heb gehoord wat je gedaan hebt — de stof, de petitie, de snaar. Deze straat heeft je nodig."
+      },
+      {
+        "speaker": "El Osri",
+        "text": "Ik organiseer de Samen Aan Tafel: 2 kilometer tafel, 7000 mensen, Easter en Iftar samen. Maar ik heb 7 facties nodig. Wil je helpen?",
+        "flag": "act4_briefed",
+        "flagVal": true,
         "choice": [
-          { "label": "Ja. Ik doe mee.", "flag": "act4_started", "flagVal": true, "next": "mayor_briefing" },
-          { "label": "Vertel me meer.", "next": "mayor_explains" }
+          {
+            "label": "Ja. Ik doe mee.",
+            "flag": "act4_started",
+            "flagVal": true,
+            "next": "mayor_briefing"
+          },
+          {
+            "label": "Vertel me meer.",
+            "next": "mayor_explains"
+          }
         ]
       }
     ]
   },
-
   "mayor_post_brief": {
-    "npc": "el_osri", "priority": 50,
-    "conditions": { "flags": { "act4_started": true } },
+    "npc": "el_osri",
+    "priority": 50,
+    "conditions": {
+      "flags": {
+        "act4_started": true
+      }
+    },
     "lines": [
-      { "speaker": "El Osri", "text": "Hoe gaat het met de facties? We hebben ze alle zeven nodig voor de grote tafel." },
-      { "speaker": "El Osri", "text": "Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee, Frituur de Tram. Vooruit!" }
+      {
+        "speaker": "El Osri",
+        "text": "Hoe gaat het met de facties? We hebben ze alle zeven nodig voor de grote tafel."
+      },
+      {
+        "speaker": "El Osri",
+        "text": "Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee, Frituur de Tram. Vooruit!"
+      }
     ]
   },
-
   "mayor_briefing": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "El Osri", "text": "Goed. Zeven facties: Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee en Frituur de Tram. Eén voor één." }
+      {
+        "speaker": "El Osri",
+        "text": "Goed. Zeven facties: Marokkaanse vereniging, Turkse club, Bar Leon, Borgerhub, de school, de moskee en Frituur de Tram. Eén voor één."
+      }
     ]
   },
-
   "mayor_explains": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "El Osri", "text": "April 2024. 2 kilometer. Easter en Iftar op dezelfde dag. 7000 stoelen. De hele Turnhoutsebaan aan tafel. Real history.", "flag": "act4_started", "flagVal": true }
+      {
+        "speaker": "El Osri",
+        "text": "April 2024. 2 kilometer. Easter en Iftar op dezelfde dag. 7000 stoelen. De hele Turnhoutsebaan aan tafel. Real history.",
+        "flag": "act4_started",
+        "flagVal": true
+      }
     ]
   },
-
   "tine_intro": {
-    "npc": "tine", "priority": 0,
+    "npc": "tine",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Tine", "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts." },
-      { "speaker": "Tine", "text": "Chocolade, aspirine, een luisterend oor — ik heb het allemaal. Welkom op de Turnhoutsebaan." }
+      {
+        "speaker": "Tine",
+        "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts."
+      },
+      {
+        "speaker": "Tine",
+        "text": "Chocolade, aspirine, een luisterend oor — ik heb het allemaal. Welkom op de Turnhoutsebaan."
+      }
     ]
   },
-
   "tine_faction": {
-    "npc": "tine", "priority": 60,
-    "conditions": { "flags": { "met_mayor": true, "tine_faction_convinced": false } },
+    "npc": "tine",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "tine_faction_convinced": false
+      }
+    },
     "lines": [
-      { "speaker": "Tine", "text": "Ah, de Samen Aan Tafel! Ik ken de voorzitter van de Turkse sociale club al 20 jaar. Als jij het vraagt en ik het ondersteun — hij zegt ja.", "flag": "tine_faction_convinced", "flagVal": true }
+      {
+        "speaker": "Tine",
+        "text": "Ah, de Samen Aan Tafel! Ik ken de voorzitter van de Turkse sociale club al 20 jaar. Als jij het vraagt en ik het ondersteun — hij zegt ja.",
+        "flag": "tine_faction_convinced",
+        "flagVal": true
+      }
     ]
   },
-
   "tine_done": {
-    "npc": "tine", "priority": 40,
-    "conditions": { "flags": { "tine_faction_convinced": true } },
+    "npc": "tine",
+    "priority": 40,
+    "conditions": {
+      "flags": {
+        "tine_faction_convinced": true
+      }
+    },
     "lines": [
-      { "speaker": "Tine", "text": "De voorzitter van de Turkse club is erbij. Bel El Osri maar — het is geregeld." }
+      {
+        "speaker": "Tine",
+        "text": "De voorzitter van de Turkse club is erbij. Bel El Osri maar — het is geregeld."
+      }
     ]
   },
-
   "reuzenpoort_blocked": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Turnhoutsebaan", "text": "De poort blijft gesloten voor vreemden. Spreek eerst met Fatima aan het begin van de straat." }
+      {
+        "speaker": "Turnhoutsebaan",
+        "text": "De poort blijft gesloten voor vreemden. Spreek eerst met Fatima aan het begin van de straat."
+      }
     ]
   },
-
   "de_roma_blocked": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Turnhoutsebaan", "text": "De deur van De Roma opent alleen voor wie de taal van de straat begrijpt. Zoek Reza's oud-snaar." }
+      {
+        "speaker": "Turnhoutsebaan",
+        "text": "De deur van De Roma opent alleen voor wie de taal van de straat begrijpt. Zoek Reza's oud-snaar."
+      }
     ]
   },
-
   "deurne_blocked": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Turnhoutsebaan", "text": "De grenswachter vraagt naar uw papieren. Versla de Bulldozer-bureaucraat en draag zijn vergunning." }
+      {
+        "speaker": "Turnhoutsebaan",
+        "text": "De grenswachter vraagt naar uw papieren. Versla de Bulldozer-bureaucraat en draag zijn vergunning."
+      }
     ]
   },
-
   "de_roma_keeper": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "De Roma", "text": "Dit gebouw is Art Deco, gebouwd in 1927. Alphonse Pauwels ontwierp het voor 2000 toeschouwers.", "flag": "visited_de_roma", "flagVal": true },
-      { "speaker": "De Roma", "text": "Na jaren leegstand werden wij in 2003 gered door Paul Schyvens en 400 vrijwilligers." },
-      { "speaker": "De Roma", "text": "Vanavond: gnawa-muziek uit Marrakech. Morgen: hiphop uit Borgerhout. Altijd welkom." }
+      {
+        "speaker": "De Roma",
+        "text": "Dit gebouw is Art Deco, gebouwd in 1927. Alphonse Pauwels ontwierp het voor 2000 toeschouwers.",
+        "flag": "visited_de_roma",
+        "flagVal": true
+      },
+      {
+        "speaker": "De Roma",
+        "text": "Na jaren leegstand werden wij in 2003 gered door Paul Schyvens en 400 vrijwilligers."
+      },
+      {
+        "speaker": "De Roma",
+        "text": "Vanavond: gnawa-muziek uit Marrakech. Morgen: hiphop uit Borgerhout. Altijd welkom."
+      }
     ]
   },
-
   "de_roma_concert": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "De Roma", "text": "Reza speelt vanavond op het podium. Dankzij jou. Dankzij de snaar die je vond." },
-      { "speaker": "Reza", "text": "*speelt oud* Dit nummer heet 'Turnhoutsebaan'. Ik schreef het voor iedereen hier.", "flag": "de_roma_concert_seen", "flagVal": true }
+      {
+        "speaker": "De Roma",
+        "text": "Reza speelt vanavond op het podium. Dankzij jou. Dankzij de snaar die je vond."
+      },
+      {
+        "speaker": "Reza",
+        "text": "*speelt oud* Dit nummer heet 'Turnhoutsebaan'. Ik schreef het voor iedereen hier.",
+        "flag": "de_roma_concert_seen",
+        "flagVal": true
+      }
     ]
   },
-
   "imam_mosque": {
-    "priority": 0, "conditions": { "flags": { "met_mayor": true, "kracht_van_gemeenschap": true } },
+    "priority": 0,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "kracht_van_gemeenschap": true
+      }
+    },
     "lines": [
-      { "speaker": "Imam", "text": "Vrede. Ik heb gehoord van uw tafel. Als de iftar-maaltijd gerespecteerd wordt — als er geen alcohol naast onze borden staat — dan doen wij mee.", "flag": "met_imam", "flagVal": true,
+      {
+        "speaker": "Imam",
+        "text": "Vrede. Ik heb gehoord van uw tafel. Als de iftar-maaltijd gerespecteerd wordt — als er geen alcohol naast onze borden staat — dan doen wij mee.",
+        "flag": "met_imam",
+        "flagVal": true,
         "choice": [
-          { "label": "Dat beloof ik. We zorgen voor gescheiden zones.", "flag": "mosque_faction_convinced", "flagVal": true, "next": "imam_agreed" },
-          { "label": "Hoe stel je je dat voor?", "next": "imam_explains" }
+          {
+            "label": "Dat beloof ik. We zorgen voor gescheiden zones.",
+            "flag": "mosque_faction_convinced",
+            "flagVal": true,
+            "next": "imam_agreed"
+          },
+          {
+            "label": "Hoe stel je je dat voor?",
+            "next": "imam_explains"
+          }
         ]
       }
     ]
   },
-
   "imam_agreed": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Imam", "text": "Alhamdulillah. De moskee doet mee. Een maaltijd gedeeld is een oordeel verschoven." }
+      {
+        "speaker": "Imam",
+        "text": "Alhamdulillah. De moskee doet mee. Een maaltijd gedeeld is een oordeel verschoven."
+      }
     ]
   },
-
   "imam_explains": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Imam", "text": "Een aparte strook: halal, no alcohol, maar naast de anderen. Niet apart. Samen maar respectvol.", "flag": "mosque_faction_convinced", "flagVal": true }
+      {
+        "speaker": "Imam",
+        "text": "Een aparte strook: halal, no alcohol, maar naast de anderen. Niet apart. Samen maar respectvol.",
+        "flag": "mosque_faction_convinced",
+        "flagVal": true
+      }
     ]
   },
-
   "frituur_faction": {
-    "priority": 0, "conditions": { "flags": { "met_mayor": true, "delivery_done": true } },
+    "priority": 0,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "delivery_done": true
+      }
+    },
     "lines": [
-      { "speaker": "Frituur de Tram", "text": "7000 zakjes friet? Dat is... heel veel aardappelen. Maar als jij de bestelling regelt bij de groothandel, doen wij mee.",
+      {
+        "speaker": "Frituur de Tram",
+        "text": "7000 zakjes friet? Dat is... heel veel aardappelen. Maar als jij de bestelling regelt bij de groothandel, doen wij mee.",
         "choice": [
-          { "label": "Ik regel de bestelling.", "flag": "frituur_faction_convinced", "flagVal": true, "coins": -5, "next": "frituur_agreed" },
-          { "label": "Hoeveel kost dat?", "next": "frituur_cost" }
+          {
+            "label": "Ik regel de bestelling.",
+            "flag": "frituur_faction_convinced",
+            "flagVal": true,
+            "coins": -5,
+            "next": "frituur_agreed"
+          },
+          {
+            "label": "Hoeveel kost dat?",
+            "next": "frituur_cost"
+          }
         ]
       }
     ]
   },
-
   "frituur_agreed": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Frituur de Tram", "text": "Top! Friet met Andalous voor 7000 mensen. Dat schrijven we in de geschiedenis.", "item": "friet" }
+      {
+        "speaker": "Frituur de Tram",
+        "text": "Top! Friet met Andalous voor 7000 mensen. Dat schrijven we in de geschiedenis.",
+        "item": "friet"
+      }
     ]
   },
-
   "frituur_cost": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Frituur de Tram", "text": "Vijf munten voor de aanbetaling. Daarna regelen wij de rest.", "flag": "frituur_faction_convinced", "flagVal": true, "coins": -5 }
+      {
+        "speaker": "Frituur de Tram",
+        "text": "Vijf munten voor de aanbetaling. Daarna regelen wij de rest.",
+        "flag": "frituur_faction_convinced",
+        "flagVal": true,
+        "coins": -5
+      }
     ]
   },
-
   "borgerhub_faction": {
-    "priority": 0, "conditions": { "flags": { "met_mayor": true, "visited_de_roma": true } },
+    "priority": 0,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "visited_de_roma": true
+      }
+    },
     "lines": [
-      { "speaker": "Borgerhub", "text": "Een kunstenaarscollectief aan de Samen Aan Tafel? Als De Roma ook meedoet — absoluut. Kunst en buurt horen samen.", "flag": "art_faction_convinced", "flagVal": true }
+      {
+        "speaker": "Borgerhub",
+        "text": "Een kunstenaarscollectief aan de Samen Aan Tafel? Als De Roma ook meedoet — absoluut. Kunst en buurt horen samen.",
+        "flag": "art_faction_convinced",
+        "flagVal": true
+      }
     ]
   },
-
   "kid_marbles": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Kind", "text": "Yo! Wil je knikkers? Ik win altijd maar het is saai als er niemand is om tegen te spelen." },
-      { "speaker": "Kind", "text": "Mijn oma zegt dat vroeger de politie hier altijd patrouilleerde. Nu is er een cafeetje. Beter toch?" }
+      {
+        "speaker": "Kind",
+        "text": "Yo! Wil je knikkers? Ik win altijd maar het is saai als er niemand is om tegen te spelen."
+      },
+      {
+        "speaker": "Kind",
+        "text": "Mijn oma zegt dat vroeger de politie hier altijd patrouilleerde. Nu is er een cafeetje. Beter toch?"
+      }
     ]
   },
-
   "delivery_rush": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Koerier", "text": "Nee nee nee, niet nu! Mijn bakfiets heeft een lekke band en ik heb nog 12 pakjes te leveren!" },
-      { "speaker": "Koerier", "text": "Als jij mij helpt met de laatste drie, geef ik je een tramticket. Deal?" }
+      {
+        "speaker": "Koerier",
+        "text": "Nee nee nee, niet nu! Mijn bakfiets heeft een lekke band en ik heb nog 12 pakjes te leveren!"
+      },
+      {
+        "speaker": "Koerier",
+        "text": "Als jij mij helpt met de laatste drie, geef ik je een tramticket. Deal?"
+      }
     ]
   },
-
   "geest_van_88_encounter": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Geest van '88", "text": "Borgerokko! Dit is onze wijk! Jullie horen hier niet!" },
-      { "speaker": "Turnhoutsebaan", "text": "De Geest van '88 kan niet worden verslagen door kracht. Gebruik 'Samen Aan Tafel' in de strijd.", "flag": "geest_encountered", "flagVal": true }
+      {
+        "speaker": "Geest van '88",
+        "text": "Borgerokko! Dit is onze wijk! Jullie horen hier niet!"
+      },
+      {
+        "speaker": "Turnhoutsebaan",
+        "text": "De Geest van '88 kan niet worden verslagen door kracht. Gebruik 'Samen Aan Tafel' in de strijd.",
+        "flag": "geest_encountered",
+        "flagVal": true
+      }
     ]
   },
-
   "geest_van_88_defeated": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Geest van '88", "text": "Ik... ik heb al die jaren nooit... aan tafel gezeten met...", "flag": "kracht_van_gemeenschap", "flagVal": true },
-      { "speaker": "Geest van '88", "text": "*verdwijnt langzaam* ...smakelijk." }
+      {
+        "speaker": "Geest van '88",
+        "text": "Ik... ik heb al die jaren nooit... aan tafel gezeten met...",
+        "flag": "kracht_van_gemeenschap",
+        "flagVal": true
+      },
+      {
+        "speaker": "Geest van '88",
+        "text": "*verdwijnt langzaam* ...smakelijk."
+      }
     ]
   },
-
   "delivery_indian": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Indian Boutique", "text": "Ah, een pakje van Yusuf! Bedankt hè. Groetjes van de Turnhoutsebaan.", "flag": "delivered_137", "flagVal": true }
+      {
+        "speaker": "Indian Boutique",
+        "text": "Ah, een pakje van Yusuf! Bedankt hè. Groetjes van de Turnhoutsebaan.",
+        "flag": "delivered_137",
+        "flagVal": true
+      }
     ]
   },
-
   "delivery_aladdin": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Patisserie Aladdin", "text": "Merci! We wachtten hierop. Yusuf stuurt altijd de beste mensen.", "flag": "delivered_170", "flagVal": true }
+      {
+        "speaker": "Patisserie Aladdin",
+        "text": "Merci! We wachtten hierop. Yusuf stuurt altijd de beste mensen.",
+        "flag": "delivered_170",
+        "flagVal": true
+      }
     ]
   },
-
   "delivery_borgerhub": {
-    "priority": 0, "conditions": {},
+    "priority": 0,
+    "conditions": {},
     "lines": [
-      { "speaker": "Borger Hub", "text": "Geleverd! Alle drie pakjes zijn nu weg. Ga maar terug naar Yusuf — hij is je een tramticket schuldig.", "flag": "delivered_284", "flagVal": true }
+      {
+        "speaker": "Borger Hub",
+        "text": "Geleverd! Alle drie pakjes zijn nu weg. Ga maar terug naar Yusuf — hij is je een tramticket schuldig.",
+        "flag": "delivered_284",
+        "flagVal": true
+      }
     ]
   },
-
   "fatima_idle_a": {
-    "npc": "fatima", "priority": -5,
+    "npc": "fatima",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Fatima", "text": "22 jaar op deze straat en ik ken nog steeds niet iedereen." }
+      {
+        "speaker": "Fatima",
+        "text": "22 jaar op deze straat en ik ken nog steeds niet iedereen."
+      }
     ]
   },
-
   "fatima_idle_b": {
-    "npc": "fatima", "priority": -5,
+    "npc": "fatima",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Fatima", "text": "De geur van Omars brood 's ochtends — dát is de Turnhoutsebaan." }
+      {
+        "speaker": "Fatima",
+        "text": "De geur van Omars brood 's ochtends — dát is de Turnhoutsebaan."
+      }
     ]
   },
-
   "fatima_idle_c": {
-    "npc": "fatima", "priority": -5,
+    "npc": "fatima",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Fatima", "text": "Mijn vader zei altijd: een buurt is wat de mensen ervan maken." }
+      {
+        "speaker": "Fatima",
+        "text": "Mijn vader zei altijd: een buurt is wat de mensen ervan maken."
+      }
     ]
   },
-
   "omar_idle_a": {
-    "npc": "omar", "priority": -5,
+    "npc": "omar",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Omar", "text": "Msemmen klaargemaakt voor zonsopgang — zo hoort het." }
+      {
+        "speaker": "Omar",
+        "text": "Msemmen klaargemaakt voor zonsopgang — zo hoort het."
+      }
     ]
   },
-
   "omar_idle_b": {
-    "npc": "omar", "priority": -5,
+    "npc": "omar",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Omar", "text": "Elke keer als ik deeg kneed, denk ik aan mijn moeder in Nador." }
+      {
+        "speaker": "Omar",
+        "text": "Elke keer als ik deeg kneed, denk ik aan mijn moeder in Nador."
+      }
     ]
   },
-
   "omar_idle_c": {
-    "npc": "omar", "priority": -5,
+    "npc": "omar",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Omar", "text": "Mijn oven is de warmste plek op heel de Turnhoutsebaan." }
+      {
+        "speaker": "Omar",
+        "text": "Mijn oven is de warmste plek op heel de Turnhoutsebaan."
+      }
     ]
   },
-
   "baert_idle_a": {
-    "npc": "baert", "priority": -5,
+    "npc": "baert",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Stof van over de hele wereld, maar altijd verkocht op hetzelfde adres." }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Stof van over de hele wereld, maar altijd verkocht op hetzelfde adres."
+      }
     ]
   },
-
   "baert_idle_b": {
-    "npc": "baert", "priority": -5,
+    "npc": "baert",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Vroeger fietste ik naar het werk. Nu rijdt de tram erlangs en ik ben blij dat ik hier bleef." }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Vroeger fietste ik naar het werk. Nu rijdt de tram erlangs en ik ben blij dat ik hier bleef."
+      }
     ]
   },
-
   "baert_idle_c": {
-    "npc": "baert", "priority": -5,
+    "npc": "baert",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Mevrouw Baert", "text": "Een goeie stof vertelt een verhaal — precies zoals een goeie buurt dat doet." }
+      {
+        "speaker": "Mevrouw Baert",
+        "text": "Een goeie stof vertelt een verhaal — precies zoals een goeie buurt dat doet."
+      }
     ]
   },
-
   "reza_idle_a": {
-    "npc": "reza", "priority": -5,
+    "npc": "reza",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Reza", "text": "Als de tram passeert op de juiste maat, is de Turnhoutsebaan een partituur." }
+      {
+        "speaker": "Reza",
+        "text": "Als de tram passeert op de juiste maat, is de Turnhoutsebaan een partituur."
+      }
     ]
   },
-
   "reza_idle_b": {
-    "npc": "reza", "priority": -5,
+    "npc": "reza",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Reza", "text": "Een snaar te weinig en het lied sterft. Een mens te weinig en de buurt ook." }
+      {
+        "speaker": "Reza",
+        "text": "Een snaar te weinig en het lied sterft. Een mens te weinig en de buurt ook."
+      }
     ]
   },
-
   "reza_idle_c": {
-    "npc": "reza", "priority": -5,
+    "npc": "reza",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Reza", "text": "De Roma staat er nog. Zolang zij staat, staat deze wijk." }
+      {
+        "speaker": "Reza",
+        "text": "De Roma staat er nog. Zolang zij staat, staat deze wijk."
+      }
     ]
   },
-
   "aziz_idle_a": {
-    "npc": "aziz", "priority": -5,
+    "npc": "aziz",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Aziz", "text": "Veertig jaar. In die tijd is Borgerhout drie keer veranderd en toch hetzelfde gebleven." }
+      {
+        "speaker": "Aziz",
+        "text": "Veertig jaar. In die tijd is Borgerhout drie keer veranderd en toch hetzelfde gebleven."
+      }
     ]
   },
-
   "aziz_idle_b": {
-    "npc": "aziz", "priority": -5,
+    "npc": "aziz",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Aziz", "text": "Een wijk die haar ouderen vergeet, vergeet zichzelf." }
+      {
+        "speaker": "Aziz",
+        "text": "Een wijk die haar ouderen vergeet, vergeet zichzelf."
+      }
     ]
   },
-
   "aziz_idle_c": {
-    "npc": "aziz", "priority": -5,
+    "npc": "aziz",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Aziz", "text": "Elke steen hier heeft een naam. Je moet alleen weten hoe je moet luisteren." }
+      {
+        "speaker": "Aziz",
+        "text": "Elke steen hier heeft een naam. Je moet alleen weten hoe je moet luisteren."
+      }
     ]
   },
-
   "yusuf_idle_a": {
-    "npc": "yusuf", "priority": -5,
+    "npc": "yusuf",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Yusuf", "text": "Banden slijten, maar de Turnhoutsebaan rijdt altijd door." }
+      {
+        "speaker": "Yusuf",
+        "text": "Banden slijten, maar de Turnhoutsebaan rijdt altijd door."
+      }
     ]
   },
-
   "yusuf_idle_b": {
-    "npc": "yusuf", "priority": -5,
+    "npc": "yusuf",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Yusuf", "text": "Op deze straat bezorg ik méér dan pakjes — ik breng buurten bij elkaar." }
+      {
+        "speaker": "Yusuf",
+        "text": "Op deze straat bezorg ik méér dan pakjes — ik breng buurten bij elkaar."
+      }
     ]
   },
-
   "hamza_idle_a": {
-    "npc": "hamza", "priority": -5,
+    "npc": "hamza",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Hamza", "text": "Wist je dat er een knikker bestaat die honderd jaar oud is? Die van mijn opa." }
+      {
+        "speaker": "Hamza",
+        "text": "Wist je dat er een knikker bestaat die honderd jaar oud is? Die van mijn opa."
+      }
     ]
   },
-
   "hamza_idle_b": {
-    "npc": "hamza", "priority": -5,
+    "npc": "hamza",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Hamza", "text": "Op de Turnhoutsebaan leer je meer dan op school. Dat zegt mijn oom tenminste." }
+      {
+        "speaker": "Hamza",
+        "text": "Op de Turnhoutsebaan leer je meer dan op school. Dat zegt mijn oom tenminste."
+      }
     ]
   },
-
   "tine_idle_a": {
-    "npc": "tine", "priority": -5,
+    "npc": "tine",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Tine", "text": "Vijftien jaar nachtwinkel en ik heb nog nooit een saaie nacht gehad." }
+      {
+        "speaker": "Tine",
+        "text": "Vijftien jaar nachtwinkel en ik heb nog nooit een saaie nacht gehad."
+      }
     ]
   },
-
   "tine_idle_b": {
-    "npc": "tine", "priority": -5,
+    "npc": "tine",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Tine", "text": "De nacht onthult wie de buurt echt zijn — en ze zijn goed, deze mensen." }
+      {
+        "speaker": "Tine",
+        "text": "De nacht onthult wie de buurt echt zijn — en ze zijn goed, deze mensen."
+      }
     ]
   },
-
   "lotte_intro": {
-    "npc": "lotte", "priority": 0,
+    "npc": "lotte",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Lotte", "text": "Dag! Lotte Verbeke — buurtcomité, moeder van twee en halftijds verontwaardigd burger.", "flag": "met_lotte", "flagVal": true },
-      { "speaker": "Lotte", "text": "Ik woon hier drie jaar maar ik ken elke slager, elke nachtwinkel en elk sluikstortje op de Turnhoutsebaan." },
-      { "speaker": "Lotte", "text": "Ze zeggen dat het hier verloederd is. Ik zeg: ze hebben het nog niet écht gezien." }
+      {
+        "speaker": "Lotte",
+        "text": "Dag! Lotte Verbeke — buurtcomité, moeder van twee en halftijds verontwaardigd burger.",
+        "flag": "met_lotte",
+        "flagVal": true
+      },
+      {
+        "speaker": "Lotte",
+        "text": "Ik woon hier drie jaar maar ik ken elke slager, elke nachtwinkel en elk sluikstortje op de Turnhoutsebaan."
+      },
+      {
+        "speaker": "Lotte",
+        "text": "Ze zeggen dat het hier verloederd is. Ik zeg: ze hebben het nog niet écht gezien."
+      }
     ]
   },
-
   "lotte_speculator_lore": {
-    "npc": "lotte", "priority": 20,
-    "conditions": { "flags": { "delivery_done": true } },
+    "npc": "lotte",
+    "priority": 20,
+    "conditions": {
+      "flags": {
+        "delivery_done": true
+      }
+    },
     "lines": [
-      { "speaker": "Lotte", "text": "Heb je gehoord van die speculator? Hij heet Vermeersch — heeft al panden in de Seefhoek leeggekocht." },
-      { "speaker": "Lotte", "text": "Drie panden hier op de Turnhoutsebaan. Nummer 108, 137 én het pand van Mevrouw Van den Berg. Dat is geen toeval." },
-      { "speaker": "Lotte", "text": "Als die gaat, gaat de ziel van de straat. We moeten iets doen voor het te laat is.", "flag": "knows_speculator", "flagVal": true }
+      {
+        "speaker": "Lotte",
+        "text": "Heb je gehoord van die speculator? Hij heet Vermeersch — heeft al panden in de Seefhoek leeggekocht."
+      },
+      {
+        "speaker": "Lotte",
+        "text": "Drie panden hier op de Turnhoutsebaan. Nummer 108, 137 én het pand van Mevrouw Van den Berg. Dat is geen toeval."
+      },
+      {
+        "speaker": "Lotte",
+        "text": "Als die gaat, gaat de ziel van de straat. We moeten iets doen voor het te laat is.",
+        "flag": "knows_speculator",
+        "flagVal": true
+      }
     ]
   },
-
   "lotte_idle_a": {
-    "npc": "lotte", "priority": -5,
+    "npc": "lotte",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Lotte", "text": "Milieu, buurt, buggy — ik doe het allemaal tegelijk en doe geen van drie goed genoeg." }
+      {
+        "speaker": "Lotte",
+        "text": "Milieu, buurt, buggy — ik doe het allemaal tegelijk en doe geen van drie goed genoeg."
+      }
     ]
   },
-
   "bram_intro": {
-    "npc": "bram", "priority": 0,
+    "npc": "bram",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Bram", "text": "Bar Leon. Stap binnen of blijf buiten, maar kijk zo niet naar mijn toog.", "flag": "met_bram", "flagVal": true },
-      { "speaker": "Bram", "text": "Vijfenveertig jaar oud, barman hier al twintig. Heb alles zien komen en gaan op deze straat." },
-      { "speaker": "Bram", "text": "Vroeger was dit een echte Vlaamse stamkroeg. Nu? Gemengd. Niet slecht — alleen anders." }
+      {
+        "speaker": "Bram",
+        "text": "Bar Leon. Stap binnen of blijf buiten, maar kijk zo niet naar mijn toog.",
+        "flag": "met_bram",
+        "flagVal": true
+      },
+      {
+        "speaker": "Bram",
+        "text": "Vijfenveertig jaar oud, barman hier al twintig. Heb alles zien komen en gaan op deze straat."
+      },
+      {
+        "speaker": "Bram",
+        "text": "Vroeger was dit een echte Vlaamse stamkroeg. Nu? Gemengd. Niet slecht — alleen anders."
+      }
     ]
   },
-
   "bram_skeptical": {
-    "npc": "bram", "priority": 70,
-    "conditions": { "flags": { "met_mayor": true, "baert_faction_convinced": false } },
+    "npc": "bram",
+    "priority": 70,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "baert_faction_convinced": false
+      }
+    },
     "lines": [
-      { "speaker": "Bram", "text": "Een Samen Aan Tafel? Klinkt goed op papier. Maar wie betaalt? Wie ruimt op? Wie zorgt dat het niet uitloopt op gedoe?" },
-      { "speaker": "Bram", "text": "Kom terug als Mevrouw Baert erbij is. Die vrouw heeft krediet bij ons. Dan praten we." }
+      {
+        "speaker": "Bram",
+        "text": "Een Samen Aan Tafel? Klinkt goed op papier. Maar wie betaalt? Wie ruimt op? Wie zorgt dat het niet uitloopt op gedoe?"
+      },
+      {
+        "speaker": "Bram",
+        "text": "Kom terug als Mevrouw Baert erbij is. Die vrouw heeft krediet bij ons. Dan praten we."
+      }
     ]
   },
-
   "bram_convinced": {
-    "npc": "bram", "priority": 70,
-    "conditions": { "flags": { "met_mayor": true, "baert_faction_convinced": true } },
+    "npc": "bram",
+    "priority": 70,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "baert_faction_convinced": true
+      }
+    },
     "lines": [
-      { "speaker": "Bram", "text": "Mevrouw Baert was hier gisteren. Een fles Duvel en een half uur later — oké, we doen mee.", "flag": "bram_acknowledged", "flagVal": true },
-      { "speaker": "Bram", "text": "Bar Leon zet tien tafels buiten op de Turnhoutsebaan. Maar de eerste ronde is van mij. Conditie." }
+      {
+        "speaker": "Bram",
+        "text": "Mevrouw Baert was hier gisteren. Een fles Duvel en een half uur later — oké, we doen mee.",
+        "flag": "bram_acknowledged",
+        "flagVal": true
+      },
+      {
+        "speaker": "Bram",
+        "text": "Bar Leon zet tien tafels buiten op de Turnhoutsebaan. Maar de eerste ronde is van mij. Conditie."
+      }
     ]
   },
-
   "bram_idle_a": {
-    "npc": "bram", "priority": -5,
+    "npc": "bram",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Bram", "text": "Een goeie Duvel lost geen problemen op, maar maakt ze draaglijker." }
+      {
+        "speaker": "Bram",
+        "text": "Een goeie Duvel lost geen problemen op, maar maakt ze draaglijker."
+      }
     ]
   },
-
   "nathalie_intro": {
-    "npc": "nathalie", "priority": 0,
-    "conditions": { "flags": { "met_mayor": true } },
+    "npc": "nathalie",
+    "priority": 0,
+    "conditions": {
+      "flags": {
+        "met_mayor": true
+      }
+    },
     "lines": [
-      { "speaker": "Nathalie", "text": "Nathalie Claes, OCMW Borgerhout. Ik hoor dat jij de man of vrouw bent die dingen in beweging zet hier.", "flag": "met_nathalie", "flagVal": true },
-      { "speaker": "Nathalie", "text": "Ik werk al tien jaar met gezinnen op de Turnhoutsebaan. De problemen zijn complex maar de mensen zijn veerkrachtig." },
-      { "speaker": "Nathalie", "text": "Wat je nodig hebt voor die zeven facties — ik kan je wegwijs maken. Vraag maar." }
+      {
+        "speaker": "Nathalie",
+        "text": "Nathalie Claes, OCMW Borgerhout. Ik hoor dat jij de man of vrouw bent die dingen in beweging zet hier.",
+        "flag": "met_nathalie",
+        "flagVal": true
+      },
+      {
+        "speaker": "Nathalie",
+        "text": "Ik werk al tien jaar met gezinnen op de Turnhoutsebaan. De problemen zijn complex maar de mensen zijn veerkrachtig."
+      },
+      {
+        "speaker": "Nathalie",
+        "text": "Wat je nodig hebt voor die zeven facties — ik kan je wegwijs maken. Vraag maar."
+      }
     ]
   },
-
   "nathalie_faction_context": {
-    "npc": "nathalie", "priority": 55,
-    "conditions": { "flags": { "met_mayor": true, "met_nathalie": true } },
+    "npc": "nathalie",
+    "priority": 55,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "met_nathalie": true
+      }
+    },
     "lines": [
-      { "speaker": "Nathalie", "text": "De zeven facties zijn geen toeval. Elk vertegenwoordigt een stuk van de wijk dat niet vanzelf samenkomt." },
-      { "speaker": "Nathalie", "text": "De Marokkaanse vereniging en de Turkse club praten al jaren langs elkaar heen. De school staat er los van. Bar Leon al helemaal." },
-      { "speaker": "Nathalie", "text": "Maar een gedeelde maaltijd — dat werkt. Dat heb ik zien werken. Soms is eten politieker dan een vergadering." }
+      {
+        "speaker": "Nathalie",
+        "text": "De zeven facties zijn geen toeval. Elk vertegenwoordigt een stuk van de wijk dat niet vanzelf samenkomt."
+      },
+      {
+        "speaker": "Nathalie",
+        "text": "De Marokkaanse vereniging en de Turkse club praten al jaren langs elkaar heen. De school staat er los van. Bar Leon al helemaal."
+      },
+      {
+        "speaker": "Nathalie",
+        "text": "Maar een gedeelde maaltijd — dat werkt. Dat heb ik zien werken. Soms is eten politieker dan een vergadering."
+      }
     ]
   },
-
   "nathalie_idle_a": {
-    "npc": "nathalie", "priority": -5,
+    "npc": "nathalie",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Nathalie", "text": "Achter elke deur op deze straat is een verhaal dat niemand vertelt." }
+      {
+        "speaker": "Nathalie",
+        "text": "Achter elke deur op deze straat is een verhaal dat niemand vertelt."
+      }
     ]
   },
-
   "kevin_intro": {
-    "npc": "kevin", "priority": 0,
+    "npc": "kevin",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Kevin", "text": "Yo. Kevin. Ik skate hier al van kleins af. Kijk niet zo — ik val zelden.", "flag": "met_kevin", "flagVal": true },
-      { "speaker": "Kevin", "text": "Mijn ma is van hier, mijn beste vriend Mehdi spreekt Arabisch, Emre leert mij Turks. Borgerhout is mijn taal." }
+      {
+        "speaker": "Kevin",
+        "text": "Yo. Kevin. Ik skate hier al van kleins af. Kijk niet zo — ik val zelden.",
+        "flag": "met_kevin",
+        "flagVal": true
+      },
+      {
+        "speaker": "Kevin",
+        "text": "Mijn ma is van hier, mijn beste vriend Mehdi spreekt Arabisch, Emre leert mij Turks. Borgerhout is mijn taal."
+      }
     ]
   },
-
   "kevin_school_faction": {
-    "npc": "kevin", "priority": 60,
-    "conditions": { "flags": { "met_mayor": true, "school_faction_convinced": false } },
+    "npc": "kevin",
+    "priority": 60,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "school_faction_convinced": false
+      }
+    },
     "lines": [
-      { "speaker": "Kevin", "text": "Samen Aan Tafel en de school doet niet mee? Wacht. Ik ken de leerlingenraad. Hamza kent de juf. Samen regelen wij dat.", "flag": "school_faction_convinced", "flagVal": true },
-      { "speaker": "Kevin", "text": "Geen meeting, geen e-mail — gewoon zeggen dat wij allemaal gaan. Dan volgt de school vanzelf." }
+      {
+        "speaker": "Kevin",
+        "text": "Samen Aan Tafel en de school doet niet mee? Wacht. Ik ken de leerlingenraad. Hamza kent de juf. Samen regelen wij dat.",
+        "flag": "school_faction_convinced",
+        "flagVal": true
+      },
+      {
+        "speaker": "Kevin",
+        "text": "Geen meeting, geen e-mail — gewoon zeggen dat wij allemaal gaan. Dan volgt de school vanzelf."
+      }
     ]
   },
-
   "kevin_idle_a": {
-    "npc": "kevin", "priority": -5,
+    "npc": "kevin",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Kevin", "text": "Borgerhout is mijn skatepark, mijn dorp en mijn universum — in die volgorde." }
+      {
+        "speaker": "Kevin",
+        "text": "Borgerhout is mijn skatepark, mijn dorp en mijn universum — in die volgorde."
+      }
     ]
   },
-
   "van_den_berg_intro": {
-    "npc": "van_den_berg", "priority": 0,
+    "npc": "van_den_berg",
+    "priority": 0,
     "conditions": {},
     "lines": [
-      { "speaker": "Mevrouw Van den Berg", "text": "Goeiedag. Ik woon hier al 45 jaar — in dat pand daar, tweede verdieping, links.", "flag": "met_van_den_berg", "flagVal": true },
-      { "speaker": "Mevrouw Van den Berg", "text": "Ik heb dertig jaar les gegeven op de Atheneum. Kinderen van nu zijn kleindochtervrienden van mijn vroegere leerlingen." },
-      { "speaker": "Mevrouw Van den Berg", "text": "Op deze straat ken ik iedereen. Jij nog niet — maar dat verandert snel." }
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Goeiedag. Ik woon hier al 45 jaar — in dat pand daar, tweede verdieping, links.",
+        "flag": "met_van_den_berg",
+        "flagVal": true
+      },
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Ik heb dertig jaar les gegeven op de Atheneum. Kinderen van nu zijn kleindochtervrienden van mijn vroegere leerlingen."
+      },
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Op deze straat ken ik iedereen. Jij nog niet — maar dat verandert snel."
+      }
     ]
   },
-
   "van_den_berg_speculator_worry": {
-    "npc": "van_den_berg", "priority": 40,
-    "conditions": { "flags": { "has_community_trust": true, "sig_aziz": false } },
+    "npc": "van_den_berg",
+    "priority": 40,
+    "conditions": {
+      "flags": {
+        "has_community_trust": true,
+        "sig_aziz": false
+      }
+    },
     "lines": [
-      { "speaker": "Mevrouw Van den Berg", "text": "Die speculator heeft een brief gestuurd. Mijn huis. 45 jaar. Ze willen het sloppen voor appartementen." },
-      { "speaker": "Mevrouw Van den Berg", "text": "Ik ga niet weg. Ik ben hier begraven, bijna letterlijk. Maar ik ben bang dat ze me dwingen." },
-      { "speaker": "Mevrouw Van den Berg", "text": "Doe iets. Alsjeblieft. Dit is niet alleen mijn huis — dit is de geheugenplaats van heel deze straat." }
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Die speculator heeft een brief gestuurd. Mijn huis. 45 jaar. Ze willen het sloppen voor appartementen."
+      },
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Ik ga niet weg. Ik ben hier begraven, bijna letterlijk. Maar ik ben bang dat ze me dwingen."
+      },
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Doe iets. Alsjeblieft. Dit is niet alleen mijn huis — dit is de geheugenplaats van heel deze straat."
+      }
     ]
   },
-
   "van_den_berg_grateful": {
-    "npc": "van_den_berg", "priority": 65,
-    "conditions": { "flags": { "sig_aziz": true } },
+    "npc": "van_den_berg",
+    "priority": 65,
+    "conditions": {
+      "flags": {
+        "sig_aziz": true
+      }
+    },
     "lines": [
-      { "speaker": "Mevrouw Van den Berg", "text": "Ze hebben me gebeld — de petitie heeft indruk gemaakt. De notaris heeft de verkoop opgeschort.", "flag": "van_den_berg_thanked", "flagVal": true },
-      { "speaker": "Mevrouw Van den Berg", "text": "Dankzij jou. Dankzij iedereen op deze straat. Na 45 jaar weet ik eindelijk zeker dat ik hier thuishoor." }
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Ze hebben me gebeld — de petitie heeft indruk gemaakt. De notaris heeft de verkoop opgeschort.",
+        "flag": "van_den_berg_thanked",
+        "flagVal": true
+      },
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Dankzij jou. Dankzij iedereen op deze straat. Na 45 jaar weet ik eindelijk zeker dat ik hier thuishoor."
+      }
     ]
   },
-
   "van_den_berg_idle_a": {
-    "npc": "van_den_berg", "priority": -5,
+    "npc": "van_den_berg",
+    "priority": -5,
     "conditions": {},
     "lines": [
-      { "speaker": "Mevrouw Van den Berg", "text": "Elke morgen kijk ik uit mijn raam en tel mijn zegeningen. Er zijn er veel." }
+      {
+        "speaker": "Mevrouw Van den Berg",
+        "text": "Elke morgen kijk ik uit mijn raam en tel mijn zegeningen. Er zijn er veel."
+      }
     ]
   },
-
   "reza_after_concert": {
-    "npc": "reza", "priority": 110,
-    "conditions": { "flags": { "reza_quest_done": true, "visited_de_roma": true, "sig_reza": true } },
+    "npc": "reza",
+    "priority": 110,
+    "conditions": {
+      "flags": {
+        "reza_quest_done": true,
+        "visited_de_roma": true,
+        "sig_reza": true
+      }
+    },
     "lines": [
-      { "speaker": "Reza", "text": "Je was er vanavond. In De Roma. Je hebt het gehoord." },
-      { "speaker": "Reza", "text": "Die zaal... Art Deco, 1927, twee keer gered van de sloop. Elk concert is een overwinning op het vergeten." },
-      { "speaker": "Reza", "text": "Mijn vader speelde oud in een appartement in Molenbeek. Hier speel ik op een podium voor 2000 mensen. Dat is niet normaal. Dat is een wonder." },
-      { "speaker": "Reza", "text": "Dankzij die snaar. Dankzij jou. De Turnhoutsebaan zingt vanavond." }
+      {
+        "speaker": "Reza",
+        "text": "Je was er vanavond. In De Roma. Je hebt het gehoord."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Die zaal... Art Deco, 1927, twee keer gered van de sloop. Elk concert is een overwinning op het vergeten."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Mijn vader speelde oud in een appartement in Molenbeek. Hier speel ik op een podium voor 2000 mensen. Dat is niet normaal. Dat is een wonder."
+      },
+      {
+        "speaker": "Reza",
+        "text": "Dankzij die snaar. Dankzij jou. De Turnhoutsebaan zingt vanavond."
+      }
     ]
   },
-
   "omar_samen_tafel_prep": {
-    "npc": "omar", "priority": 85,
-    "conditions": { "flags": { "met_mayor": true, "omar_flour_done": true, "sig_omar": true } },
+    "npc": "omar",
+    "priority": 85,
+    "conditions": {
+      "flags": {
+        "met_mayor": true,
+        "omar_flour_done": true,
+        "sig_omar": true
+      }
+    },
     "lines": [
-      { "speaker": "Omar", "text": "Ik heb de oven op zes uur gezet. Voor 7000 mensen — dat is 350 kilogram deeg, reken maar mee." },
-      { "speaker": "Omar", "text": "Khobz, msemmen, pistolets — alles gemengd op één tafel. Zo hoort het. Niemand mag honger hebben op de Turnhoutsebaan." },
-      { "speaker": "Omar", "text": "Mijn moeder deed dit tijdens Ramadan voor de hele straat in Nador. Nu doe ik het hier. De cirkel sluit zich." }
+      {
+        "speaker": "Omar",
+        "text": "Ik heb de oven op zes uur gezet. Voor 7000 mensen — dat is 350 kilogram deeg, reken maar mee."
+      },
+      {
+        "speaker": "Omar",
+        "text": "Khobz, msemmen, pistolets — alles gemengd op één tafel. Zo hoort het. Niemand mag honger hebben op de Turnhoutsebaan."
+      },
+      {
+        "speaker": "Omar",
+        "text": "Mijn moeder deed dit tijdens Ramadan voor de hele straat in Nador. Nu doe ik het hier. De cirkel sluit zich."
+      }
     ]
   },
-
   "fatima_nora_wedding": {
-    "npc": "fatima", "priority": 105,
-    "conditions": { "flags": { "stunt_quest_done": true, "sig_fatima": true } },
+    "npc": "fatima",
+    "priority": 105,
+    "conditions": {
+      "flags": {
+        "stunt_quest_done": true,
+        "sig_fatima": true
+      }
+    },
     "lines": [
-      { "speaker": "Fatima", "text": "Nora's trouwdag was prachtig. Die stof — je had haar gezicht moeten zien." },
-      { "speaker": "Fatima", "text": "Ze heeft je naam vermeld in haar speech. De hele familie klapt. Ga zo door." }
+      {
+        "speaker": "Fatima",
+        "text": "Nora's trouwdag was prachtig. Die stof — je had haar gezicht moeten zien."
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Ze heeft je naam vermeld in haar speech. De hele familie klapt. Ga zo door."
+      }
     ]
   }
 }
