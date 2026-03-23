@@ -114,6 +114,7 @@ class StateManager {
   private gameTimeMinutes:  number = 9 * 60;
   /** Legacy flag store — still written for dialogue conditions not yet in bridge. */
   private extraFlags:       QuestFlags = {};
+  private _autoSaveTimer:   ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     const persisted = this._loadPersistedSnapshot();
@@ -131,9 +132,25 @@ class StateManager {
     }
     this.actor.start();
     this._attachDebugLogger();
+    this._attachAutoSave();
     gameEventLogger.attachSnapshotGetter(
       () => this.actor.getSnapshot() as { value: unknown; context: GameContext },
     );
+  }
+
+  /**
+   * Debounced auto-save on every XState transition.
+   * Batches rapid events (e.g. dialogue flag bursts) into one save after 1.5 s.
+   * This closes the gap between the explicit dialogue/battle save calls.
+   */
+  private _attachAutoSave(): void {
+    this.actor.subscribe(() => {
+      if (this._autoSaveTimer) clearTimeout(this._autoSaveTimer);
+      this._autoSaveTimer = setTimeout(() => {
+        this._autoSaveTimer = null;
+        this.save();
+      }, 1500);
+    });
   }
 
   private _attachDebugLogger(): void {
