@@ -67,7 +67,7 @@
     "priority": 100,
     "conditions": {
       "flags": {
-        "stunt_quest_done": false
+        "stunt_quest_active": true
       },
       "items": [
         "fabric_bolt"
@@ -439,7 +439,9 @@
     "priority": 40,
     "conditions": {
       "flags": {
-        "oud_quest_accepted": true
+        "oud_quest_accepted": true,
+        "has_oud_string_item": false,
+        "reza_quest_done": false
       }
     },
     "lines": [
@@ -470,11 +472,9 @@
     "priority": 90,
     "conditions": {
       "flags": {
-        "oud_quest_accepted": true
-      },
-      "items": [
-        "oud_string"
-      ]
+        "oud_quest_accepted": true,
+        "has_oud_string_item": true
+      }
     },
     "lines": [
       {
@@ -654,7 +654,8 @@
     "conditions": {
       "flags": {
         "oud_quest_accepted": true,
-        "has_oud_string_item": false
+        "has_oud_string_item": false,
+        "reza_quest_done": false
       }
     },
     "lines": [
@@ -1740,7 +1741,8 @@
     "conditions": {
       "flags": {
         "stunt_quest_done": true,
-        "sig_fatima": true
+        "sig_fatima": true,
+        "met_mayor": false
       }
     },
     "lines": [
