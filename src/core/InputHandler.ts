@@ -19,7 +19,8 @@ export class InputHandler {
   };
   private actionKey!:  Phaser.Input.Keyboard.Key;   // Z
   private enterKey!:   Phaser.Input.Keyboard.Key;   // Enter
-  private cancelKey!: Phaser.Input.Keyboard.Key;   // X / Escape
+  private cancelKey!:  Phaser.Input.Keyboard.Key;   // X
+  private escKey!:     Phaser.Input.Keyboard.Key;   // ESC
   private menuKey!:   Phaser.Input.Keyboard.Key;   // Tab / I
 
   constructor(scene: Phaser.Scene) {
@@ -36,6 +37,7 @@ export class InputHandler {
     this.actionKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
     this.enterKey  = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.cancelKey = kb.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+    this.escKey    = kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.menuKey   = kb.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
   }
 
@@ -78,6 +80,7 @@ export class InputHandler {
   }
   get cancelJustPressed(): boolean {
     return Phaser.Input.Keyboard.JustDown(this.cancelKey) ||
+           Phaser.Input.Keyboard.JustDown(this.escKey)    ||
            Phaser.Input.Keyboard.JustDown(this.cursors.shift);
   }
   get menuJustPressed(): boolean {

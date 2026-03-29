@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { PlayerState, stateManager } from '@core/StateManager';
-import { GAME_WIDTH, GAME_HEIGHT }   from '@core/GameConfig';
-import { localeManager }             from '@i18n/LocaleManager';
+import { PlayerState }  from '@core/StateManager';
+import { GAME_WIDTH }   from '@core/GameConfig';
+import { localeManager } from '@i18n/LocaleManager';
 
 /**
  * HUD — top-left overlay showing HP bar, coins, and level.
@@ -79,28 +79,6 @@ export class HUD {
       fontSize:   '3px',
       color:      '#555555',
     }).setScrollFactor(0).setDepth(101);
-
-    // Save button — bottom-right corner
-    const bx = GAME_WIDTH - p - 28;
-    const by = GAME_HEIGHT - p - 14;
-    const saveBg = this.scene.add.rectangle(bx, by, 30, 12, 0x1A3A1A, 0.85)
-      .setOrigin(0, 0)
-      .setScrollFactor(0)
-      .setDepth(100)
-      .setInteractive({ useHandCursor: true });
-    const saveLabel = this.scene.add.text(bx + 15, by + 6, localeManager.t('save'), {
-      fontFamily: gf,
-      fontSize:   '3px',
-      color:      '#7FDD7F',
-    }).setOrigin(0.5, 0.5).setScrollFactor(0).setDepth(101);
-
-    saveBg.on('pointerover',  () => { saveBg.setFillStyle(0x2A5A2A, 0.95); });
-    saveBg.on('pointerout',   () => { saveBg.setFillStyle(0x1A3A1A, 0.85); });
-    saveBg.on('pointerdown',  () => {
-      stateManager.save();
-      saveLabel.setText(localeManager.t('saved'));
-      this.scene.time.delayedCall(1200, () => saveLabel.setText(localeManager.t('save')));
-    });
 
   }
 

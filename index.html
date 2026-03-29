@@ -101,6 +101,7 @@
     /* ── HTML Inventory Panel ─────────────────────────────────────────────── */
     #html-inventory {
       background: rgba(10,10,18,0.85);
+      border: 1px solid #FFD700;
       border-radius: 8px;
       padding: 8px;
       width: 100%;
@@ -962,8 +963,6 @@
         if (hintBtn) hintBtn.textContent = t.hint_btn;
 
         // Action buttons
-        var saveBtn = el('btn-save');
-        if (saveBtn) saveBtn.innerHTML = t.save_main + '<span class="sub">' + t.save_sub + '</span>';
         var talkBtn = el('btn-talk');
         if (talkBtn) talkBtn.innerHTML = t.talk_main + '<span class="sub">' + t.talk_sub + '</span>';
         var okBtn = el('btn-ok');
@@ -1034,8 +1033,6 @@
   <!-- Left panel -->
   <div id="left-panel">
     <div class="panel-top">
-      <!-- HTML Inventory — sharper rendering than canvas -->
-      <div id="html-inventory" style="display:none; width:100%; flex-direction:column; gap:4px;"></div>
       <div id="auth-panel">
         <div id="auth-user">
           <img id="auth-avatar" src="" alt="avatar" />
@@ -1047,6 +1044,8 @@
         <button class="auth-btn" id="btn-scores">🏆 SCORES</button>
         <div id="auth-error" style="display:none;font-family:'Press Start 2P',monospace;font-size:4px;color:#ff6633;line-height:1.8;"></div>
       </div>
+      <!-- HTML Inventory — sharper rendering than canvas -->
+      <div id="html-inventory" style="display:none; width:100%; flex-direction:column; gap:4px;"></div>
     </div>
     <div class="panel-bottom">
       <div id="dpad">
@@ -1079,7 +1078,7 @@
     </div>
     <div class="panel-bottom">
       <div id="action-btns">
-        <button class="action-btn" id="btn-save">SAVEN<span class="sub">opslaan</span></button>
+        <button class="action-btn" id="btn-fullscreen">⛶<span class="sub">volledig</span></button>
         <button class="action-btn" id="btn-talk">PRAAT<span class="sub">spatiebalk</span></button>
         <button class="action-btn" id="btn-ok">OK<span class="sub">enter</span></button>
       </div>
@@ -1166,16 +1165,23 @@
       if (id) document.getElementById(id)?.classList.remove('pressed');
     });
 
-    // Save button — calls stateManager directly, no held-state needed
-    const saveBtn = document.getElementById('btn-save');
-    function doSave(e) {
+    // Fullscreen toggle — hides both side panels so the game fills the window
+    const fullscreenBtn = document.getElementById('btn-fullscreen');
+    let _panelsHidden = false;
+    function togglePanels(e) {
       e.preventDefault();
-      saveBtn.classList.add('pressed');
-      if (window.__saveGame) window.__saveGame();
-      setTimeout(() => saveBtn.classList.remove('pressed'), 300);
+      _panelsHidden = !_panelsHidden;
+      const lp = document.getElementById('left-panel');
+      const rp = document.getElementById('right-panel');
+      if (lp) lp.style.display = _panelsHidden ? 'none' : '';
+      if (rp) rp.style.display = _panelsHidden ? 'none' : '';
+      fullscreenBtn.textContent = _panelsHidden ? '⛶' : '⛶';
+      fullscreenBtn.classList.toggle('pressed', _panelsHidden);
     }
-    saveBtn.addEventListener('touchstart', doSave, { passive: false });
-    saveBtn.addEventListener('mousedown',  doSave);
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click',      togglePanels);
+      fullscreenBtn.addEventListener('touchstart', togglePanels, { passive: false });
+    }
   </script>
 
   <script type="module">

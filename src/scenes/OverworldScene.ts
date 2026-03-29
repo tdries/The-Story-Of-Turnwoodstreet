@@ -145,7 +145,11 @@ export class OverworldScene extends Phaser.Scene {
     if (px > this.lastPlayerX) {
       const block = GateSystem.checkTransition(this.lastPlayerX, px);
       if (block) {
-        this.player.sprite.setX(this.lastPlayerX);   // push back silently
+        this.player.sprite.setX(this.lastPlayerX);
+        this.player.sprite.setVelocity(0, 0);
+        if (block.hint && !this.dialogueSystem.isOpen) {
+          this.dialogueSystem.openRaw('', block.hint);
+        }
       }
     }
     this.lastPlayerX = this.player.sprite.x;
@@ -164,6 +168,7 @@ export class OverworldScene extends Phaser.Scene {
             this.scene.pause(SCENE.OVERWORLD);
             this.scene.launch(SCENE.BATTLE, { enemyId: trigger.enemyId });
           } else {
+            this.player.sprite.setVelocity(0, 0);
             this.dialogueSystem.open(trigger.dialogueId);
           }
           break;
@@ -177,6 +182,7 @@ export class OverworldScene extends Phaser.Scene {
       if (target) {
         this.activeTalkingNpc = target;
         target.setTalking(true);
+        this.player.sprite.setVelocity(0, 0);
         const dlgId = this.resolveDialogueId(target);
         this.dialogueSystem.open(dlgId);
       }

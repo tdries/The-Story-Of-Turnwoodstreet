@@ -66,6 +66,7 @@ export class DialogueSystem {
   private lines:         DialogueLine[] = [];
   private lineIdx        = 0;
   private _isOpen        = false;
+  private _isRaw         = false;  // true when opened via openRaw — skip quest/save on close
   private pendingChoices: DialogueChoice[] | null = null;
   private dialogueId     = '';   // tracks current node for locale lookups
 
@@ -88,6 +89,18 @@ export class DialogueSystem {
     this.lines          = node.lines;
     this.lineIdx        = 0;
     this._isOpen        = true;
+    this._isRaw         = false;
+    this.pendingChoices = null;
+    this.showLine();
+  }
+
+  /** Show arbitrary text via the dialogue UI without triggering quest checks or auto-save. */
+  openRaw(speaker: string, ...lines: string[]): void {
+    this.dialogueId     = '';
+    this.lines          = lines.map(text => ({ speaker, text }));
+    this.lineIdx        = 0;
+    this._isOpen        = true;
+    this._isRaw         = true;
     this.pendingChoices = null;
     this.showLine();
   }
@@ -194,11 +207,14 @@ export class DialogueSystem {
   }
 
   private close(): void {
-    this._isOpen      = false;
+    this._isOpen        = false;
     this.pendingChoices = null;
     this.box.hide();
-    QuestSystem.checkAll();
-    stateManager.save();
+    if (!this._isRaw) {
+      QuestSystem.checkAll();
+      stateManager.save();
+    }
+    this._isRaw = false;
     this.onClose?.();
   }
 }
