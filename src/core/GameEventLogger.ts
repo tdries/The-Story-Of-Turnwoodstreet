@@ -160,16 +160,27 @@ class GameEventLogger {
   constructor() {
     // Resolve auth user; events are buffered until this resolves.
     supabase.auth.getUser().then(({ data }) => {
-      this.userId = data.user?.id ?? null;
-      if (this.userId) {
-        // Stamp userId on any events that arrived before auth resolved
-        for (const row of this.queue) row.user_id = this.userId;
-        void this.flush();
-      } else {
-        // Not logged in — discard buffer
-        this.queue = [];
+      const uid = data.user?.id ?? null;
+      if (uid) this.activateUser(uid);
+      // If not logged in, keep buffering — onAuthStateChange will activate later
+    });
+
+    // Activate logging the moment user logs in, even mid-session
+    supabase.auth.onAuthStateChange((_event, session) => {
+      const uid = session?.user?.id ?? null;
+      if (uid && !this.userId) {
+        this.activateUser(uid);
+      } else if (!uid && this.userId) {
+        this.userId = null;
+        this.queue  = [];
       }
     });
+  }
+
+  private activateUser(uid: string): void {
+    this.userId = uid;
+    for (const row of this.queue) row.user_id = uid;
+    void this.flush();
   }
 
   /** Called once by StateManager after actor is started. */
