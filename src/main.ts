@@ -4,7 +4,8 @@ import { BootScene }         from '@scenes/BootScene';
 import { MainMenuScene }     from '@scenes/MainMenuScene';
 import { OverworldScene }    from '@scenes/OverworldScene';
 import { BattleScene }       from '@scenes/BattleScene';
-import { ItemReceiveScene }  from '@scenes/ItemReceiveScene';
+import { ItemReceiveScene }   from '@scenes/ItemReceiveScene';
+import { BulldozerIntroScene } from '@scenes/BulldozerIntroScene';
 import { stateManager }   from '@core/StateManager';
 import { supabase, supabaseConfigured } from '@core/SupabaseClient';
 import { playtimeTracker } from '@core/PlaytimeTracker';
@@ -12,7 +13,7 @@ import { PlaytimeTracker } from '@core/PlaytimeTracker';
 
 const config: Phaser.Types.Core.GameConfig = {
   ...GAME_CONFIG,
-  scene: [BootScene, MainMenuScene, OverworldScene, BattleScene, ItemReceiveScene],
+  scene: [BootScene, MainMenuScene, OverworldScene, BattleScene, ItemReceiveScene, BulldozerIntroScene],
 };
 
 const game = new Phaser.Game(config);

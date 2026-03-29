@@ -166,7 +166,11 @@ export class OverworldScene extends Phaser.Scene {
         if (px >= trigger.x && px <= trigger.x + trigger.width) {
           if (trigger.type === 'battle') {
             this.scene.pause(SCENE.OVERWORLD);
-            this.scene.launch(SCENE.BATTLE, { enemyId: trigger.enemyId });
+            // Bulldozer gets a cinematic intro before the battle
+            const launchScene = trigger.enemyId === 'bulldozer_bureau'
+              ? SCENE.BULLDOZER_INTRO
+              : SCENE.BATTLE;
+            this.scene.launch(launchScene, { enemyId: trigger.enemyId });
           } else {
             this.player.sprite.setVelocity(0, 0);
             this.dialogueSystem.open(trigger.dialogueId);
