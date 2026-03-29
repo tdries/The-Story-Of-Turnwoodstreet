@@ -225,7 +225,7 @@ export class DialogueBox {
   private _showPortrait(speaker: string): void {
     const key = SPEAKER_PORTRAIT[speaker];
     if (key && this.scene.textures.exists(key)) {
-      this.portrait.setTexture(key, 1);   // frame 1 = talking
+      this.portrait.setTexture(key, 1).setDisplaySize(this.PORT_SIZE, this.PORT_SIZE);
       this.portraitBorder.setVisible(true);
       this.portraitBg.setVisible(true);
       this.portrait.setVisible(true);
