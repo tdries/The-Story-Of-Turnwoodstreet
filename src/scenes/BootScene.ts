@@ -145,7 +145,7 @@ export class BootScene extends Phaser.Scene {
       this.load.spritesheet(
         `portrait_${name}`,
         `assets/Sprites/characters/npcs/portraits/${name}_portrait.png`,
-        { frameWidth: 128, frameHeight: 128 },
+        { frameWidth: 512, frameHeight: 512 },
       );
     }
 

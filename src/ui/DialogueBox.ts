@@ -63,8 +63,8 @@ export class DialogueBox {
   private readonly MAX_CHOICES = 4;
 
   // Portrait constants
-  private readonly PORT_SIZE = 64;   // display px in game coords
-  private readonly PORT_X    = GAME_WIDTH  - 4 - 64;   // left edge
+  private readonly PORT_SIZE = 32;   // display px in game coords (2× smaller)
+  private readonly PORT_X    = GAME_WIDTH  - 4 - 32;   // left edge
   private readonly PORT_Y    = 4;                       // top edge
 
   constructor(scene: Phaser.Scene) {
@@ -111,8 +111,8 @@ export class DialogueBox {
     const py = this.PORT_Y;
     const ps = this.PORT_SIZE;
 
-    // Gold border (2px inset)
-    this.portraitBorder = this.scene.add.rectangle(px - 2, py - 2, ps + 4, ps + 4, 0xFFD700)
+    // Gold border — 1px inset each side, matching the dialogue box border style
+    this.portraitBorder = this.scene.add.rectangle(px - 1, py - 1, ps + 2, ps + 2, 0xFFD700)
       .setOrigin(0, 0).setScrollFactor(0).setDepth(1003);
 
     // Dark background

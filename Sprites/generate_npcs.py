@@ -70,9 +70,13 @@ def draw_head_bare(s, ox, oy, skin, skin_lt, skin_shd, hair, hair_lt, eye_x):
     s.put(eye_x+1, oy+16, "black",   2,  2)   # pupil
     s.put(eye_x-2, oy+18, hair,      8,  1)   # lower lash
     s.put(eye_x-2, oy+14, skin_shd,  2,  1)   # inner corner shadow
-    # Left eye (far side, simplified)
-    s.put(ox+24,   oy+14, hair,      2,  1)   # far eyelid hint
-    s.put(ox+24,   oy+15, skin_shd,  2,  3)   # far eye in shadow
+    # Left eye (far side — visible, 3/4 depth cue via shadow iris)
+    s.put(ox+22,   oy+14, hair,           4,  1)   # far upper eyelid
+    s.put(ox+22,   oy+15, "white",        4,  3)   # far eye white
+    s.put(ox+23,   oy+15, "de_lijn_blue", 2,  3)   # far iris
+    s.put(ox+23,   oy+16, "black",        1,  2)   # far pupil
+    s.put(ox+22,   oy+18, hair,           4,  1)   # far lower lash
+    s.put(ox+22,   oy+14, skin_shd,       2,  1)   # inner-corner depth cue
     # ── nose ─────────────────────────────────────────────────────────────────
     s.put(ox+29,   oy+18, skin_shd,  4,  4)   # nose bridge shadow
     s.put(ox+28,   oy+20, skin_shd,  6,  2)   # nostril area
@@ -120,8 +124,13 @@ def draw_head_hijab(s, ox, oy, skin, skin_lt, skin_shd, hijab, hijab_lt, hijab_s
     s.put(eye_x,  oy+15, "stone_dark",4, 4)  # dark iris (Moroccan/Turkish)
     s.put(eye_x+1,oy+16, "black",   2,  2)
     s.put(eye_x-2,oy+18, hijab_shd, 8,  1)
-    s.put(ox+24,  oy+14, hijab_shd, 2,  1)
-    s.put(ox+24,  oy+15, skin_shd,  2,  3)
+    # Left eye (far side — visible)
+    s.put(ox+22,  oy+14, hijab_shd,   4,  1)   # far upper eyelid
+    s.put(ox+22,  oy+15, "white",     4,  3)   # far eye white
+    s.put(ox+23,  oy+15, "stone_dark",2,  3)   # far iris
+    s.put(ox+23,  oy+16, "black",     1,  2)   # far pupil
+    s.put(ox+22,  oy+18, hijab_shd,   4,  1)   # far lower lash
+    s.put(ox+22,  oy+14, skin_shd,    2,  1)   # inner-corner depth cue
     # ── nose & mouth (same as bare head) ─────────────────────────────────────
     s.put(ox+29,  oy+18, skin_shd,  4,  4)
     s.put(ox+28,  oy+20, skin_shd,  6,  2)
@@ -158,7 +167,12 @@ def draw_head_cap(s, ox, oy, skin, skin_lt, skin_shd, cap, cap_lt, cap_shd, eye_
     s.put(eye_x,  oy+16, "stone_dark",4,3)
     s.put(eye_x+1,oy+16, "black",  2,  2)
     s.put(eye_x-2,oy+18, cap_shd,  8,  1)
-    s.put(ox+24,  oy+16, skin_shd, 2,  3)
+    # Left eye (far side — visible)
+    s.put(ox+22,  oy+15, cap_shd,     4,  1)   # far upper eyelid
+    s.put(ox+22,  oy+16, "white",     4,  3)   # far eye white
+    s.put(ox+23,  oy+16, "stone_dark",2,  3)   # far iris
+    s.put(ox+23,  oy+17, "black",     1,  2)   # far pupil
+    s.put(ox+22,  oy+19, cap_shd,     4,  1)   # far lower lash
     # ── nose & mouth ─────────────────────────────────────────────────────────
     s.put(ox+29,  oy+20, skin_shd, 4,  3)
     s.put(ox+28,  oy+21, skin_shd, 6,  2)
@@ -669,7 +683,12 @@ def draw_aziz(s, ox, oy, frame=0):
     s.put(ox+34, oy+15, "black",    1,  2)
     s.put(ox+32, oy+13, "stone_dark",6,  1)
     s.put(ox+32, oy+17, "stone_mid", 6,  1)  # droopy lower lid
-    s.put(ox+24, oy+14, SKIND,      2,  4)   # far eye in shadow
+    # Far eye — visible
+    s.put(ox+22, oy+14, "stone_dark",  4,  1)   # far upper eyelid
+    s.put(ox+22, oy+15, "white",       4,  3)   # far eye white
+    s.put(ox+23, oy+15, "stone_dark",  2,  3)   # far iris
+    s.put(ox+23, oy+16, "black",       1,  2)   # far pupil
+    s.put(ox+22, oy+18, "stone_dark",  4,  1)   # far lower lash
 
     # ── nose (larger, older) ──────────────────────────────────────────────────
     s.put(ox+29, oy+19, SKIND,  6,  5)
@@ -754,7 +773,12 @@ def draw_sofia(s, ox, oy, frame=0):
     s.put(ox+34, oy+14, "wood_dark",2,  4)  # hazel iris
     s.put(ox+35, oy+15, "black",    1,  2)
     s.put(ox+32, oy+17, SKIND,      6,  1)
-    s.put(ox+24, oy+14, SKIND,      2,  4)
+    # Far eye — visible (hazel iris)
+    s.put(ox+22, oy+14, "wood_dark",  4,  1)
+    s.put(ox+22, oy+15, "white",      4,  3)
+    s.put(ox+23, oy+15, "wood_dark",  2,  3)
+    s.put(ox+23, oy+16, "black",      1,  2)
+    s.put(ox+22, oy+18, "wood_dark",  4,  1)
 
     # nose/mouth
     s.put(ox+29, oy+18, SKIND,  4,  4)
@@ -938,7 +962,12 @@ def draw_tine(s, ox, oy, frame=0):
     s.put(ox+34, oy+14, "stone_dark",2, 4)
     s.put(ox+34, oy+15, "black",    1,  2)
     s.put(ox+32, oy+17, SKIND,      6,  1)
-    s.put(ox+24, oy+14, SKIND,      2,  4)
+    # Far eye — visible (dark brown iris)
+    s.put(ox+22, oy+14, "stone_dark",  4,  1)
+    s.put(ox+22, oy+15, "white",       4,  3)
+    s.put(ox+23, oy+15, "stone_dark",  2,  3)
+    s.put(ox+23, oy+16, "black",       1,  2)
+    s.put(ox+22, oy+18, "stone_dark",  4,  1)
 
     s.put(ox+29, oy+18, SKIND,  4,  4)
     s.put(ox+28, oy+20, SKIND,  6,  2)
