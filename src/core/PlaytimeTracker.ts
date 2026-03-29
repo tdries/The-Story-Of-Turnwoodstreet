@@ -131,8 +131,9 @@ class PlaytimeTracker {
 
     return players.map(p => ({
       ...p,
-      feedback_count:  fbCount[p.user_id] ?? 0,
-      guestbook_count: gbCount[p.user_id] ?? 0,
+      items_collected:  (p.items_collected as string[] | null) ?? null,
+      feedback_count:   fbCount[p.user_id] ?? 0,
+      guestbook_count:  gbCount[p.user_id] ?? 0,
     }));
   }
 }
