@@ -517,35 +517,35 @@ export class OverworldScene extends Phaser.Scene {
     //   #189 Bakkerij Charif  → x≈590   #215 Theehuys Amal      → x≈880
     //   #239 Aziz             → x≈1060  #284 Borger Hub         → x≈1664
     // showFlag: NPC starts invisible and appears once this flag is set
-    type NPCDef = { id: string; texture: string; x: number; y: number; dialogue: string; showFlag?: string };
+    type NPCDef = { id: string; texture: string; x: number; y: number; dialogue: string; showFlag?: string; name?: string };
     const seed: NPCDef[] = [
-      { id: 'baert',       texture: 'npc_baert',   x:  210, y: sw,     dialogue: 'stunt_baert'         }, // Indian Boutique #137
-      { id: 'fatima',      texture: 'npc_fatima',  x:  400, y: sw,     dialogue: 'fatima_intro'        }, // Patisserie Aladdin #170
-      { id: 'yusuf',       texture: 'npc_yusuf',   x:  300, y: sw,     dialogue: 'yusuf_delivery'      }, // courier near start
-      { id: 'hamza',       texture: 'npc_hamza',   x:  500, y: sw + 2, dialogue: 'hamza_marbles'       }, // between #170 and #189
-      { id: 'omar',        texture: 'npc_omar',    x:  590, y: sw - 2, dialogue: 'omar_bakker'         }, // Bakkerij Charif #189
-      { id: 'reza',        texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'          }, // Theehuys Amal #215
-      { id: 'aziz',        texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_oud_string'     }, // #239
-      { id: 'tine',        texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_intro'          }, // Nacht Winkel #240
-      { id: 'el_osri',     texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor'      }, // Borger Hub #284
+      { id: 'baert',       texture: 'npc_baert',   x:  210, y: sw,     dialogue: 'stunt_baert',    name: 'Mevr. Baert'   }, // Indian Boutique #137
+      { id: 'fatima',      texture: 'npc_fatima',  x:  400, y: sw,     dialogue: 'fatima_intro'                          }, // Patisserie Aladdin #170
+      { id: 'yusuf',       texture: 'npc_yusuf',   x:  300, y: sw,     dialogue: 'yusuf_delivery'                        }, // courier near start
+      { id: 'hamza',       texture: 'npc_hamza',   x:  500, y: sw + 2, dialogue: 'hamza_marbles'                         }, // between #170 and #189
+      { id: 'omar',        texture: 'npc_omar',    x:  590, y: sw - 2, dialogue: 'omar_bakker'                           }, // Bakkerij Charif #189
+      { id: 'reza',        texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'                            }, // Theehuys Amal #215
+      { id: 'aziz',        texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_oud_string'                       }, // #239
+      { id: 'tine',        texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_intro'                            }, // Nacht Winkel #240
+      { id: 'el_osri',     texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor', name: 'El Osri'       }, // Borger Hub #284
       // De Roma #286 handled by location trigger at x=1728
 
       // ── 5 new NPCs with Dutch names ──────────────────────────────────────────
       // Lotte Verbeke — jonge moeder/activiste, verschijnt na de bezorgtaak
-      { id: 'lotte',        texture: 'npc_sofia',   x:  450, y: sw + 1, dialogue: 'lotte_intro',        showFlag: 'delivery_done'       },
+      { id: 'lotte',        texture: 'npc_sofia',   x:  450, y: sw + 1, dialogue: 'lotte_intro',        showFlag: 'delivery_done',       name: 'Lotte'         },
       // Kevin — skater tiener, altijd aanwezig, questrelevant na mayorgesprek
-      { id: 'kevin',        texture: 'npc_hamza',   x:  640, y: sw + 2, dialogue: 'kevin_intro'                                         },
-      // Mevrouw Van den Berg — gepensioneerde lerares, verschijnt met community trust
-      { id: 'van_den_berg', texture: 'npc_baert',   x: 1095, y: sw,     dialogue: 'van_den_berg_intro', showFlag: 'has_community_trust' },
+      { id: 'kevin',        texture: 'npc_hamza',   x:  640, y: sw + 2, dialogue: 'kevin_intro',                                         name: 'Kevin'         },
+      // Mevrouw Van den Berg — gepensioneerde lerares, verschijnt met community trust; placed at 1130 to avoid overlapping Aziz (1060) label
+      { id: 'van_den_berg', texture: 'npc_baert',   x: 1130, y: sw,     dialogue: 'van_den_berg_intro', showFlag: 'has_community_trust',  name: 'Van den Berg'  },
       // Bram Desmedt — barman Bar Leon, verschijnt met community trust
-      { id: 'bram',         texture: 'npc_omar',    x: 1540, y: sw - 1, dialogue: 'bram_intro',         showFlag: 'has_community_trust' },
+      { id: 'bram',         texture: 'npc_omar',    x: 1540, y: sw - 1, dialogue: 'bram_intro',         showFlag: 'has_community_trust',  name: 'Bram'          },
       // Nathalie Claes — maatschappelijk werkster OCMW, verschijnt na mayorgesprek
-      { id: 'nathalie',     texture: 'npc_tine',    x:  730, y: sw,     dialogue: 'nathalie_intro',     showFlag: 'met_mayor'           },
+      { id: 'nathalie',     texture: 'npc_tine',    x:  730, y: sw,     dialogue: 'nathalie_intro',     showFlag: 'met_mayor',            name: 'Nathalie'      },
     ];
 
     this.npcs = seed.map(d => {
       const startVisible = !d.showFlag;
-      const npc = new NPC(this, d.x, d.y, d.texture, 0, d.id, d.dialogue, startVisible);
+      const npc = new NPC(this, d.x, d.y, d.texture, 0, d.id, d.dialogue, startVisible, d.name);
       if (d.showFlag) this.npcVisibility.push({ npc, showFlag: d.showFlag });
       return npc;
     });

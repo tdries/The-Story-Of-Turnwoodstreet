@@ -29,14 +29,15 @@ export class NPC {
   private arrow!:   Phaser.GameObjects.Text;
 
   constructor(
-    scene:      Phaser.Scene,
-    x:          number,
-    y:          number,
-    texture:    string,
-    _frame:     number,            // ignored — always starts idle (frame 0)
-    id:         string,
-    dialogueId: string,
-    startVisible = true,
+    scene:        Phaser.Scene,
+    x:            number,
+    y:            number,
+    texture:      string,
+    _frame:       number,          // ignored — always starts idle (frame 0)
+    id:           string,
+    dialogueId:   string,
+    startVisible  = true,
+    displayName?: string,
   ) {
     this.id         = id;
     this.dialogueId = dialogueId;
@@ -52,7 +53,8 @@ export class NPC {
     this.sprite.setOffset(5, 20);
 
     // Name tag (fixed at spawn position — fine for short wanders)
-    this.nameTag = scene.add.text(x, y - 40, id.charAt(0).toUpperCase() + id.slice(1), {
+    const label = displayName ?? (id.charAt(0).toUpperCase() + id.slice(1));
+    this.nameTag = scene.add.text(x, y - 40, label, {
       fontFamily: '"Press Start 2P"',
       fontSize:   '8px',
       color:      '#FFD700',

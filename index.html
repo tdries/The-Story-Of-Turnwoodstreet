@@ -595,6 +595,40 @@
       text-align: center;
       min-height: 12px;
     }
+    #login-intro {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      color: #9A9AAA;
+      text-align: center;
+      line-height: 1.8;
+      max-width: 380px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Floating restore-panels button — only visible when panels are hidden */
+    #btn-restore-panels {
+      display: none;
+      position: fixed;
+      top: 50%;
+      right: 6px;
+      transform: translateY(-50%);
+      z-index: 500;
+      writing-mode: vertical-rl;
+      background: rgba(10,10,18,0.85);
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 6px;
+      color: #FFD700;
+      font-family: "Press Start 2P", monospace;
+      font-size: 6px;
+      padding: 10px 5px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    #btn-restore-panels.visible { display: block; }
 
     /* ── Touch controls ───────────────────────────────────────────────────── */
 
@@ -1057,9 +1091,18 @@
     <canvas id="login-canvas"></canvas>
     <h1>TURNHOUTSEBAAN<br>RPG</h1>
     <p>Borgerhout · Antwerpen · 2140</p>
+    <div id="login-intro">
+      <span>Je bent een nieuwkomer op de Turnhoutsebaan.</span>
+      <span>De buurt wordt bedreigd door een vastgoedspeculant.</span>
+      <span>Help de bewoners, verdien hun vertrouwen</span>
+      <span>en red de straat — voordat het te laat is.</span>
+    </div>
     <button id="btn-gate-google">Log in met Google</button>
     <div id="login-gate-error"></div>
   </div>
+
+  <!-- Restore-panels button — only shown when panels are hidden -->
+  <button id="btn-restore-panels" title="Toon panelen">◀ panelen</button>
 
   <!-- Left panel -->
   <div id="left-panel">
@@ -1197,7 +1240,8 @@
     });
 
     // Fullscreen toggle — hides both side panels so the game fills the window
-    const fullscreenBtn = document.getElementById('btn-fullscreen');
+    const fullscreenBtn  = document.getElementById('btn-fullscreen');
+    const restoreBtn     = document.getElementById('btn-restore-panels');
     let _panelsHidden = false;
     function togglePanels(e) {
       e.preventDefault();
@@ -1206,12 +1250,16 @@
       const rp = document.getElementById('right-panel');
       if (lp) lp.style.display = _panelsHidden ? 'none' : '';
       if (rp) rp.style.display = _panelsHidden ? 'none' : '';
-      fullscreenBtn.textContent = _panelsHidden ? '⛶' : '⛶';
-      fullscreenBtn.classList.toggle('pressed', _panelsHidden);
+      if (fullscreenBtn) fullscreenBtn.classList.toggle('pressed', _panelsHidden);
+      if (restoreBtn)    restoreBtn.classList.toggle('visible',    _panelsHidden);
     }
     if (fullscreenBtn) {
       fullscreenBtn.addEventListener('click',      togglePanels);
       fullscreenBtn.addEventListener('touchstart', togglePanels, { passive: false });
+    }
+    if (restoreBtn) {
+      restoreBtn.addEventListener('click',      togglePanels);
+      restoreBtn.addEventListener('touchstart', togglePanels, { passive: false });
     }
   </script>
 

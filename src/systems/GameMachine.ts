@@ -814,7 +814,9 @@ export function getNavTarget(snapshot: AnySnapshot): { x: number; label: string 
   if (flour === 'picked_up')  return { x: NAV_X.omar,   label: 'Omar' };
 
   // ── Act 2: Signatures (5 sigs, in NPC order) ──────────────────────────────
-  if (sigs !== 'rewarded') {
+  // Only enter this block while actively collecting; 'completed' means all 5 done
+  // (machine moved via onDone) — fall through to Act 3 at that point.
+  if (sigs === 'idle' || sigs === 'collecting') {
     if (!sigRegionIs(v, 'fatima_sig', 'done')) return { x: NAV_X.fatima, label: 'Fatima' };
     if (!sigRegionIs(v, 'omar_sig',   'done')) return { x: NAV_X.omar,   label: 'Omar'   };
     if (!sigRegionIs(v, 'reza_sig',   'done')) return { x: NAV_X.reza,   label: 'Reza'   };
@@ -903,7 +905,7 @@ export function getHintText(snapshot: AnySnapshot): string {
   if (flour === 'picked_up') return 'Je hebt de bloem! Breng hem naar Omar (Bakkerij Charif, nr. 189).';
 
   // ── Act 2: Signatures ────────────────────────────────────────────────────────
-  if (sigs !== 'rewarded') {
+  if (sigs === 'idle' || sigs === 'collecting') {
     if (!sigRegionIs(v, 'fatima_sig', 'done')) return 'Verzamel handtekeningen voor de petitie — vraag Fatima als eerste (nr. 170).';
     if (!sigRegionIs(v, 'omar_sig',   'done')) return 'Verzamel handtekeningen — vraag Omar (Bakkerij Charif, nr. 189).';
     if (!sigRegionIs(v, 'reza_sig',   'done')) return 'Verzamel handtekeningen — vraag Reza (Theehuys Amal, nr. 215).';

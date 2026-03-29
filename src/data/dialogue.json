@@ -531,10 +531,30 @@
       }
     ]
   },
+  "yusuf_delivery_inprogress": {
+    "npc": "yusuf",
+    "priority": 5,
+    "conditions": {
+      "flags": {
+        "delivery_packages_received": true,
+        "delivery_done": false
+      }
+    },
+    "lines": [
+      {
+        "speaker": "Yusuf",
+        "text": "Hup hup! Alle drie adressen: nr.137, nr.170 en nr.284. Vlug terug!"
+      }
+    ]
+  },
   "yusuf_delivery": {
     "npc": "yusuf",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "delivery_packages_received": false
+      }
+    },
     "lines": [
       {
         "speaker": "Yusuf",
