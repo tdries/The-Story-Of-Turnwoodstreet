@@ -50,8 +50,9 @@ export const PALETTE = {
 
 /** Scene keys — centralised to avoid string typos. */
 export const SCENE = {
-  BOOT:      'BootScene',
-  MAIN_MENU: 'MainMenuScene',
-  OVERWORLD: 'OverworldScene',
-  BATTLE:    'BattleScene',
+  BOOT:         'BootScene',
+  MAIN_MENU:    'MainMenuScene',
+  OVERWORLD:    'OverworldScene',
+  BATTLE:       'BattleScene',
+  ITEM_RECEIVE: 'ItemReceiveScene',
 } as const;

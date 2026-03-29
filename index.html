@@ -131,16 +131,16 @@
       100% { background: transparent; }
     }
     .inv-icon {
-      width: 32px;
-      height: 32px;
+      width: 64px;
+      height: 64px;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
       background-image: url('/assets/Sprites/items/items_sheet.png');
-      background-size: 416px 32px; /* 13 frames × 32px = 416px at 2× scale */
+      background-size: 832px 64px; /* 13 frames × 64px = 832px at 4× scale */
       background-repeat: no-repeat;
       flex-shrink: 0;
       border: 1px solid rgba(255,215,0,0.2);
-      border-radius: 3px;
+      border-radius: 4px;
     }
     .inv-label {
       font-family: "Press Start 2P", monospace;
@@ -312,7 +312,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.72);
+      background: rgba(0,0,0,0.78);
       z-index: 1001;
       align-items: center;
       justify-content: center;
@@ -322,74 +322,105 @@
       background: #0A0A12;
       border: 2px solid #FFD700;
       border-radius: 12px;
-      padding: 24px;
-      width: min(92vw, 400px);
+      padding: 20px 16px;
+      width: min(96vw, 520px);
+      max-height: 88vh;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     #scores-modal h2 {
       font-family: "Press Start 2P", monospace;
       font-size: 8px;
       color: #FFD700;
+      text-align: center;
     }
     #scores-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .score-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 22px 24px 1fr auto;
       align-items: center;
-      gap: 10px;
-      padding: 6px 8px;
-      border-radius: 6px;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
       background: rgba(255,255,255,0.04);
+      border: 1px solid transparent;
     }
-    .score-row.me { background: rgba(255,215,0,0.10); border: 1px solid rgba(255,215,0,0.3); }
+    .score-row.me { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.35); }
     .score-rank {
       font-family: "Press Start 2P", monospace;
-      font-size: 5px;
-      color: rgba(255,215,0,0.5);
-      width: 16px;
-      text-align: right;
+      font-size: 8px;
+      text-align: center;
     }
+    .score-rank.gold   { color: #FFD700; }
+    .score-rank.silver { color: #C0C0C0; }
+    .score-rank.bronze { color: #CD7F32; }
+    .score-rank.plain  { color: rgba(240,234,214,0.35); font-size: 5px; }
     .score-avatar {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       object-fit: cover;
       background: #1a1a2e;
+    }
+    .score-body {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+    .score-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .score-name {
       font-family: "Press Start 2P", monospace;
       font-size: 5px;
       color: #F0EAD6;
-      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      flex: 1;
     }
     .score-time {
       font-family: "Press Start 2P", monospace;
       font-size: 5px;
       color: #FFD700;
-    }
-    .score-stats {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 3px;
+      white-space: nowrap;
     }
     .score-meta {
       display: flex;
-      gap: 6px;
+      gap: 8px;
     }
     .score-badge {
       font-family: "Press Start 2P", monospace;
       font-size: 4px;
-      color: rgba(240,234,214,0.55);
+      color: rgba(240,234,214,0.45);
     }
+    /* Item progress strip — one slot per canonical item, collected=lit, missing=dim */
+    .score-items {
+      display: flex;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+    .score-item {
+      width: 16px;
+      height: 16px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background-image: url('/assets/Sprites/items/items_sheet.png');
+      background-size: 208px 16px; /* 13 × 16px at 1× */
+      background-repeat: no-repeat;
+      border-radius: 2px;
+    }
+    .score-item.collected { opacity: 1;   border: 1px solid rgba(255,215,0,0.5); }
+    .score-item.missing   { opacity: 0.15; filter: grayscale(1); border: 1px solid transparent; }
     #scores-close {
       font-family: "Press Start 2P", monospace;
       font-size: 6px;
@@ -1570,21 +1601,45 @@
       }
 
       const _playerDefault = _st.player_default || 'Speler';
-      scoresList.innerHTML = rows.map((r, i) => `
+      // Canonical item order (matches ItemBar ITEM_FRAME)
+      const ITEM_ORDER = [
+        'fabric_bolt','delivery_package','flour','oud_string','tram_ticket',
+        'harira','baklava','samen_flyer','permit_doc','friet',
+        'reuzenpoort_key','mint_tea','smoske',
+      ];
+      const rankSymbol = (i) => {
+        if (i === 0) return { sym: '🥇', cls: 'gold' };
+        if (i === 1) return { sym: '🥈', cls: 'silver' };
+        if (i === 2) return { sym: '🥉', cls: 'bronze' };
+        return { sym: String(i + 1), cls: 'plain' };
+      };
+      scoresList.innerHTML = rows.map((r, i) => {
+        const { sym, cls } = rankSymbol(i);
+        const collected = new Set(r.items_collected ?? []);
+        const itemStrip = ITEM_ORDER.map((id, fi) => {
+          const has = collected.has(id);
+          const bx  = -(fi * 16);
+          return `<div class="score-item ${has ? 'collected' : 'missing'}" style="background-position:${bx}px 0" title="${id.replace(/_/g,' ')}"></div>`;
+        }).join('');
+        return `
         <div class="score-row${r.user_id === currentUserId ? ' me' : ''}">
-          <span class="score-rank">${i + 1}</span>
+          <span class="score-rank ${cls}">${sym}</span>
           ${r.avatar_url
             ? `<img class="score-avatar" src="${r.avatar_url}" alt="" />`
             : `<div class="score-avatar"></div>`}
-          <span class="score-name">${r.display_name ?? _playerDefault}</span>
-          <div class="score-stats">
-            <span class="score-time">⏱ ${fmtTime(r.playtime_seconds ?? 0)}</span>
+          <div class="score-body">
+            <div class="score-top">
+              <span class="score-name">${r.display_name ?? _playerDefault}</span>
+              <span class="score-time">⏱ ${fmtTime(r.playtime_seconds ?? 0)}</span>
+            </div>
             <div class="score-meta">
               <span class="score-badge">💬 ${r.feedback_count ?? 0}</span>
               <span class="score-badge">✍ ${r.guestbook_count ?? 0}</span>
             </div>
+            <div class="score-items">${itemStrip}</div>
           </div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     });
 
     document.getElementById('scores-close').addEventListener('click', () => {
@@ -1749,7 +1804,7 @@
         invEl.innerHTML =
           '<div class="inv-header">RUGZAK</div>' +
           items.map(function (item) {
-            var bx = -(item.frame * 32);
+            var bx = -(item.frame * 64);
             var badge = item.count > 1
               ? '<span class="inv-badge">' + item.count + '</span>'
               : '';

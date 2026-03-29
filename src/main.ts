@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 import { GAME_CONFIG } from '@core/GameConfig';
-import { BootScene }      from '@scenes/BootScene';
-import { MainMenuScene }  from '@scenes/MainMenuScene';
-import { OverworldScene } from '@scenes/OverworldScene';
-import { BattleScene }    from '@scenes/BattleScene';
+import { BootScene }         from '@scenes/BootScene';
+import { MainMenuScene }     from '@scenes/MainMenuScene';
+import { OverworldScene }    from '@scenes/OverworldScene';
+import { BattleScene }       from '@scenes/BattleScene';
+import { ItemReceiveScene }  from '@scenes/ItemReceiveScene';
 import { stateManager }   from '@core/StateManager';
 import { supabase, supabaseConfigured } from '@core/SupabaseClient';
 import { playtimeTracker } from '@core/PlaytimeTracker';
@@ -11,7 +12,7 @@ import { PlaytimeTracker } from '@core/PlaytimeTracker';
 
 const config: Phaser.Types.Core.GameConfig = {
   ...GAME_CONFIG,
-  scene: [BootScene, MainMenuScene, OverworldScene, BattleScene],
+  scene: [BootScene, MainMenuScene, OverworldScene, BattleScene, ItemReceiveScene],
 };
 
 const game = new Phaser.Game(config);

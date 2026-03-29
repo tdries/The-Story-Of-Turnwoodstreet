@@ -1172,6 +1172,9 @@ export class OverworldScene extends Phaser.Scene {
       this.activeTalkingNpc = null;
       this.syncMusic();
     };
+    this.dialogueSystem.onItemReceived = (itemId, speaker, done) => {
+      this.scene.launch(SCENE.ITEM_RECEIVE, { itemId, speakerName: speaker, onDone: done });
+    };
 
     // Navigation arrow — bottom-centre, fixed to camera
     this.navArrow = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 6, '', {

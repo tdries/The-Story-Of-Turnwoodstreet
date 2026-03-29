@@ -69,8 +69,12 @@ export class DialogueSystem {
   private _isRaw         = false;  // true when opened via openRaw — skip quest/save on close
   private pendingChoices: DialogueChoice[] | null = null;
   private dialogueId     = '';   // tracks current node for locale lookups
+  private _pendingItem:  { itemId: string; speaker: string } | null = null;
 
-  onClose: (() => void) | null = null;
+  onClose:        (() => void) | null = null;
+  /** If set, item grants are deferred: handler shows the item-receive animation,
+   *  then calls done() which adds the item and continues the dialogue. */
+  onItemReceived: ((itemId: string, speaker: string, done: () => void) => void) | null = null;
 
   constructor(box: DialogueBox) {
     this.box = box;
@@ -157,6 +161,24 @@ export class DialogueSystem {
       return;
     }
 
+    // Item-receive animation: pause dialogue until player dismisses the overlay
+    if (this._pendingItem) {
+      const pi = this._pendingItem;
+      this._pendingItem = null;
+      this._isOpen = false;
+      this.onItemReceived!(pi.itemId, pi.speaker, () => {
+        stateManager.addItem(pi.itemId);
+        this._isOpen = true;
+        this.lineIdx++;
+        if (this.lineIdx >= this.lines.length) {
+          this.close();
+        } else {
+          this.showLine();
+        }
+      });
+      return;
+    }
+
     this.lineIdx++;
     if (this.lineIdx >= this.lines.length) {
       this.close();
@@ -201,9 +223,16 @@ export class DialogueSystem {
   private applyLineEffects(line: DialogueLine): void {
     if (line.flag       !== undefined && line.flagVal  !== undefined) stateManager.setFlag(line.flag,  line.flagVal);
     if (line.flag2      !== undefined && line.flagVal2 !== undefined) stateManager.setFlag(line.flag2, line.flagVal2);
-    if (line.item)       stateManager.addItem(line.item);
     if (line.removeItem) stateManager.removeItem(line.removeItem);
     if (line.coins)      stateManager.addCoins(line.coins);
+    if (line.item) {
+      if (this.onItemReceived) {
+        // Defer: show animation before adding to inventory
+        this._pendingItem = { itemId: line.item, speaker: line.speaker ?? '' };
+      } else {
+        stateManager.addItem(line.item);
+      }
+    }
   }
 
   private close(): void {

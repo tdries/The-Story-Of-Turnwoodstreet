@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Vite Dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "Express Server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3000
+    },
+    {
+      "name": "Vite Preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview"],
+      "port": 4173
+    }
+    ,{
+      "name": "Asset Viewer",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "assets", "-p", "5500", "--no-clipboard"],
+      "port": 5500
+    }
+  ]
+}

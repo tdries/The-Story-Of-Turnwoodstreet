@@ -1747,7 +1747,8 @@
       "flags": {
         "stunt_quest_done": true,
         "sig_fatima": true,
-        "met_mayor": false
+        "met_mayor": false,
+        "fatima_wedding_seen": false
       }
     },
     "lines": [
@@ -1757,7 +1758,9 @@
       },
       {
         "speaker": "Fatima",
-        "text": "Ze heeft je naam vermeld in haar speech. De hele familie klapt. Ga zo door."
+        "text": "Ze heeft je naam vermeld in haar speech. De hele familie klapt. Ga zo door.",
+        "flag": "fatima_wedding_seen",
+        "flagVal": true
       }
     ]
   }
