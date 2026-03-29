@@ -7,7 +7,33 @@ import { GAME_WIDTH, GAME_HEIGHT } from '@core/GameConfig';
  * Two modes:
  *   1. Text mode  — speaker name + body text with typewriter effect
  *   2. Choice mode — up to 4 labelled options, navigated with up/down, confirmed with action
+ *
+ * Portrait: when the active speaker has a matching portrait texture loaded, a
+ * 64×64 inlay is shown in the top-right corner of the screen.  Frame 0 = neutral,
+ * frame 1 = talking (mouth open).  The frame animates with the typewriter.
  */
+
+// ── Speaker → portrait texture key ──────────────────────────────────────────
+const SPEAKER_PORTRAIT: Record<string, string> = {
+  'Fatima':            'portrait_fatima',
+  'Omar':              'portrait_omar',
+  'Mevrouw Baert':     'portrait_baert',
+  'Reza':              'portrait_reza',
+  'El Osri':           'portrait_el_osri',
+  'Districtsvoorzitter': 'portrait_el_osri',
+  'Yusuf':             'portrait_yusuf',
+  'Aziz':              'portrait_aziz',
+  'Sofia':             'portrait_sofia',
+  'Hamza':             'portrait_hamza',
+  'Tine':              'portrait_tine',
+  // NPCs that share a base texture
+  'Kevin':             'portrait_hamza',
+  'Lotte':             'portrait_sofia',
+  'Bram':              'portrait_omar',
+  'Nathalie':          'portrait_tine',
+  'Van den Berg':      'portrait_baert',
+};
+
 export class DialogueBox {
   private scene:        Phaser.Scene;
   private panel!:       Phaser.GameObjects.Rectangle;
@@ -21,6 +47,11 @@ export class DialogueBox {
   private choiceCursor = 0;
   private _inChoiceMode = false;
 
+  // Portrait UI (top-right corner)
+  private portraitBorder!: Phaser.GameObjects.Rectangle;
+  private portraitBg!:     Phaser.GameObjects.Rectangle;
+  private portrait!:       Phaser.GameObjects.Sprite;
+
   private _visible    = false;
   private typeTimer:  Phaser.Time.TimerEvent | null = null;
   private _typeDone   = false;
@@ -30,6 +61,11 @@ export class DialogueBox {
   private readonly PAD     = 6;
   private readonly BOX_Y   = GAME_HEIGHT - this.BOX_H - 2;
   private readonly MAX_CHOICES = 4;
+
+  // Portrait constants
+  private readonly PORT_SIZE = 64;   // display px in game coords
+  private readonly PORT_X    = GAME_WIDTH  - 4 - 64;   // left edge
+  private readonly PORT_Y    = 4;                       // top edge
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -70,6 +106,25 @@ export class DialogueBox {
       this.choiceTexts.push(ct);
     }
 
+    // ── Portrait overlay (top-right) ───────────────────────────────────────
+    const px = this.PORT_X;
+    const py = this.PORT_Y;
+    const ps = this.PORT_SIZE;
+
+    // Gold border (2px inset)
+    this.portraitBorder = this.scene.add.rectangle(px - 2, py - 2, ps + 4, ps + 4, 0xFFD700)
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(1003);
+
+    // Dark background
+    this.portraitBg = this.scene.add.rectangle(px, py, ps, ps, 0x0A0A12)
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(1004);
+
+    // Portrait sprite — start on a safe texture until a real one is set
+    this.portrait = this.scene.add.sprite(px + ps / 2, py + ps / 2, '__DEFAULT')
+      .setDisplaySize(ps, ps)
+      .setScrollFactor(0)
+      .setDepth(1005);
+
     this.setVisible(false);
   }
 
@@ -85,6 +140,9 @@ export class DialogueBox {
     this.bodyText.setText('');
     this.promptText.setVisible(false);
 
+    // Portrait: switch texture for current speaker
+    this._showPortrait(speaker);
+
     if (this.typeTimer) { this.typeTimer.remove(); }
     let i = 0;
     this.typeTimer = this.scene.time.addEvent({
@@ -95,6 +153,7 @@ export class DialogueBox {
         if (i >= text.length) {
           this._typeDone = true;
           this.promptText.setVisible(true);
+          this.portrait.setFrame(0);   // back to neutral when done typing
         }
       },
     });
@@ -108,6 +167,7 @@ export class DialogueBox {
       this.bodyText.setText(this._fullText);
       this._typeDone = true;
       this.promptText.setVisible(true);
+      this.portrait.setFrame(0);
     }
   }
 
@@ -121,6 +181,7 @@ export class DialogueBox {
     this._typeDone     = true;
     this.promptText.setVisible(false);
     this.bodyText.setVisible(false);
+    this.portrait.setFrame(0);   // neutral while player picks
 
     const y   = this.BOX_Y;
     const cnt = Math.min(labels.length, this.MAX_CHOICES);
@@ -159,6 +220,22 @@ export class DialogueBox {
     });
   }
 
+  // ── Portrait helpers ───────────────────────────────────────────────────────
+
+  private _showPortrait(speaker: string): void {
+    const key = SPEAKER_PORTRAIT[speaker];
+    if (key && this.scene.textures.exists(key)) {
+      this.portrait.setTexture(key, 1);   // frame 1 = talking
+      this.portraitBorder.setVisible(true);
+      this.portraitBg.setVisible(true);
+      this.portrait.setVisible(true);
+    } else {
+      this.portraitBorder.setVisible(false);
+      this.portraitBg.setVisible(false);
+      this.portrait.setVisible(false);
+    }
+  }
+
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   hide(): void {
@@ -172,7 +249,12 @@ export class DialogueBox {
     this._visible = v;
     [this.border, this.panel, this.speakerText, this.bodyText, this.promptText]
       .forEach(o => o.setVisible(v));
-    if (!v) this.choiceTexts.forEach(c => c.setVisible(false));
+    if (!v) {
+      this.choiceTexts.forEach(c => c.setVisible(false));
+      this.portraitBorder.setVisible(false);
+      this.portraitBg.setVisible(false);
+      this.portrait.setVisible(false);
+    }
   }
 
   get visible(): boolean { return this._visible; }

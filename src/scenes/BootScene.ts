@@ -135,6 +135,20 @@ export class BootScene extends Phaser.Scene {
       'assets/Sprites/items/items_sheet.png',
       { frameWidth: 16, frameHeight: 16 });
 
+    // ── NPC Portraits (2-frame: 0=neutral, 1=talking) ─────────────────
+    // PNG per NPC: 256×128 px (2 × 64×64 game-px at scale=2)
+    const portraitNames = [
+      'fatima', 'omar', 'baert', 'reza', 'el_osri',
+      'yusuf',  'aziz', 'sofia', 'hamza', 'tine',
+    ] as const;
+    for (const name of portraitNames) {
+      this.load.spritesheet(
+        `portrait_${name}`,
+        `assets/Sprites/characters/npcs/portraits/${name}_portrait.png`,
+        { frameWidth: 128, frameHeight: 128 },
+      );
+    }
+
     // ── Main menu background (AI-generated street art) ────────────────────
     this.load.image('menu_bg',
       'assets/Sprites/raw_assets/Gemini_Generated_Image_bwblrpbwblrpbwbl.png');

@@ -32,6 +32,7 @@ export class OverworldScene extends Phaser.Scene {
   private dialogueSystem!: DialogueSystem;
   private navArrow!:       Phaser.GameObjects.Text;
   private _navBlink = 0;
+  private activeTalkingNpc: import('@entities/NPC').NPC | null = null;
 
   // Gate trigger zones (invisible physics zones)
   private gateTriggers: Array<{
@@ -174,6 +175,8 @@ export class OverworldScene extends Phaser.Scene {
     if (this.controls.actionJustPressed) {
       const target = this.getNearbyNPC();
       if (target) {
+        this.activeTalkingNpc = target;
+        target.setTalking(true);
         const dlgId = this.resolveDialogueId(target);
         this.dialogueSystem.open(dlgId);
       }
@@ -1158,7 +1161,11 @@ export class OverworldScene extends Phaser.Scene {
     this.itemBar        = new ItemBar();
     this.dialogueBox    = new DialogueBox(this);
     this.dialogueSystem = new DialogueSystem(this.dialogueBox);
-    this.dialogueSystem.onClose = () => this.syncMusic();
+    this.dialogueSystem.onClose = () => {
+      this.activeTalkingNpc?.setTalking(false);
+      this.activeTalkingNpc = null;
+      this.syncMusic();
+    };
 
     // Navigation arrow — bottom-centre, fixed to camera
     this.navArrow = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 6, '', {

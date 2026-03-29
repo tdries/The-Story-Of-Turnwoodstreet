@@ -82,6 +82,11 @@ export class NPC {
     if (!startVisible) this.setVisible(false);
   }
 
+  /** Turn the interaction arrow green while this NPC is speaking, gold otherwise. */
+  setTalking(talking: boolean): void {
+    this.arrow.setColor(talking ? '#00FF66' : '#FFD700');
+  }
+
   /** Show or hide the NPC and disable/enable its physics body. */
   setVisible(visible: boolean): void {
     this.sprite.setVisible(visible);
