@@ -25,8 +25,9 @@ export class NPC {
   private readonly WALK_SPD = 18;  // px / s
 
   // Visibility helpers (name tag + arrow stored so setVisible() can toggle them)
-  private nameTag!: Phaser.GameObjects.Text;
-  private arrow!:   Phaser.GameObjects.Text;
+  private nameTag!:    Phaser.GameObjects.Text;
+  private arrow!:      Phaser.GameObjects.Text;
+  private isTalking  = false;
 
   constructor(
     scene:        Phaser.Scene,
@@ -86,8 +87,16 @@ export class NPC {
 
   /** Turn the interaction arrow and name tag green while this NPC is speaking, gold otherwise. */
   setTalking(talking: boolean): void {
+    this.isTalking = talking;
     this.arrow.setColor(talking ? '#00FF66' : '#FFD700');
     this.nameTag.setColor(talking ? '#00FF66' : '#FFD700');
+  }
+
+  /** Highlight name + arrow purple when player is in interact range (ignored while talking). */
+  setNearby(nearby: boolean): void {
+    if (this.isTalking) return;
+    this.arrow.setColor(nearby ? '#CC88FF' : '#FFD700');
+    this.nameTag.setColor(nearby ? '#CC88FF' : '#FFD700');
   }
 
   /** Show or hide the NPC and disable/enable its physics body. */

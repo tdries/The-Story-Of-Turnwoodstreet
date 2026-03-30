@@ -1,0 +1,19 @@
+{
+  "_meta": "NPC definitions for Turnhoutsebaan. y is computed at runtime as sidewalkY + yOffset.",
+  "npcs": [
+    { "id": "yusuf",       "texture": "npc_yusuf",   "x": 300,  "yOffset":  0, "dialogueId": "yusuf_delivery",     "name": "Yusuf"        },
+    { "id": "baert",       "texture": "npc_baert",   "x": 210,  "yOffset":  0, "dialogueId": "stunt_baert",        "name": "Mevr. Baert"  },
+    { "id": "fatima",      "texture": "npc_fatima",  "x": 400,  "yOffset":  0, "dialogueId": "fatima_intro"                               },
+    { "id": "hamza",       "texture": "npc_hamza",   "x": 500,  "yOffset":  2, "dialogueId": "hamza_marbles",      "name": "Hamza"        },
+    { "id": "omar",        "texture": "npc_omar",    "x": 590,  "yOffset": -2, "dialogueId": "omar_bakker",        "name": "Omar"         },
+    { "id": "reza",        "texture": "npc_reza",    "x": 880,  "yOffset": -1, "dialogueId": "reza_music",         "name": "Reza"         },
+    { "id": "aziz",        "texture": "npc_aziz",    "x": 1060, "yOffset": -1, "dialogueId": "aziz_oud_string",    "name": "Aziz"         },
+    { "id": "tine",        "texture": "npc_tine",    "x": 1160, "yOffset":  1, "dialogueId": "tine_intro",         "name": "Tine"         },
+    { "id": "el_osri",     "texture": "npc_el_osri", "x": 1664, "yOffset":  0, "dialogueId": "district_mayor",     "name": "El Osri"      },
+    { "id": "lotte",       "texture": "npc_sofia",   "x": 450,  "yOffset":  1, "dialogueId": "lotte_intro",        "name": "Lotte",       "showFlag": "delivery_done"      },
+    { "id": "kevin",       "texture": "npc_hamza",   "x": 640,  "yOffset":  2, "dialogueId": "kevin_intro",        "name": "Kevin"        },
+    { "id": "van_den_berg","texture": "npc_baert",   "x": 1130, "yOffset":  0, "dialogueId": "van_den_berg_intro", "name": "Van den Berg","showFlag": "has_community_trust" },
+    { "id": "bram",        "texture": "npc_omar",    "x": 1540, "yOffset": -1, "dialogueId": "bram_intro",         "name": "Bram",        "showFlag": "has_community_trust" },
+    { "id": "nathalie",    "texture": "npc_tine",    "x": 730,  "yOffset":  0, "dialogueId": "nathalie_intro",     "name": "Nathalie",    "showFlag": "met_mayor"          }
+  ]
+}

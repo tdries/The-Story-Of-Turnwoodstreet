@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { SCENE, GAME_WIDTH, GAME_HEIGHT } from '@core/GameConfig';
+import { StreetLoader } from '@core/StreetLoader';
+import type { LocationTrigger } from '@core/StreetLoader';
 import { InputHandler }   from '@core/InputHandler';
 import { stateManager }   from '@core/StateManager';
 import { Player }         from '@entities/Player';
@@ -9,7 +11,6 @@ import { ItemBar }        from '@ui/ItemBar';
 import { DialogueBox }    from '@ui/DialogueBox';
 import { DialogueSystem, DIALOGUES, DialogueConditions } from '@systems/DialogueSystem';
 import { GateSystem, ZONE_STARTS } from '@systems/GateSystem';
-import { getNavTarget, getHintText } from '@systems/GameMachine';
 import { QuestSystem }    from '@systems/QuestSystem';
 import { playtimeTracker } from '@core/PlaytimeTracker';
 import { TimeManager }    from '@core/TimeManager';
@@ -43,11 +44,16 @@ export class OverworldScene extends Phaser.Scene {
   private lastPlayerX = 0;
   /** Per-NPC visibility conditions: checked each update, toggles NPC.setVisible(). */
   private npcVisibility: Array<{ npc: NPC; showFlag?: string; hideFlag?: string }> = [];
-  private locationTriggers: Array<
-    | { type: 'dialogue'; x: number; width: number; dialogueId: string; onceFlag: string; requiredFlags?: Record<string, boolean> }
-    | { type: 'battle';   x: number; width: number; enemyId: string;    onceFlag: string; requiredFlags?: Record<string, boolean> }
-  > = [];
+  private locationTriggers: LocationTrigger[] = [];
   private playtimeSyncTimer = 0;
+
+  // World entities (non-NPC interactable sprites)
+  private geestSprite: Phaser.GameObjects.Sprite | null = null;
+  private geestLabel:  Phaser.GameObjects.Text   | null = null;
+
+  // Street side switching
+  private currentSide: 'north' | 'south' = 'south';  // south = even = most shops face south
+  private buildingImages: Phaser.GameObjects.Image[] = [];
 
   // ── Day/Night cycle ───────────────────────────────────────────────────────
   private _clock!:          TimeManager;
@@ -94,6 +100,7 @@ export class OverworldScene extends Phaser.Scene {
     this.setupCollisions();
     this.setupZoneTriggers();
     this.setupLocationTriggers();
+    this.spawnWorldEntities();
     this.createUI();
     this.initDayCycle();
 
@@ -173,7 +180,7 @@ export class OverworldScene extends Phaser.Scene {
             this.scene.launch(launchScene, { enemyId: trigger.enemyId });
           } else {
             this.player.sprite.setVelocity(0, 0);
-            this.dialogueSystem.open(trigger.dialogueId);
+            this.dialogueSystem.open(trigger.dialogueId ?? '');
           }
           break;
         }
@@ -201,6 +208,12 @@ export class OverworldScene extends Phaser.Scene {
     this.hud.update(stateManager.get().player);
     this.itemBar.update();
     this.updateNavArrow(delta);
+
+    // ── NPC nearby highlight (purple = in interact range) ─────────────────
+    const nearbyNpc = this.getNearbyNPC();
+    for (const npc of this.npcs) npc.setNearby(npc === nearbyNpc);
+
+    this.updateGeestVisibility();
   }
 
   // ── World ─────────────────────────────────────────────────────────────────
@@ -303,131 +316,125 @@ export class OverworldScene extends Phaser.Scene {
    *  36=Hillaert#276-278     37=Optiek Ann Brands#339  38=Apotheek Meeussen#351
    *  39=TattooCharis#372     40=Frituur De Brug#471
    */
-  private placeBuildingFacades(W: number, H: number): void {
-    const TW = 96;   // tile display width in Phaser game-units (2× the 48 game-px tile)
-    const buildingBottom = Math.floor(H * 0.52);
+  // ── Building height table (tile frame → display height in Phaser units) ───
+  private static readonly TILE_HEIGHTS: Record<number, number> = {
+    4:  114,  // Frituur de Tram         — low 1-storey shed
+    7:  116,  // Nacht Winkel            — compact night shop
+    8:  148,  // Hammam Borgerhout       — ornate 3-storey landmark
+    9:  144,  // Borger Hub              — renovated 3-storey community hub
+    11: 154,  // Budget Market           — 4-storey corner block
+    13: 150,  // Basic-Fit               — large industrial gym volume
+    15: 146,  // Carrefour               — wide supermarket
+    16: 140,  // brick_a rowhouse        — standard 3-storey residence
+    18: 142,  // brick_c (bay window)    — slightly taller gable
+    20: 118,  // Ornipa Parket           — small 2-storey shop
+    21: 112,  // Eéntje Meer             — tiny service office
+    22: 138,  // Heiremans               — dignified 3-storey funeral home
+    23: 124,  // Audifoon                — modern 2-storey clinic
+    24: 136,  // Pluym                   — large 3-storey furniture showroom
+    25: 118,  // Svelta                  — small boutique
+    26: 126,  // Optiek VDB              — mid-size optician
+    27: 128,  // Inverko Parfumerie      — elegant 2-storey
+    28: 122,  // Schaeps                 — small medical shop
+    29: 132,  // Cobra Keukens           — medium showroom
+    30: 120,  // Miss Sera               — boutique
+    31: 124,  // De Mont                 — small gifts shop
+    32: 136,  // Ter Rivierenhof         — brasserie, tall ceilings
+    33: 148,  // Wijnegem SEC            — large shopping centre
+    34: 116,  // Nada                    — small shoe shop
+    35: 130,  // Beeckman                — garden centre
+    36: 120,  // Hillaert                — small specialist shop
+    37: 126,  // Optiek Ann Brands       — optician
+    38: 122,  // Apotheek Meeussen       — pharmacy
+    39: 114,  // TattooCharis            — small tattoo studio
+    40: 116,  // Frituur De Brug         — frituur
+  };
 
-    // Real house-number sequence (west → east), all shops from streetdata.md
-    // Borgerhout → Deurne → Wijnegem
-    const streetLayout = [
-      16, 17,                          // brick (west edge)
-      // ── Borgerhout (2140) ──────────────────────────────
-      0,                               // Indian Boutique #137
-      16,
-      1,                               // Patisserie Aladdin #170
-      2,                               // Brasserie 't Center #180
-      3,                               // Bakkerij Charif #189
-      16,
-      4,                               // Frituur de Tram #200
-      5,                               // Theehuys Amal #215
-      18,
-      6,                               // Mimoun #239
-      7,                               // Nacht Winkel #240
-      20,                              // Ornipa Parket #257
-      17,
-      8,                               // Hammam Borgerhout #260
-      16,
-      9,                               // Borger Hub #284
-      18,
-      10,                              // Apotheek Praats #317
-      11,                              // Budget Market #326
-      12,                              // Costermans Wielersport #332
-      21,                              // Eéntje Meer #343
-      19,                              // Vacant
-      13,                              // Basic-Fit #360
-      14,                              // New Star Kebab #370
-      22,                              // Hendrik Heiremans #381
-      16,
-      23,                              // Audifoon #410
-      15,                              // Carrefour Market
-      17, 18,                          // brick filler
-      // ── Deurne (2100) ─────────────────────────────────
-      24,                              // Pluym #1-3
-      16,
-      25,                              // Svelta #30
-      26,                              // Optiek Frits Van Den Bosh #31-33
-      16,
-      27,                              // Inverko Parfumerie #62-64
-      16,
-      28,                              // Schaeps Medische Hulpmiddelen #92-94
-      29,                              // Cobra Keukens #108
-      30,                              // Miss Sera #115
-      16,
-      31,                              // De Mont #212
-      16,
-      32,                              // Ter Rivierenhof #247
-      17,
-      // ── Wijnegem (2110) ───────────────────────────────
-      33,                              // Wijnegem Shop Eat Enjoy #5
-      34,                              // Nada #5 unit 208
-      16,
-      35,                              // Beeckman & Co #90
-      17,
-      36,                              // Hillaert #276-278
-      17,
-      37,                              // Optiek Ann Brands #339-341
-      38,                              // Apotheek Meeussen #351
-      39,                              // TattooCharis #372
-      16,
-      40,                              // Frituur De Brug #471
-      17, 18,                          // brick (east edge)
-    ];
+  /**
+   * Build north (odd) and south (even) tile sequences from street.json.
+   * Named buildings appear at their correct position; residential tiles fill gaps
+   * proportionally to the house-number distance between named buildings.
+   */
+  private buildStreetLayouts(): { north: number[]; south: number[] } {
+    const street = StreetLoader.street;
+    const res = street.residentialTiles as number[];
+    let ri = 0;
+    const nextRes = () => res[ri++ % res.length];
 
-    // Height variation per tile frame — buildings differ in stories/prominence.
-    // Default display height: 130 Phaser units. All share dH_src=108 game-px crop.
-    const TILE_HEIGHTS: Record<number, number> = {
-      4:  114,  // Frituur de Tram         — low 1-storey shed
-      7:  116,  // Nacht Winkel            — compact night shop
-      8:  148,  // Hammam Borgerhout       — ornate 3-storey landmark
-      9:  144,  // Borger Hub              — renovated 3-storey community hub
-      11: 154,  // Budget Market           — 4-storey corner block
-      13: 150,  // Basic-Fit               — large industrial gym volume
-      15: 146,  // Carrefour               — wide supermarket
-      16: 140,  // brick_a rowhouse        — standard 3-storey residence
-      18: 142,  // brick_c (bay window)    — slightly taller gable
-      20: 118,  // Ornipa Parket           — small 2-storey shop
-      21: 112,  // Eéntje Meer             — tiny service office
-      22: 138,  // Heiremans               — dignified 3-storey funeral home
-      23: 124,  // Audifoon                — modern 2-storey clinic
-      // Deurne
-      24: 136,  // Pluym                   — large 3-storey furniture showroom
-      25: 118,  // Svelta                  — small boutique
-      26: 126,  // Optiek VDB              — mid-size optician
-      27: 128,  // Inverko Parfumerie      — elegant 2-storey
-      28: 122,  // Schaeps                 — small medical shop
-      29: 132,  // Cobra Keukens           — medium showroom
-      30: 120,  // Miss Sera               — boutique
-      31: 124,  // De Mont                 — small gifts shop
-      32: 136,  // Ter Rivierenhof         — brasserie, tall ceilings
-      // Wijnegem
-      33: 148,  // Wijnegem SEC            — large shopping centre
-      34: 116,  // Nada                    — small shoe shop
-      35: 130,  // Beeckman                — garden centre
-      36: 120,  // Hillaert                — small specialist shop
-      37: 126,  // Optiek Ann Brands       — optician
-      38: 122,  // Apotheek Meeussen       — pharmacy
-      39: 114,  // TattooCharis            — small tattoo studio
-      40: 116,  // Frituur De Brug         — frituur
+    // Collect all named buildings keyed by house number
+    const byNumber = new Map<number, number>();
+    for (const section of street.sections as Array<{ buildings: Array<{ number: number; tile: number }> }>) {
+      for (const b of section.buildings) {
+        byNumber.set(b.number, b.tile);
+      }
+    }
+
+    const named = [...byNumber.entries()].sort(([a], [b]) => a - b);
+    const namedNorth = named.filter(([n]) => n % 2 !== 0); // odd numbers = north side
+    const namedSouth = named.filter(([n]) => n % 2 === 0); // even numbers = south side
+
+    // Build a layout list: insert residential gap tiles proportional to number spacing
+    const buildLayout = (list: [number, number][]): number[] => {
+      const layout: number[] = [nextRes(), nextRes()]; // leading residential
+      let prev = list[0]?.[0] ?? 1;
+      for (const [num, tile] of list) {
+        const gap = Math.min(Math.floor((num - prev) / 30), 3);
+        for (let g = 0; g < gap; g++) layout.push(nextRes());
+        layout.push(tile);
+        prev = num;
+      }
+      layout.push(nextRes(), nextRes()); // trailing residential
+      return layout;
     };
 
-    // All tiles: SCALE=8, plinth at game-y=104, show top 108 game-px of tile.
-    // Displayed at TW=96 (2× wide); height varies per tile for skyline interest.
-    const PNG_W  = 384;   // PNG frame width  (SCALE=8, TW=48 → 384 px)
-    const dH_src = 108;   // source game-px to show (108 × 8 = 864 PNG px)
+    return {
+      north: buildLayout(namedNorth),
+      south: buildLayout(namedSouth),
+    };
+  }
+
+  private placeBuildingFacades(W: number, H: number): void {
+    const TW             = 96;    // tile display width (2× the 48 game-px tile)
+    const buildingBottom = Math.floor(H * 0.52);
+    const PNG_W          = 384;   // PNG frame width (48 game-px × SCALE=8)
+    const dH_src         = 108;   // game-px height to crop and show
+
+    const { north, south } = this.buildStreetLayouts();
+    const layout = this.currentSide === 'north' ? north : south;
+
+    // Destroy any previously placed building images (used by switchSide)
+    for (const img of this.buildingImages) img.destroy();
+    this.buildingImages = [];
 
     let tileX = 0;
     let idx   = 0;
     while (tileX < W) {
-      const frame      = streetLayout[idx % streetLayout.length];
-      const dH_display = TILE_HEIGHTS[frame] ?? 130;
-      this.add.image(tileX, buildingBottom, 'buildings', frame)
+      const frame      = layout[idx % layout.length];
+      const dH_display = OverworldScene.TILE_HEIGHTS[frame] ?? 130;
+      const img = this.add.image(tileX, buildingBottom, 'buildings', frame)
         .setOrigin(0, 1)
-        .setCrop(0, 0, PNG_W, dH_src * 8)      // show top 108 game-px (864 PNG px)
+        .setCrop(0, 0, PNG_W, dH_src * 8)
         .setDisplaySize(TW, dH_display)
         .setDepth(1);
+      this.buildingImages.push(img);
       tileX += TW;
       idx++;
     }
+  }
+
+  /**
+   * Switch the visible side of the street (north↔south).
+   * Called from the HTML side-switch button via window.__switchStreetSide().
+   * The camera flash is triggered from index.html before calling this.
+   */
+  switchSide(): void {
+    this.currentSide = this.currentSide === 'north' ? 'south' : 'north';
+    const W = OverworldScene.WORLD_W;
+    const H = OverworldScene.WORLD_H;
+    this.placeBuildingFacades(W, H);
+
+    // Brief camera tint to reinforce the switch (complements HTML flash)
+    this.cameras.main.flash(200, 255, 255, 255, false);
   }
 
   /**
@@ -512,44 +519,13 @@ export class OverworldScene extends Phaser.Scene {
   // ── Named NPCs ────────────────────────────────────────────────────────────
 
   private spawnNamedNPCs(): void {
-    const H = OverworldScene.WORLD_H;
+    const H  = OverworldScene.WORLD_H;
     const sw = Math.floor(H * 0.54);   // front sidewalk y
 
-    // Named NPCs — each uses individual spritesheet from BootScene
-    // NPC x-positions aligned with their associated buildings (tile width = 96):
-    //   #137 Indian Boutique  → x≈210   #170 Patisserie Aladdin → x≈400
-    //   #189 Bakkerij Charif  → x≈590   #215 Theehuys Amal      → x≈880
-    //   #239 Aziz             → x≈1060  #284 Borger Hub         → x≈1664
-    // showFlag: NPC starts invisible and appears once this flag is set
-    type NPCDef = { id: string; texture: string; x: number; y: number; dialogue: string; showFlag?: string; name?: string };
-    const seed: NPCDef[] = [
-      { id: 'baert',       texture: 'npc_baert',   x:  210, y: sw,     dialogue: 'stunt_baert',    name: 'Mevr. Baert'   }, // Indian Boutique #137
-      { id: 'fatima',      texture: 'npc_fatima',  x:  400, y: sw,     dialogue: 'fatima_intro'                          }, // Patisserie Aladdin #170
-      { id: 'yusuf',       texture: 'npc_yusuf',   x:  300, y: sw,     dialogue: 'yusuf_delivery'                        }, // courier near start
-      { id: 'hamza',       texture: 'npc_hamza',   x:  500, y: sw + 2, dialogue: 'hamza_marbles'                         }, // between #170 and #189
-      { id: 'omar',        texture: 'npc_omar',    x:  590, y: sw - 2, dialogue: 'omar_bakker'                           }, // Bakkerij Charif #189
-      { id: 'reza',        texture: 'npc_reza',    x:  880, y: sw - 1, dialogue: 'reza_music'                            }, // Theehuys Amal #215
-      { id: 'aziz',        texture: 'npc_aziz',    x: 1060, y: sw - 1, dialogue: 'aziz_oud_string'                       }, // #239
-      { id: 'tine',        texture: 'npc_tine',    x: 1160, y: sw + 1, dialogue: 'tine_intro'                            }, // Nacht Winkel #240
-      { id: 'el_osri',     texture: 'npc_el_osri', x: 1664, y: sw,     dialogue: 'district_mayor', name: 'El Osri'       }, // Borger Hub #284
-      // De Roma #286 handled by location trigger at x=1728
-
-      // ── 5 new NPCs with Dutch names ──────────────────────────────────────────
-      // Lotte Verbeke — jonge moeder/activiste, verschijnt na de bezorgtaak
-      { id: 'lotte',        texture: 'npc_sofia',   x:  450, y: sw + 1, dialogue: 'lotte_intro',        showFlag: 'delivery_done',       name: 'Lotte'         },
-      // Kevin — skater tiener, altijd aanwezig, questrelevant na mayorgesprek
-      { id: 'kevin',        texture: 'npc_hamza',   x:  640, y: sw + 2, dialogue: 'kevin_intro',                                         name: 'Kevin'         },
-      // Mevrouw Van den Berg — gepensioneerde lerares, verschijnt met community trust; placed at 1130 to avoid overlapping Aziz (1060) label
-      { id: 'van_den_berg', texture: 'npc_baert',   x: 1130, y: sw,     dialogue: 'van_den_berg_intro', showFlag: 'has_community_trust',  name: 'Van den Berg'  },
-      // Bram Desmedt — barman Bar Leon, verschijnt met community trust
-      { id: 'bram',         texture: 'npc_omar',    x: 1540, y: sw - 1, dialogue: 'bram_intro',         showFlag: 'has_community_trust',  name: 'Bram'          },
-      // Nathalie Claes — maatschappelijk werkster OCMW, verschijnt na mayorgesprek
-      { id: 'nathalie',     texture: 'npc_tine',    x:  730, y: sw,     dialogue: 'nathalie_intro',     showFlag: 'met_mayor',            name: 'Nathalie'      },
-    ];
-
-    this.npcs = seed.map(d => {
+    this.npcs = StreetLoader.npcs.map(d => {
+      const y            = sw + (d.yOffset ?? 0);
       const startVisible = !d.showFlag;
-      const npc = new NPC(this, d.x, d.y, d.texture, 0, d.id, d.dialogue, startVisible, d.name);
+      const npc = new NPC(this, d.x, y, d.texture, 0, d.id, d.dialogueId, startVisible, d.name);
       if (d.showFlag) this.npcVisibility.push({ npc, showFlag: d.showFlag });
       return npc;
     });
@@ -566,10 +542,74 @@ export class OverworldScene extends Phaser.Scene {
     }
   }
 
-  /** Expose hint text to the HTML layer so the hint button always matches the nav arrow. */
+  // ── World entities (non-NPC interactable sprites) ────────────────────────
+
+  private spawnWorldEntities(): void {
+    const H  = OverworldScene.WORLD_H;
+    const sw = Math.floor(H * 0.54);   // front sidewalk y (matches NPC row)
+
+    // ── Geest van '88 — visible ghost at the trigger zone (x≈2220) ──────────
+    const gx = 2220;
+    const gy = sw - 10;   // float slightly above sidewalk
+
+    this.geestSprite = this.add.sprite(gx, gy, 'battle_sprites', 6)
+      .setDisplaySize(30, 40)
+      .setTint(0xAA88FF)
+      .setAlpha(0.82)
+      .setDepth(gy + 1)
+      .setOrigin(0.5, 1);
+
+    this.geestLabel = this.add.text(gx, gy - 46, "Geest van '88", {
+      fontFamily: '"Press Start 2P"',
+      fontSize:   '6px',
+      color:      '#CC88FF',
+      stroke:     '#0A0A12',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(gy + 2);
+
+    // Bob up/down
+    this.tweens.add({
+      targets:  [this.geestSprite, this.geestLabel],
+      y:        '-=6',
+      duration: 1400,
+      ease:     'Sine.easeInOut',
+      yoyo:     true,
+      repeat:   -1,
+    });
+
+    // Ethereal flicker
+    this.tweens.add({
+      targets:  this.geestSprite,
+      alpha:    0.45,
+      duration: 900,
+      ease:     'Sine.easeInOut',
+      yoyo:     true,
+      repeat:   -1,
+    });
+  }
+
+  private updateGeestVisibility(): void {
+    if (!this.geestSprite) return;
+    const flags   = stateManager.get().questFlags;
+    const visible = !flags['kracht_van_gemeenschap'];
+    this.geestSprite.setVisible(visible);
+    this.geestLabel!.setVisible(visible);
+  }
+
+  /** Expose hint text and street-side switcher to the HTML layer. */
   private registerGlobals(): void {
     (window as unknown as Record<string, unknown>).__getNavHint =
-      () => getHintText(stateManager.getSnapshot());
+      () => stateManager.getHintText();
+
+    // Side-switch: called by the HTML button after it triggers its own flash overlay
+    (window as unknown as Record<string, unknown>).__switchStreetSide =
+      () => this.switchSide();
+
+    // Let HTML read which side is currently shown (for button label)
+    Object.defineProperty(window, '__currentStreetSide', {
+      get: () => this.currentSide,
+      configurable: true,
+    });
   }
 
   // ── Crowd NPCs (anonymous pedestrians + vehicles) ─────────────────────────
@@ -1133,23 +1173,7 @@ export class OverworldScene extends Phaser.Scene {
   // ── Location triggers (one-shot walk-in events) ───────────────────────────
 
   private setupLocationTriggers(): void {
-    this.locationTriggers = [
-      // ── Delivery quest — player must physically visit each address ─────────
-      { type: 'dialogue', x: 192, width: 96, dialogueId: 'delivery_indian',
-        onceFlag: 'delivered_137', requiredFlags: { delivery_packages_received: true } },
-      { type: 'dialogue', x: 384, width: 96, dialogueId: 'delivery_aladdin',
-        onceFlag: 'delivered_170', requiredFlags: { delivery_packages_received: true } },
-      { type: 'dialogue', x: 1632, width: 96, dialogueId: 'delivery_borgerhub',
-        onceFlag: 'delivered_284', requiredFlags: { delivery_packages_received: true } },
-      // ── Budget Market flour pickup (bug 5 fix — not an NPC, location trigger) ─
-      { type: 'dialogue', x: 1920, width: 96, dialogueId: 'budget_market_flour',
-        onceFlag: 'has_flour', requiredFlags: { flour_quest_accepted: true, omar_flour_done: false } },
-      // ── De Roma concert hall #286 — brick_c tile at x=1728 ────────────────
-      { type: 'dialogue', x: 1728, width: 60, dialogueId: 'de_roma_keeper', onceFlag: 'visited_de_roma' },
-      // ── Bureau-Bulldozer fight — guards zone 4 gate ───────────────────────
-      { type: 'battle', x: 1810, width: 50, enemyId: 'bulldozer_bureau', onceFlag: 'has_permit_doc',
-        requiredFlags: { visited_de_roma: true, speculator_threatened: true } },
-    ];
+    this.locationTriggers = StreetLoader.quests.locationTriggers;
   }
 
   // ── Zone gate triggers ────────────────────────────────────────────────────
@@ -1194,7 +1218,7 @@ export class OverworldScene extends Phaser.Scene {
 
   /** Returns the world-x of the next quest objective, driven by XState machine state. */
   private getNextTarget(): { x: number; label: string } | null {
-    return getNavTarget(stateManager.getSnapshot());
+    return stateManager.getNavTarget();
   }
 
   private updateNavArrow(delta: number): void {

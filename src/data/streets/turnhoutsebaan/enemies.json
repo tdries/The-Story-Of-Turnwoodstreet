@@ -1,0 +1,29 @@
+{
+  "_meta": "Enemies for Turnhoutsebaan. Each entry mirrors the global enemies.json schema.",
+  "bulldozer_bureau": {
+    "id":     "bulldozer_bureau",
+    "name":   "Bureau-Buldozer",
+    "hp":     25,
+    "atk":    6,
+    "def":    3,
+    "spd":    2,
+    "xp":     50,
+    "coins":  10,
+    "loot":   ["permit_doc"],
+    "taunt":  ["Formulier C, sectie 4!", "Geen handtekening, geen toestemming.", "Dit project gaat DOOR."]
+  },
+  "vlok_geest": {
+    "id":     "vlok_geest",
+    "name":   "Geest van '88",
+    "hp":     18,
+    "atk":    5,
+    "def":    2,
+    "spd":    4,
+    "xp":     40,
+    "coins":  0,
+    "loot":   [],
+    "post_battle_flag": "vlok_geest_verslagen",
+    "taunt":  ["Borgerokko!", "Ga terug!", "Dit is ONZE straat."],
+    "_note":  "Represents the Vlaams Blok era of Borgerhout. Defeated by community solidarity."
+  }
+}

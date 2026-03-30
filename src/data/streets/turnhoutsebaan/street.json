@@ -1,0 +1,93 @@
+{
+  "_meta": {
+    "description": "Turnhoutsebaan — source of truth for world generation. Odd numbers = north side, even = south side.",
+    "sidingRule": "odd=north, even=south (confirmed via Flemish address registry)",
+    "gameMapping": "north=top row (far/backdrop), south=bottom row (near/switchable)",
+    "tileRef": "tile indices reference assets/Sprites/buildings/building_tiles.png (41 tiles)"
+  },
+
+  "id": "turnhoutsebaan",
+  "name": "Turnhoutsebaan",
+  "oddSide": "north",
+  "evenSide": "south",
+  "tileWidthUnits": 96,
+  "residentialTiles": [16, 17, 18],
+  "vacantTile": 19,
+
+  "sections": [
+    {
+      "id": "borgerhout",
+      "label": "Borgerhout",
+      "postcode": "2140",
+      "numberMin": 1,
+      "numberMax": 461,
+      "buildings": [
+        { "number": 137, "tile": 0,  "name": "Indian Boutique",        "type": "shop",      "note": "Colourful fabrics, awning" },
+        { "number": 170, "tile": 1,  "name": "Patisserie Aladdin",     "type": "shop",      "note": "Cream render, yellow awning" },
+        { "number": 180, "tile": 2,  "name": "Brasserie 't Center",    "type": "horeca",    "note": "Red brick café, bar stools" },
+        { "number": 189, "tile": 3,  "name": "Bakkerij Charif",        "type": "shop",      "note": "Cream, yellow awning, bread" },
+        { "number": 200, "tile": 4,  "name": "Frituur de Tram",        "type": "horeca",    "note": "White/red frituur, 1 storey" },
+        { "number": 215, "tile": 5,  "name": "Theehuys Amal",          "type": "horeca",    "note": "Ochre, teal shutters" },
+        { "number": 239, "tile": 6,  "name": "Mimoun",                 "type": "shop",      "note": "Gifts & household" },
+        { "number": 240, "tile": 7,  "name": "Nacht Winkel",           "type": "shop",      "note": "Dark grey, neon" },
+        { "number": 257, "tile": 20, "name": "Ornipa Parket",          "type": "shop",      "note": "Flooring, small 2-storey" },
+        { "number": 260, "tile": 8,  "name": "Hammam Borgerhout",      "type": "service",   "note": "Terracotta, teal arch, ornate" },
+        { "number": 284, "tile": 9,  "name": "Borger Hub",             "type": "community", "note": "Renovated, grey, green" },
+        { "number": 317, "tile": 10, "name": "Apotheek Praats",        "type": "service",   "note": "White & blue pharmacy" },
+        { "number": 326, "tile": 11, "name": "Budget Market",          "type": "shop",      "note": "Brick, 4 stories, red awning" },
+        { "number": 332, "tile": 12, "name": "Costermans Wielersport", "type": "shop",      "note": "Cycling shop, brick" },
+        { "number": 343, "tile": 21, "name": "Eéntje Meer",            "type": "service",   "note": "Small service office" },
+        { "number": 360, "tile": 13, "name": "Basic-Fit",              "type": "service",   "note": "Dark grey, blue logo" },
+        { "number": 370, "tile": 14, "name": "New Star Kebab",         "type": "horeca",    "note": "Terracotta, red awning" },
+        { "number": 381, "tile": 22, "name": "Hendrik Heiremans",      "type": "service",   "note": "Funeral home, dignified" },
+        { "number": 410, "tile": 23, "name": "Audifoon",               "type": "service",   "note": "Hearing clinic, modern" },
+        { "number": 420, "tile": 15, "name": "Carrefour Market",       "type": "shop",      "note": "Wide supermarket" }
+      ]
+    },
+    {
+      "id": "deurne_2100",
+      "label": "Deurne",
+      "postcode": "2100",
+      "numberMin": 1,
+      "numberMax": 103,
+      "buildings": [
+        { "number": 2,  "tile": 24, "name": "Pluym",                   "type": "shop",    "note": "Furniture showroom, 3 storeys", "spanNumbers": [1,2,3] },
+        { "number": 30, "tile": 25, "name": "Svelta",                  "type": "shop",    "note": "Lingerie boutique, pink" },
+        { "number": 31, "tile": 26, "name": "Optiek Frits Van Den Bosh","type": "service", "note": "Optician, off-white", "spanNumbers": [31,32,33] },
+        { "number": 62, "tile": 27, "name": "Inverko Parfumerie",      "type": "shop",    "note": "Elegant parfumerie, purple", "spanNumbers": [62,63,64] },
+        { "number": 92, "tile": 28, "name": "Schaeps",                 "type": "service", "note": "Medical supplies", "spanNumbers": [92,93,94] },
+        { "number": 108,"tile": 29, "name": "Cobra Keukens",           "type": "shop",    "note": "Kitchen showroom, grey" },
+        { "number": 115,"tile": 30, "name": "Miss Sera",               "type": "shop",    "note": "Dameskleding, dark" }
+      ]
+    },
+    {
+      "id": "deurne_2100b",
+      "label": "Deurne Zuid",
+      "postcode": "2100",
+      "numberMin": 200,
+      "numberMax": 260,
+      "buildings": [
+        { "number": 212,"tile": 31, "name": "De Mont",                 "type": "shop",    "note": "Gifts & household, terracotta" },
+        { "number": 247,"tile": 32, "name": "Ter Rivierenhof",         "type": "horeca",  "note": "Brasserie, tall ceilings" }
+      ]
+    },
+    {
+      "id": "wijnegem",
+      "label": "Wijnegem",
+      "postcode": "2110",
+      "numberMin": 1,
+      "numberMax": 471,
+      "buildings": [
+        { "number": 5,  "tile": 33, "name": "Wijnegem Shop Eat Enjoy", "type": "mall",    "note": "Large shopping centre" },
+        { "number": 90, "tile": 35, "name": "Beeckman & Co",           "type": "shop",    "note": "Garden centre, plants" },
+        { "number": 276,"tile": 36, "name": "Hillaert",                "type": "service", "note": "Keys & security", "spanNumbers": [276,277,278] },
+        { "number": 317,"tile": 10, "name": "Apotheek Praats",         "type": "service", "note": "Pharmacy (Wijnegem)" },
+        { "number": 332,"tile": 12, "name": "Costermans Wielersport",  "type": "shop",    "note": "Bike shop (Wijnegem)" },
+        { "number": 339,"tile": 37, "name": "Optiek Ann Brands",       "type": "service", "note": "Optician, cream", "spanNumbers": [339,340,341] },
+        { "number": 351,"tile": 38, "name": "Apotheek Meeussen",       "type": "service", "note": "Pharmacy, ochre" },
+        { "number": 372,"tile": 39, "name": "TattooCharis",            "type": "service", "note": "Tattoo & piercing, dark" },
+        { "number": 471,"tile": 40, "name": "Frituur De Brug",         "type": "horeca",  "note": "Frituur, yellow" }
+      ]
+    }
+  ]
+}

@@ -69,6 +69,7 @@
     "xp":     40,
     "coins":  0,
     "loot":   [],
+    "post_battle_flag": "vlok_geest_verslagen",
     "taunt":  ["Borgerokko!", "Ga terug!", "Dit is ONZE straat."],
     "_note":  "Represents the Vlaams Blok era of Borgerhout. Defeated by community solidarity."
   }

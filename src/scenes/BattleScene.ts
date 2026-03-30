@@ -211,6 +211,9 @@ export class BattleScene extends Phaser.Scene {
         if (flagKey) stateManager.setFlag(flagKey, true);
       }
 
+      const postFlag = (enemyDef as any)?.post_battle_flag as string | undefined;
+      if (postFlag) stateManager.setFlag(postFlag, true);
+
       stateManager.setHP(this.combat.getState().player.hp);
       gameEventLogger.logBattle(this.enemyId, result, xpGain, coinGain); // after HP/XP/loot so state is accurate
 

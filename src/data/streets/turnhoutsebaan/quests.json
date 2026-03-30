@@ -1,0 +1,325 @@
+{
+  "_meta": "Quest machine definition for Turnhoutsebaan. Used by StreetMachine.ts to build an XState parallel machine at runtime.",
+
+  "machineId": "turnhoutsebaan",
+
+  "context": {
+    "coins": 5,
+    "xp": 0,
+    "hp": 20,
+    "maxHp": 20,
+    "level": 1,
+    "xpNext": 100,
+    "inventory": [],
+    "skills": [],
+    "name": "Speler"
+  },
+
+  "regions": [
+
+    {
+      "id": "delivery",
+      "initial": "idle",
+      "states": {
+        "idle":          { "on": { "MET_YUSUF": "met" } },
+        "met":           { "on": { "DELIVERY_ACCEPTED": "accepted" } },
+        "accepted":      {
+          "type": "parallel",
+          "subRegions": [
+            { "id": "pkg137", "event": "DELIVERED_137" },
+            { "id": "pkg170", "event": "DELIVERED_170" },
+            { "id": "pkg284", "event": "DELIVERED_284" }
+          ],
+          "onDone": "all_delivered"
+        },
+        "all_delivered": { "on": { "DELIVERY_REWARDED": "rewarded" } },
+        "rewarded":      { "type": "final" }
+      }
+    },
+
+    {
+      "id": "fabric",
+      "initial": "idle",
+      "states": {
+        "idle":       { "on": { "MET_FATIMA": "met" } },
+        "met":        { "on": { "FABRIC_ACCEPTED": "accepted" } },
+        "accepted":   { "on": { "FABRIC_PICKED_UP": "picked_up" } },
+        "picked_up":  { "on": { "FABRIC_DELIVERED": "completed" } },
+        "completed":  { "type": "final" }
+      }
+    },
+
+    {
+      "id": "flour",
+      "initial": "idle",
+      "states": {
+        "idle":       { "on": { "FLOUR_ACCEPTED": "accepted" } },
+        "accepted":   { "on": { "FLOUR_PICKED_UP": "picked_up" } },
+        "picked_up":  { "on": { "FLOUR_DELIVERED": "completed" } },
+        "completed":  { "type": "final" }
+      }
+    },
+
+    {
+      "id": "oud",
+      "initial": "idle",
+      "states": {
+        "idle":       { "on": { "OUD_ACCEPTED": "accepted" } },
+        "accepted":   { "on": { "OUD_FOUND": "found" } },
+        "found":      { "on": { "OUD_DELIVERED": "completed" } },
+        "completed":  { "type": "final" }
+      }
+    },
+
+    {
+      "id": "signatures",
+      "initial": "idle",
+      "states": {
+        "idle": {
+          "on": {
+            "SIG_FATIMA": "collecting",
+            "SIG_OMAR":   "collecting",
+            "SIG_REZA":   "collecting",
+            "SIG_BAERT":  "collecting",
+            "SIG_AZIZ":   "collecting"
+          }
+        },
+        "collecting": {
+          "type": "parallel",
+          "subRegions": [
+            { "id": "fatima_sig", "event": "SIG_FATIMA" },
+            { "id": "omar_sig",   "event": "SIG_OMAR"   },
+            { "id": "reza_sig",   "event": "SIG_REZA"   },
+            { "id": "baert_sig",  "event": "SIG_BAERT"  },
+            { "id": "aziz_sig",   "event": "SIG_AZIZ"   }
+          ],
+          "onDone": "completed"
+        },
+        "completed": { "on": { "SIGNATURES_DONE": "rewarded" } },
+        "rewarded":  { "type": "final" }
+      }
+    },
+
+    {
+      "id": "bulldozer",
+      "initial": "idle",
+      "states": {
+        "idle":             { "on": { "VISITED_DE_ROMA": "de_roma_visited" } },
+        "de_roma_visited":  { "on": { "BULLDOZER_DEFEATED": "completed" } },
+        "completed":        { "type": "final" }
+      }
+    },
+
+    {
+      "id": "geest",
+      "initial": "idle",
+      "states": {
+        "idle":        { "on": { "GEEST_ENCOUNTERED": "encountered" } },
+        "encountered": { "on": { "GEEST_DEFEATED": "completed" } },
+        "completed":   { "type": "final" }
+      }
+    },
+
+    {
+      "id": "mayor",
+      "initial": "idle",
+      "states": {
+        "idle":    { "on": { "MET_MAYOR": "met" } },
+        "met":     { "on": { "MAYOR_BRIEFED": "briefed" } },
+        "briefed": { "type": "final" }
+      }
+    },
+
+    {
+      "id": "factions",
+      "type": "parallel",
+      "subRegions": [
+        { "id": "moroccan", "event": "FACTION_MOROCCAN" },
+        { "id": "turkish",  "event": "FACTION_TURKISH"  },
+        { "id": "flemish",  "event": "FACTION_FLEMISH"  },
+        { "id": "art",      "event": "FACTION_ART"      },
+        { "id": "school",   "event": "FACTION_SCHOOL"   },
+        { "id": "mosque",   "event": "FACTION_MOSQUE"   },
+        { "id": "frituur",  "event": "FACTION_FRITUUR"  }
+      ]
+    }
+
+  ],
+
+  "flagToEvent": {
+    "met_yusuf":                  "MET_YUSUF",
+    "delivery_accepted":          "DELIVERY_ACCEPTED",
+    "delivery_packages_received": "DELIVERY_ACCEPTED",
+    "delivered_137":              "DELIVERED_137",
+    "delivered_170":              "DELIVERED_170",
+    "delivered_284":              "DELIVERED_284",
+    "delivery_done":              "DELIVERY_REWARDED",
+    "met_fatima":                 "MET_FATIMA",
+    "fabric_quest_accepted":      "FABRIC_ACCEPTED",
+    "stunt_quest_active":         "FABRIC_PICKED_UP",
+    "stunt_quest_done":           "FABRIC_DELIVERED",
+    "omar_flour_asked":           "FLOUR_ACCEPTED",
+    "flour_quest_accepted":       "FLOUR_ACCEPTED",
+    "has_flour":                  "FLOUR_PICKED_UP",
+    "omar_flour_done":            "FLOUR_DELIVERED",
+    "oud_quest_accepted":         "OUD_ACCEPTED",
+    "has_oud_string_item":        "OUD_FOUND",
+    "reza_quest_done":            "OUD_DELIVERED",
+    "sig_fatima":                 "SIG_FATIMA",
+    "sig_omar":                   "SIG_OMAR",
+    "sig_reza":                   "SIG_REZA",
+    "sig_baert":                  "SIG_BAERT",
+    "sig_aziz":                   "SIG_AZIZ",
+    "speculator_threatened":      "SIGNATURES_DONE",
+    "visited_de_roma":            "VISITED_DE_ROMA",
+    "has_permit_doc":             "BULLDOZER_DEFEATED",
+    "geest_encountered":          "GEEST_ENCOUNTERED",
+    "kracht_van_gemeenschap":     "GEEST_DEFEATED",
+    "met_mayor":                  "MET_MAYOR",
+    "act4_started":               "MAYOR_BRIEFED",
+    "fatima_convinced":           "FACTION_MOROCCAN",
+    "tine_faction_convinced":     "FACTION_TURKISH",
+    "baert_faction_convinced":    "FACTION_FLEMISH",
+    "art_faction_convinced":      "FACTION_ART",
+    "school_faction_convinced":   "FACTION_SCHOOL",
+    "mosque_faction_convinced":   "FACTION_MOSQUE",
+    "frituur_faction_convinced":  "FACTION_FRITUUR"
+  },
+
+  "flagBridge": [
+    { "flag": "met_yusuf",                  "region": "delivery",   "notState": "idle" },
+    { "flag": "delivery_accepted",          "region": "delivery",   "anyState": ["accepted","all_delivered","rewarded"] },
+    { "flag": "delivery_packages_received", "region": "delivery",   "anyState": ["accepted","all_delivered","rewarded"] },
+    { "flag": "delivered_137",              "region": "delivery",   "anyState": ["all_delivered","rewarded"], "orSubState": ["delivery","accepted","pkg137","done"] },
+    { "flag": "delivered_170",              "region": "delivery",   "anyState": ["all_delivered","rewarded"], "orSubState": ["delivery","accepted","pkg170","done"] },
+    { "flag": "delivered_284",              "region": "delivery",   "anyState": ["all_delivered","rewarded"], "orSubState": ["delivery","accepted","pkg284","done"] },
+    { "flag": "delivery_done",              "region": "delivery",   "state": "rewarded" },
+    { "flag": "q_starter_delivery_done",    "region": "delivery",   "state": "rewarded" },
+
+    { "flag": "met_fatima",            "region": "fabric",     "notState": "idle" },
+    { "flag": "fabric_quest_accepted", "region": "fabric",     "anyState": ["accepted","picked_up","completed"] },
+    { "flag": "knows_stunt_location",  "region": "fabric",     "anyState": ["accepted","picked_up","completed"] },
+    { "flag": "stunt_quest_active",    "region": "fabric",     "state": "picked_up" },
+    { "flag": "stunt_quest_done",      "region": "fabric",     "state": "completed" },
+    { "flag": "has_community_trust",   "region": "fabric",     "state": "completed" },
+    { "flag": "q_fabric_quest_done",   "region": "fabric",     "state": "completed" },
+
+    { "flag": "omar_flour_asked",      "region": "flour",      "notState": "idle" },
+    { "flag": "flour_quest_accepted",  "region": "flour",      "notState": "idle" },
+    { "flag": "has_flour",             "region": "flour",      "state": "picked_up" },
+    { "flag": "omar_flour_done",       "region": "flour",      "state": "completed" },
+    { "flag": "knows_samen_tafel",     "region": "flour",      "state": "completed" },
+    { "flag": "q_flour_shortage_done", "region": "flour",      "state": "completed" },
+
+    { "flag": "oud_quest_accepted",    "region": "oud",        "notState": "idle" },
+    { "flag": "has_oud_string_item",   "region": "oud",        "state": "found" },
+    { "flag": "reza_quest_done",       "region": "oud",        "state": "completed" },
+    { "flag": "q_oud_string_done",     "region": "oud",        "state": "completed" },
+
+    { "flag": "sig_fatima",  "region": "signatures", "notState": "idle", "orSubState": ["signatures","collecting","fatima_sig","done"] },
+    { "flag": "sig_omar",    "region": "signatures", "notState": "idle", "orSubState": ["signatures","collecting","omar_sig","done"] },
+    { "flag": "sig_reza",    "region": "signatures", "notState": "idle", "orSubState": ["signatures","collecting","reza_sig","done"] },
+    { "flag": "sig_baert",   "region": "signatures", "notState": "idle", "orSubState": ["signatures","collecting","baert_sig","done"] },
+    { "flag": "sig_aziz",    "region": "signatures", "notState": "idle", "orSubState": ["signatures","collecting","aziz_sig","done"] },
+    { "flag": "met_aziz",    "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","aziz_sig","done"] },
+    { "flag": "speculator_threatened", "region": "signatures", "anyState": ["completed","rewarded"] },
+    { "flag": "q_signatures_done",     "region": "signatures", "anyState": ["completed","rewarded"] },
+
+    { "flag": "visited_de_roma",  "region": "bulldozer", "notState": "idle" },
+    { "flag": "has_permit_doc",   "region": "bulldozer", "state": "completed" },
+    { "flag": "q_bulldozer_done", "region": "bulldozer", "state": "completed" },
+
+    { "flag": "geest_encountered",      "region": "geest", "notState": "idle" },
+    { "flag": "kracht_van_gemeenschap", "region": "geest", "state": "completed" },
+    { "flag": "q_geest_88_done",        "region": "geest", "state": "completed" },
+
+    { "flag": "met_mayor",            "region": "mayor", "notState": "idle" },
+    { "flag": "act4_briefed",         "region": "mayor", "notState": "idle" },
+    { "flag": "act4_started",         "region": "mayor", "state": "briefed" },
+    { "flag": "q_mayor_meeting_done", "region": "mayor", "notState": "idle" },
+
+    { "flag": "fatima_convinced",        "faction": "moroccan" },
+    { "flag": "samen_tafel_faction_1",   "faction": "moroccan" },
+    { "flag": "q_faction_moroccan_done", "faction": "moroccan" },
+    { "flag": "tine_faction_convinced",  "faction": "turkish"  },
+    { "flag": "samen_tafel_faction_2",   "faction": "turkish"  },
+    { "flag": "q_faction_turkish_done",  "faction": "turkish"  },
+    { "flag": "baert_faction_convinced", "faction": "flemish"  },
+    { "flag": "samen_tafel_faction_3",   "faction": "flemish"  },
+    { "flag": "q_faction_flemish_done",  "faction": "flemish"  },
+    { "flag": "art_faction_convinced",   "faction": "art"      },
+    { "flag": "samen_tafel_faction_4",   "faction": "art"      },
+    { "flag": "q_faction_art_done",      "faction": "art"      },
+    { "flag": "school_faction_convinced","faction": "school"   },
+    { "flag": "samen_tafel_faction_5",   "faction": "school"   },
+    { "flag": "q_faction_school_done",   "faction": "school"   },
+    { "flag": "mosque_faction_convinced","faction": "mosque"   },
+    { "flag": "samen_tafel_faction_6",   "faction": "mosque"   },
+    { "flag": "q_faction_mosque_done",   "faction": "mosque"   },
+    { "flag": "met_imam",                "faction": "mosque"   },
+    { "flag": "frituur_faction_convinced","faction": "frituur" },
+    { "flag": "samen_tafel_faction_7",   "faction": "frituur"  },
+    { "flag": "q_faction_frituur_done",  "faction": "frituur"  }
+  ],
+
+  "locationTriggers": [
+    { "type": "dialogue", "x": 192,  "width": 96, "dialogueId": "delivery_indian",       "onceFlag": "delivered_137",     "requiredFlags": { "delivery_packages_received": true } },
+    { "type": "dialogue", "x": 384,  "width": 96, "dialogueId": "delivery_aladdin",      "onceFlag": "delivered_170",     "requiredFlags": { "delivery_packages_received": true } },
+    { "type": "dialogue", "x": 1632, "width": 96, "dialogueId": "delivery_borgerhub",    "onceFlag": "delivered_284",     "requiredFlags": { "delivery_packages_received": true } },
+    { "type": "dialogue", "x": 1920, "width": 96, "dialogueId": "budget_market_flour",   "onceFlag": "has_flour",         "requiredFlags": { "flour_quest_accepted": true, "omar_flour_done": false } },
+    { "type": "dialogue", "x": 1728, "width": 60, "dialogueId": "de_roma_keeper",        "onceFlag": "visited_de_roma" },
+    { "type": "battle",   "x": 1810, "width": 50, "enemyId":    "bulldozer_bureau",      "onceFlag": "has_permit_doc",    "requiredFlags": { "visited_de_roma": true, "speculator_threatened": true } },
+    { "type": "dialogue", "x": 2180, "width": 80, "dialogueId": "geest_van_88_encounter","onceFlag": "geest_encountered" },
+    { "type": "battle",   "x": 2180, "width": 80, "enemyId":    "vlok_geest",            "onceFlag": "vlok_geest_verslagen","requiredFlags": { "geest_encountered": true } },
+    { "type": "dialogue", "x": 2180, "width": 80, "dialogueId": "geest_van_88_defeated", "onceFlag": "kracht_van_gemeenschap","requiredFlags": { "vlok_geest_verslagen": true } }
+  ],
+
+  "navTargets": [
+    { "condition": { "delivery": "idle" },                        "x": 300,  "label": "Yusuf" },
+    { "condition": { "delivery": "met" },                         "x": 300,  "label": "Yusuf" },
+    { "condition": { "delivery": "accepted" },                    "x": 192,  "label": "Adres 137" },
+    { "condition": { "delivery": "all_delivered" },               "x": 300,  "label": "Yusuf" },
+    { "condition": { "fabric": "idle" },                          "x": 400,  "label": "Fatima" },
+    { "condition": { "fabric": "met" },                           "x": 210,  "label": "Baert" },
+    { "condition": { "fabric": "accepted" },                      "x": 210,  "label": "Baert" },
+    { "condition": { "fabric": "picked_up" },                     "x": 400,  "label": "Fatima" },
+    { "condition": { "oud": "idle" },                             "x": 880,  "label": "Reza" },
+    { "condition": { "oud": "accepted" },                         "x": 1060, "label": "Aziz" },
+    { "condition": { "oud": "found" },                            "x": 880,  "label": "Reza" },
+    { "condition": { "flour": "accepted" },                       "x": 1920, "label": "Budget Market" },
+    { "condition": { "flour": "picked_up" },                      "x": 590,  "label": "Omar" },
+    { "condition": { "bulldozer": "idle" },                       "x": 1728, "label": "De Roma" },
+    { "condition": { "bulldozer": "de_roma_visited" },            "x": 1810, "label": "Bulldozer" },
+    { "condition": { "mayor": "idle" },                           "x": 1664, "label": "Districtsvoorzitter" },
+    { "condition": { "geest": "idle", "flour": "completed" },     "x": 2200, "label": "Geest van '88" },
+    { "condition": { "geest": "encountered" },                    "x": 2180, "label": "Geest van '88" },
+    { "faction": "moroccan", "done": false,                       "x": 400,  "label": "Fatima" },
+    { "faction": "turkish",  "done": false,                       "x": 1160, "label": "Tine" },
+    { "faction": "flemish",  "done": false,                       "x": 210,  "label": "Baert" },
+    { "faction": "school",   "done": false,                       "x": 500,  "label": "Hamza" },
+    { "faction": "frituur",  "done": false,                       "x": 200,  "label": "Frituur de Tram" }
+  ],
+
+  "hintTexts": [
+    { "condition": { "delivery": "idle" },             "text": "Spreek met koerier Yusuf op de Turnhoutsebaan." },
+    { "condition": { "delivery": "met" },              "text": "Yusuf heeft pakjes voor je. Praat opnieuw met hem om ze op te halen." },
+    { "condition": { "delivery": "accepted" },         "text": "Bezoek alle drie bezorgadressen: nr.137, nr.170 en nr.284." },
+    { "condition": { "delivery": "all_delivered" },    "text": "Alle pakjes bezorgd! Ga terug naar Yusuf voor je beloning." },
+    { "condition": { "fabric": "idle" },               "text": "Ga naar Patisserie Aladdin en spreek met Fatima." },
+    { "condition": { "fabric": "met" },                "text": "Fatima heeft stof nodig van Mevr. Baert bij Indian Boutique nr.137." },
+    { "condition": { "fabric": "accepted" },           "text": "Haal de stoffen op bij Indian Boutique nr.137." },
+    { "condition": { "fabric": "picked_up" },          "text": "Breng de stoffen terug naar Fatima bij Patisserie Aladdin." },
+    { "condition": { "oud": "idle" },                  "text": "Reza bij Theehuys Amal (#215) zoekt hulp met zijn oud." },
+    { "condition": { "oud": "accepted" },              "text": "Aziz (#239) heeft misschien een oud-snaar voor Reza." },
+    { "condition": { "oud": "found" },                 "text": "Breng de oud-snaar terug naar Reza bij Theehuys Amal." },
+    { "condition": { "flour": "accepted" },            "text": "Haal bloem op bij Budget Market (nr.326 richting Deurne)." },
+    { "condition": { "flour": "picked_up" },           "text": "Breng de bloem terug naar Omar in Bakkerij Charif (#189)." },
+    { "condition": { "bulldozer": "idle" },            "text": "Ga naar De Roma (#286) — de ziel van de Turnhoutsebaan." },
+    { "condition": { "bulldozer": "de_roma_visited" }, "text": "De vastgoedspeculant bedreigt de buurt! Versla de Bureau-Bulldozer bij De Roma." },
+    { "condition": { "mayor": "idle" },                "text": "Districtsvoorzitter El Osri wil je spreken bij Borger Hub (nr.284)." },
+    { "condition": { "geest": "idle", "flour": "idle" }, "text": "Help eerst Omar met zijn bloem \u2014 hij heeft je nodig in Bakkerij Charif (nr.189)." },
+    { "condition": { "geest": "idle", "flour": "completed" }, "text": "Er waart een Geest van '88 op straat. Vind hem en gebruik Samen Aan Tafel om hem te overwinnen." },
+    { "condition": { "geest": "encountered" },         "text": "Versla de Geest van '88! Gebruik Samen Aan Tafel in het gevecht." },
+    { "allFactionsComplete": true,                     "text": "Alle 7 facties zijn overtuigd! Ga naar de Grote 2km Tafel voor het finale feest!" }
+  ]
+}

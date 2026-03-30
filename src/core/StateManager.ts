@@ -1,12 +1,31 @@
 import { createActor }            from 'xstate';
 import type { SnapshotFrom }      from 'xstate';
 import { supabase }               from '@core/SupabaseClient';
-import { GameMachine, flagBridge } from '@systems/GameMachine';
-import type { GameEvent, GameContext } from '@systems/GameMachine';
+import { StreetLoader }           from '@core/StreetLoader';
+import {
+  buildMachine,
+  buildFlagToEvent,
+  buildFlagBridge,
+  buildGetNavTarget,
+  buildGetHintText,
+} from '@systems/StreetMachine';
+import type { GameContext }       from '@systems/StreetMachine';
 import { gameEventLogger }        from '@core/GameEventLogger';
 
-/** The persisted snapshot type for GameMachine. */
-type GameSnapshot = SnapshotFrom<typeof GameMachine>;
+// ── Build machine + helpers from active street's quests.json ─────────────────
+
+const _questsDef    = StreetLoader.quests;
+const _machine      = buildMachine(_questsDef);
+const _flagBridge   = buildFlagBridge(_questsDef);
+const _getNavTarget = buildGetNavTarget(_questsDef);
+const _getHintText  = buildGetHintText(_questsDef);
+const _flagToEvent  = buildFlagToEvent(_questsDef);
+
+/** GameEvent union — keep generic so any event string works via cast. */
+type GameEvent = { type: string; [key: string]: unknown };
+
+/** The persisted snapshot type for the generated machine. */
+type GameSnapshot = SnapshotFrom<typeof _machine>;
 
 /**
  * Global game state — now powered by XState.
@@ -37,60 +56,7 @@ export interface GameState {
   gameTimeMinutes: number;
 }
 
-// ── Flag → Event bridge map ───────────────────────────────────────────────────
-// Maps known flag keys (set by dialogue.json) to machine events.
-// If a flag key is listed here the bridge fires the corresponding event
-// instead of (or in addition to) storing it in legacy questFlags.
-
-const FLAG_TO_EVENT: Record<string, GameEvent | null> = {
-  met_yusuf:                   { type: 'MET_YUSUF' },
-  delivery_accepted:           { type: 'DELIVERY_ACCEPTED' },
-  delivery_packages_received:  { type: 'DELIVERY_ACCEPTED' },   // alias
-  delivered_137:               { type: 'DELIVERED_137' },
-  delivered_170:               { type: 'DELIVERED_170' },
-  delivered_284:               { type: 'DELIVERED_284' },
-  delivery_done:               { type: 'DELIVERY_REWARDED' },
-
-  met_fatima:                  { type: 'MET_FATIMA' },
-  fabric_quest_accepted:       { type: 'FABRIC_ACCEPTED' },
-  knows_stunt_location:        null,                             // informational only
-  stunt_quest_active:          { type: 'FABRIC_PICKED_UP' },
-  stunt_quest_done:            { type: 'FABRIC_DELIVERED' },
-
-  omar_flour_asked:            { type: 'FLOUR_ACCEPTED' },
-  flour_quest_accepted:        { type: 'FLOUR_ACCEPTED' },
-  has_flour:                   { type: 'FLOUR_PICKED_UP' },
-  omar_flour_done:             { type: 'FLOUR_DELIVERED' },
-
-  oud_quest_accepted:          { type: 'OUD_ACCEPTED' },
-  has_oud_string_item:         { type: 'OUD_FOUND' },
-  reza_quest_done:             { type: 'OUD_DELIVERED' },
-
-  sig_fatima:                  { type: 'SIG_FATIMA' },
-  sig_omar:                    { type: 'SIG_OMAR' },
-  sig_reza:                    { type: 'SIG_REZA' },
-  sig_baert:                   { type: 'SIG_BAERT' },
-  sig_aziz:                    { type: 'SIG_AZIZ' },
-  speculator_threatened:       { type: 'SIGNATURES_DONE' },
-
-  visited_de_roma:             { type: 'VISITED_DE_ROMA' },
-  has_permit_doc:              { type: 'BULLDOZER_DEFEATED' },
-
-  geest_encountered:           { type: 'GEEST_ENCOUNTERED' },
-  kracht_van_gemeenschap:      { type: 'GEEST_DEFEATED' },
-
-  met_mayor:                   { type: 'MET_MAYOR' },
-  act4_briefed:                null,
-  act4_started:                { type: 'MAYOR_BRIEFED' },
-
-  fatima_convinced:            { type: 'FACTION_MOROCCAN' },
-  tine_faction_convinced:      { type: 'FACTION_TURKISH' },
-  baert_faction_convinced:     { type: 'FACTION_FLEMISH' },
-  art_faction_convinced:       { type: 'FACTION_ART' },
-  school_faction_convinced:    { type: 'FACTION_SCHOOL' },
-  mosque_faction_convinced:    { type: 'FACTION_MOSQUE' },
-  frituur_faction_convinced:   { type: 'FACTION_FRITUUR' },
-};
+// FLAG_TO_EVENT is now built from quests.json via StreetMachine — see _flagToEvent above.
 
 // ── Persisted snapshot shape ──────────────────────────────────────────────────
 
@@ -107,7 +73,7 @@ interface SaveData {
 // ── StateManager ──────────────────────────────────────────────────────────────
 
 class StateManager {
-  private actor: ReturnType<typeof createActor<typeof GameMachine>>;
+  private actor: ReturnType<typeof createActor<typeof _machine>>;
   private currentMap:       string = 'borgerhout_main';
   private spawnPoint:       { x: number; y: number } = { x: 64, y: 146 };
   private playtimeMs:       number = 0;
@@ -120,15 +86,15 @@ class StateManager {
     const persisted = this._loadPersistedSnapshot();
     if (persisted) {
       this.actor = persisted.snapshot
-        ? createActor(GameMachine, { snapshot: persisted.snapshot })
-        : createActor(GameMachine);
+        ? createActor(_machine, { snapshot: persisted.snapshot })
+        : createActor(_machine);
       this.currentMap      = persisted.currentMap;
       this.spawnPoint      = persisted.spawnPoint;
       this.playtimeMs      = persisted.playtimeMs;
       this.gameTimeMinutes = persisted.gameTimeMinutes;
       this.extraFlags      = persisted.questFlags ?? {};
     } else {
-      this.actor = createActor(GameMachine);
+      this.actor = createActor(_machine);
     }
     this.actor.start();
     this._attachDebugLogger();
@@ -158,7 +124,7 @@ class StateManager {
 
     this.actor.subscribe(snapshot => {
       const ctx = snapshot.context as typeof snapshot.context;
-      const flags = flagBridge(snapshot as { value: unknown; context: GameContext });
+      const flags = _flagBridge(snapshot as { value: unknown; context: GameContext });
       console.groupCollapsed(
         `%c[XState] transition`,
         'color: #FFD700; font-weight: bold',
@@ -228,7 +194,7 @@ class StateManager {
    * This is what DialogueSystem conditions read via getFlag().
    */
   getFlags(): QuestFlags {
-    const machineFlags = flagBridge(this.actor.getSnapshot() as {
+    const machineFlags = _flagBridge(this.actor.getSnapshot() as {
       value: unknown;
       context: GameContext;
     });
@@ -247,8 +213,8 @@ class StateManager {
    */
   setFlag(key: string, value: boolean | number | string): void {
     // Only translate true-ish boolean flags to machine events
-    if (value === true && key in FLAG_TO_EVENT) {
-      const event = FLAG_TO_EVENT[key];
+    if (value === true && key in _flagToEvent) {
+      const event = _flagToEvent[key];
       if (event !== null) {
         this.actor.send(event);
         gameEventLogger.logXStateEvent(event.type);
@@ -365,8 +331,8 @@ class StateManager {
   private _applyLoaded(s: SaveData): void {
     this.actor.stop();
     this.actor = s.machineSnapshot
-      ? createActor(GameMachine, { snapshot: s.machineSnapshot })
-      : createActor(GameMachine);
+      ? createActor(_machine, { snapshot: s.machineSnapshot })
+      : createActor(_machine);
     this.actor.start();
     this.currentMap      = s.currentMap      ?? 'borgerhout_main';
     this.spawnPoint      = s.spawnPoint      ?? { x: 64, y: 146 };
@@ -437,7 +403,7 @@ class StateManager {
 
   reset(): void {
     this.actor.stop();
-    this.actor = createActor(GameMachine);
+    this.actor = createActor(_machine);
     this.actor.start();
     this.currentMap      = 'borgerhout_main';
     this.spawnPoint      = { x: 64, y: 146 };
@@ -446,6 +412,16 @@ class StateManager {
     this.extraFlags      = {};
     localStorage.removeItem('tbaan_save_v2');
     localStorage.removeItem('tbaan_save');
+  }
+
+  // ── Navigation / hints ──────────────────────────────────────────────────────
+
+  getNavTarget(): { x: number; label: string } | null {
+    return _getNavTarget(this.actor.getSnapshot() as { value: unknown; context: GameContext });
+  }
+
+  getHintText(): string {
+    return _getHintText(this.actor.getSnapshot() as { value: unknown; context: GameContext });
   }
 
   // ── Internals ───────────────────────────────────────────────────────────────

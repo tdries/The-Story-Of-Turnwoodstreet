@@ -106,18 +106,29 @@
         ]
       },
       "real_shops": {
-        "notes": "Source of truth for real Herentalsebaan building appearances",
+        "notes": "Source of truth for real Turnhoutsebaan building appearances. odd numbers = north side (top in game), even numbers = south side (bot in game).",
+        "sidingRule": { "odd": "north", "even": "south", "gameMapping": { "north": "top", "south": "bot" } },
         "entries": [
-          {"id": "budgetmkt",  "num": 326, "name": "Budget Market",       "side": "bot", "facade": "red brick, 4 stories, wide red awning"},
-          {"id": "hammam",     "num": 260, "name": "Hammam Borgerhout",   "side": "top", "facade": "terracotta render, teal tiled arch, ornate"},
-          {"id": "aladdin",    "num": 170, "name": "Patisserie Aladdin",  "side": "top", "facade": "cream render, yellow awning, Arabic signage"},
-          {"id": "frituur",    "num": 200, "name": "Frituur de Tram",     "side": "bot", "facade": "white/red, classic Belgian frituur style"},
-          {"id": "theehuys",   "num": 215, "name": "Theehuys Amal",      "side": "top", "facade": "ochre, teal shutters, Arabic + Dutch sign"},
-          {"id": "nachtw",     "num": 240, "name": "Nacht Winkel",        "side": "bot", "facade": "dark grey, neon signage, always lit"},
-          {"id": "charif",     "num": 189, "name": "Bakkerij Charif",     "side": "bot", "facade": "cream, yellow awning, bread in window"},
-          {"id": "borgerHub",  "num": 284, "name": "Borger Hub",          "side": "top", "facade": "renovated, grey, modern green accents"},
-          {"id": "basic_fit",  "num": 360, "name": "Basic-Fit",           "side": "top", "facade": "dark grey, large blue logo"},
-          {"id": "newstar",    "num": 370, "name": "New Star Kebab",      "side": "bot", "facade": "terracotta, red awning, doner rotating sign"}
+          {"id": "indian_boutique","num": 137, "name": "Indian Boutique",      "side": "north", "facade": "colourful fabrics in window, brick, awning"},
+          {"id": "aladdin",        "num": 170, "name": "Patisserie Aladdin",   "side": "south", "facade": "cream render, yellow awning, Arabic signage"},
+          {"id": "brasserie",      "num": 180, "name": "Brasserie 't Center",  "side": "south", "facade": "red brick, lit windows, bar stools"},
+          {"id": "charif",         "num": 189, "name": "Bakkerij Charif",      "side": "north", "facade": "cream, yellow awning, bread in window"},
+          {"id": "frituur",        "num": 200, "name": "Frituur de Tram",      "side": "south", "facade": "white/red, classic Belgian frituur style"},
+          {"id": "theehuys",       "num": 215, "name": "Theehuys Amal",        "side": "north", "facade": "ochre, teal shutters, Arabic + Dutch sign"},
+          {"id": "mimoun",         "num": 239, "name": "Mimoun",               "side": "north", "facade": "colourful gifts, brick"},
+          {"id": "nachtw",         "num": 240, "name": "Nacht Winkel",         "side": "south", "facade": "dark grey, neon signage, always lit"},
+          {"id": "ornipa",         "num": 257, "name": "Ornipa Parket",        "side": "north", "facade": "parquet flooring, small 2-storey"},
+          {"id": "hammam",         "num": 260, "name": "Hammam Borgerhout",    "side": "south", "facade": "terracotta render, teal tiled arch, ornate"},
+          {"id": "borgerHub",      "num": 284, "name": "Borger Hub",           "side": "south", "facade": "renovated, grey, modern green accents"},
+          {"id": "apotheek",       "num": 317, "name": "Apotheek Praats",      "side": "north", "facade": "white and blue, pharmacy cross"},
+          {"id": "budgetmkt",      "num": 326, "name": "Budget Market",        "side": "south", "facade": "red brick, 4 stories, wide red awning"},
+          {"id": "costermans",     "num": 332, "name": "Costermans Wielersport","side": "south","facade": "red brick, cycling shop"},
+          {"id": "eentje_meer",    "num": 343, "name": "Eéntje Meer",          "side": "north", "facade": "small service office"},
+          {"id": "basic_fit",      "num": 360, "name": "Basic-Fit",            "side": "south", "facade": "dark grey, large blue logo"},
+          {"id": "newstar",        "num": 370, "name": "New Star Kebab",       "side": "south", "facade": "terracotta, red awning, doner rotating sign"},
+          {"id": "heiremans",      "num": 381, "name": "Hendrik Heiremans",    "side": "north", "facade": "dignified 3-storey funeral home"},
+          {"id": "audifoon",       "num": 410, "name": "Audifoon",             "side": "south", "facade": "modern 2-storey hearing clinic"},
+          {"id": "carrefour",      "num": 420, "name": "Carrefour Market",     "side": "south", "facade": "wide supermarket, red/white logo"}
         ]
       },
       "todo": [
