@@ -303,7 +303,10 @@ export function buildGetNavTarget(def: QuestsDef): (snapshot: AnySnapshot) => { 
         const allMatch = Object.entries(t.condition).every(([region, state]) =>
           regionIs(v, region, state),
         );
-        if (allMatch && factionCount(v) < 7) return { x: t.x, label: t.label };
+        if (allMatch) {
+          if (t.subState && !stateIs(v, ...t.subState)) continue;
+          if (factionCount(v) < 7) return { x: t.x, label: t.label };
+        }
       }
     }
     return null;

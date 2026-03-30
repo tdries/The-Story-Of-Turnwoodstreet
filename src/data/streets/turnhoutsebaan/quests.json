@@ -277,7 +277,9 @@
   "navTargets": [
     { "condition": { "delivery": "idle" },                        "x": 300,  "label": "Yusuf" },
     { "condition": { "delivery": "met" },                         "x": 300,  "label": "Yusuf" },
-    { "condition": { "delivery": "accepted" },                    "x": 192,  "label": "Adres 137" },
+    { "condition": { "delivery": "accepted" }, "subState": ["delivery","accepted","pkg137","pending"], "x": 192,  "label": "Adres 137" },
+    { "condition": { "delivery": "accepted" }, "subState": ["delivery","accepted","pkg170","pending"], "x": 384,  "label": "Adres 170" },
+    { "condition": { "delivery": "accepted" }, "subState": ["delivery","accepted","pkg284","pending"], "x": 1632, "label": "Adres 284" },
     { "condition": { "delivery": "all_delivered" },               "x": 300,  "label": "Yusuf" },
     { "condition": { "fabric": "idle" },                          "x": 400,  "label": "Fatima" },
     { "condition": { "fabric": "met" },                           "x": 210,  "label": "Baert" },
@@ -303,7 +305,7 @@
   "hintTexts": [
     { "condition": { "delivery": "idle" },             "text": "Spreek met koerier Yusuf op de Turnhoutsebaan." },
     { "condition": { "delivery": "met" },              "text": "Yusuf heeft pakjes voor je. Praat opnieuw met hem om ze op te halen." },
-    { "condition": { "delivery": "accepted" },         "text": "Bezoek alle drie bezorgadressen: nr.137, nr.170 en nr.284." },
+    { "condition": { "delivery": "accepted" },         "text": "Bezorg de pakjes van Yusuf: nr.137 (Indian Boutique), nr.170 (Patisserie Aladdin) en nr.284 (Borger Hub)." },
     { "condition": { "delivery": "all_delivered" },    "text": "Alle pakjes bezorgd! Ga terug naar Yusuf voor je beloning." },
     { "condition": { "fabric": "idle" },               "text": "Ga naar Patisserie Aladdin en spreek met Fatima." },
     { "condition": { "fabric": "met" },                "text": "Fatima heeft stof nodig van Mevr. Baert bij Indian Boutique nr.137." },

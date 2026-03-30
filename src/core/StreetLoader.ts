@@ -116,6 +116,7 @@ export interface NavTargetDef {
   done?:       boolean;
   x:           number;
   label:       string;
+  subState?:   string[];   // additional stateIs() path that must also be true
 }
 
 export interface HintTextDef {
