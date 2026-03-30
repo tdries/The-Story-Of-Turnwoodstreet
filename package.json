@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "start": "node server.js",
     "viz": "node scripts/generate-quest-viz.mjs && open _AI_CONTEXT_/quest_state_machine.html",
-    "portraits": "python3 Sprites/generate_portraits.py"
+    "portraits": "python3 Sprites/generate_portraits.py",
+    "test:quest": "vitest run tests/quest-simulation.test.ts --reporter=verbose"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "typescript": "^5.4.0",
     "vite": "^5.4.0",
-    "vite-plugin-top-level-await": "^1.4.4"
+    "vite-plugin-top-level-await": "^1.4.4",
+    "vitest": "^4.1.2"
   }
 }

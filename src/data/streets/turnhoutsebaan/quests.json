@@ -73,17 +73,8 @@
 
     {
       "id": "signatures",
-      "initial": "idle",
+      "initial": "collecting",
       "states": {
-        "idle": {
-          "on": {
-            "SIG_FATIMA": "collecting",
-            "SIG_OMAR":   "collecting",
-            "SIG_REZA":   "collecting",
-            "SIG_BAERT":  "collecting",
-            "SIG_AZIZ":   "collecting"
-          }
-        },
         "collecting": {
           "type": "parallel",
           "subRegions": [
@@ -216,11 +207,11 @@
     { "flag": "reza_quest_done",       "region": "oud",        "state": "completed" },
     { "flag": "q_oud_string_done",     "region": "oud",        "state": "completed" },
 
-    { "flag": "sig_fatima",  "region": "signatures", "orSubState": ["signatures","collecting","fatima_sig","done"] },
-    { "flag": "sig_omar",    "region": "signatures", "orSubState": ["signatures","collecting","omar_sig","done"] },
-    { "flag": "sig_reza",    "region": "signatures", "orSubState": ["signatures","collecting","reza_sig","done"] },
-    { "flag": "sig_baert",   "region": "signatures", "orSubState": ["signatures","collecting","baert_sig","done"] },
-    { "flag": "sig_aziz",    "region": "signatures", "orSubState": ["signatures","collecting","aziz_sig","done"] },
+    { "flag": "sig_fatima",  "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","fatima_sig","done"] },
+    { "flag": "sig_omar",    "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","omar_sig","done"] },
+    { "flag": "sig_reza",    "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","reza_sig","done"] },
+    { "flag": "sig_baert",   "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","baert_sig","done"] },
+    { "flag": "sig_aziz",    "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","aziz_sig","done"] },
     { "flag": "met_aziz",    "region": "signatures", "anyState": ["completed","rewarded"], "orSubState": ["signatures","collecting","aziz_sig","done"] },
     { "flag": "speculator_threatened", "region": "signatures", "anyState": ["completed","rewarded"] },
     { "flag": "q_signatures_done",     "region": "signatures", "anyState": ["completed","rewarded"] },
