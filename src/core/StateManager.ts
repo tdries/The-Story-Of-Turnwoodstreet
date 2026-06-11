@@ -85,6 +85,8 @@ interface SaveData {
   gameTimeMinutes: number;
   // Legacy questFlags kept so cloud saves don't break on transition
   questFlags?:     QuestFlags;
+  /** ISO timestamp of this save — used for newer-wins merge with cloud saves. */
+  savedAt?:        string;
 }
 
 // ── StateManager ──────────────────────────────────────────────────────────────
@@ -312,10 +314,11 @@ class StateManager {
         playtimeMs:      this.playtimeMs,
         gameTimeMinutes: this.gameTimeMinutes,
         questFlags:      this.extraFlags,
+        savedAt:         new Date().toISOString(),
       };
       localStorage.setItem('tbaan_save_v2', JSON.stringify(data));
     } catch { /* storage full */ }
-    this.saveToCloud();
+    void this.saveToCloud();
   }
 
   private async saveToCloud(): Promise<void> {
@@ -329,30 +332,68 @@ class StateManager {
         playtimeMs:      this.playtimeMs,
         gameTimeMinutes: this.gameTimeMinutes,
         questFlags:      this.extraFlags,
+        savedAt:         new Date().toISOString(),
       };
-      await supabase.from('save_states').upsert(
+      // supabase-js returns errors instead of throwing — check explicitly,
+      // a silently failing upsert means stale cloud saves and rollbacks.
+      const { error } = await supabase.from('save_states').upsert(
         { user_id: user.id, state: payload, saved_at: new Date().toISOString() },
         { onConflict: 'user_id' },
       );
-    } catch { /* network unavailable */ }
+      if (error) console.error('[StateManager] cloud save FAILED:', error.message);
+    } catch (e) {
+      console.error('[StateManager] cloud save unreachable:', (e as Error)?.message ?? e);
+    }
   }
 
+  /** Timestamp of the local save, 0 when absent/legacy (no savedAt field). */
+  private _localSavedAt(): number {
+    try {
+      const raw = localStorage.getItem('tbaan_save_v2');
+      if (!raw) return 0;
+      const t = Date.parse((JSON.parse(raw) as SaveData).savedAt ?? '');
+      return Number.isFinite(t) ? t : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  /**
+   * Pull the cloud save — but never roll back local progress: the cloud copy
+   * is only applied when it is strictly newer than the local save.
+   */
   async loadFromCloud(): Promise<void> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('save_states')
-        .select('state')
+        .select('state, saved_at')
         .eq('user_id', user.id)
         .single();
-      if (data?.state) {
-        const s = data.state as SaveData;
-        this._applyLoaded(s);
-        try { localStorage.setItem('tbaan_save_v2', JSON.stringify(s)); } catch { /* ok */ }
-        console.log('[StateManager] loaded from cloud');
+      if (error) {
+        if (error.code !== 'PGRST116') {   // PGRST116 = no row yet, expected for new players
+          console.error('[StateManager] cloud load failed:', error.message);
+        }
+        return;
       }
-    } catch { /* keep local state */ }
+      if (!data?.state) return;
+
+      const cloudAt = Date.parse(data.saved_at ?? '');
+      const localAt = this._localSavedAt();
+      if (!Number.isFinite(cloudAt) || cloudAt <= localAt) {
+        console.log('[StateManager] cloud save older than local — keeping local progress');
+        return;
+      }
+
+      const s = data.state as SaveData;
+      s.savedAt = data.saved_at;
+      this._applyLoaded(s);
+      try { localStorage.setItem('tbaan_save_v2', JSON.stringify(s)); } catch { /* ok */ }
+      console.log('[StateManager] loaded newer save from cloud');
+    } catch (e) {
+      console.error('[StateManager] cloud load unreachable:', (e as Error)?.message ?? e);
+    }
   }
 
   private _applyLoaded(s: SaveData): void {
@@ -439,6 +480,18 @@ class StateManager {
     this.extraFlags      = {};
     localStorage.removeItem('tbaan_save_v2');
     localStorage.removeItem('tbaan_save');
+    // Also clear the cloud slot — otherwise the next login would "restore"
+    // the abandoned run over the new game.
+    void this._deleteCloudSave();
+  }
+
+  private async _deleteCloudSave(): Promise<void> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { error } = await supabase.from('save_states').delete().eq('user_id', user.id);
+      if (error) console.error('[StateManager] cloud save delete failed:', error.message);
+    } catch { /* offline — stale cloud row will be overwritten by the next save */ }
   }
 
   // ── Navigation / hints ──────────────────────────────────────────────────────
