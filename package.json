@@ -9,7 +9,7 @@
     "start": "node server.js",
     "viz": "node scripts/generate-quest-viz.mjs && open _AI_CONTEXT_/quest_state_machine.html",
     "portraits": "python3 Sprites/generate_portraits.py",
-    "test:quest": "vitest run tests/quest-simulation.test.ts --reporter=verbose"
+    "test:quest": "vitest run tests/ --reporter=verbose"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",

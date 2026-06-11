@@ -3,6 +3,7 @@ import { SCENE, GAME_WIDTH, GAME_HEIGHT } from '@core/GameConfig';
 import { stateManager }  from '@core/StateManager';
 import { InputHandler }  from '@core/InputHandler';
 import { CombatSystem, BattleResult } from '@systems/CombatSystem';
+import { SkillSystem }   from '@systems/SkillSystem';
 import { localeManager } from '@i18n/LocaleManager';
 import { gameEventLogger } from '@core/GameEventLogger';
 import enemyData from '@data/enemies.json';
@@ -73,7 +74,8 @@ export class BattleScene extends Phaser.Scene {
       { id: 'player', name: player.name, hp: player.hp, maxHp: player.maxHp, atk: 5, def: 2, spd: 4 },
       { id: this.enemyId, name: enemy?.name ?? localeManager.t('enemy_default'),
         hp: enemy?.hp ?? 10, maxHp: enemy?.hp ?? 10,
-        atk: enemy?.atk ?? 3, def: enemy?.def ?? 1, spd: enemy?.spd ?? 3 },
+        atk: enemy?.atk ?? 3, def: enemy?.def ?? 1, spd: enemy?.spd ?? 3,
+        forceImmune: (enemy as { force_immune?: boolean })?.force_immune === true },
     );
 
     const enemyName = enemy?.name ?? localeManager.t('enemy_default');
@@ -158,7 +160,13 @@ export class BattleScene extends Phaser.Scene {
     if (action === 'run') { this.endBattle('escaped'); return; }
 
     this.menuLocked = true;
-    const result = this.combat.playerTurn(action === 'attack' ? 'attack' : 'skill');
+    // Samen Aan Tafel pacifies the Geest van '88 — the only way to truly win
+    const usePacify = action === 'skill'
+      && this.enemyId === 'vlok_geest'
+      && SkillSystem.has('samen_aan_tafel');
+    const result = usePacify
+      ? this.combat.pacify()
+      : this.combat.playerTurn(action === 'attack' ? 'attack' : 'skill');
     this.showMessage(result.message);
     this.refreshBars();
 
@@ -220,7 +228,10 @@ export class BattleScene extends Phaser.Scene {
       const msg = levelled ? localeManager.t('level_up') : `+${xpGain} XP`;
       this.showMessage(`${localeManager.t('victory')} ${msg}`);
     } else if (result === 'defeat') {
-      stateManager.setHP(1);
+      // Wake at half HP so the rematch is survivable; the overworld keeps the
+      // trigger suppressed until the player leaves its zone, so no battle loop.
+      const maxHp = stateManager.get().player.maxHp;
+      stateManager.setHP(Math.max(1, Math.floor(maxHp / 2)));
       gameEventLogger.logBattle(this.enemyId, result);
       this.showMessage(localeManager.t('defeat'));
     } else if (result === 'escaped') {

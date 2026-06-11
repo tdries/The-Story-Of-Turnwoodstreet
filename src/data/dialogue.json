@@ -57,8 +57,10 @@
       {
         "speaker": "Fatima",
         "text": "Indian Boutique! Nummer 137. Al open sinds 1985. Mevrouw Baert kent elke stof. Ze is Vlaams, maar haar beste klanten zijn Marokkaans — ze begrijpt ons.",
-        "flag": "knows_stunt_location",
-        "flagVal": true
+        "flag": "fabric_quest_accepted",
+        "flagVal": true,
+        "flag2": "knows_stunt_location",
+        "flagVal2": true
       }
     ]
   },
@@ -170,11 +172,17 @@
   "omar_bakker": {
     "npc": "omar",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_omar": false
+      }
+    },
     "lines": [
       {
         "speaker": "Omar",
-        "text": "Khobz? Msemmen? Vers van vanmorgen vijf uur! Mijn oven staat nooit stil op de Turnhoutsebaan."
+        "text": "Khobz? Msemmen? Vers van vanmorgen vijf uur! Mijn oven staat nooit stil op de Turnhoutsebaan.",
+        "flag": "met_omar",
+        "flagVal": true
       },
       {
         "speaker": "Omar",
@@ -309,11 +317,17 @@
   "stunt_baert": {
     "npc": "baert",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_baert": false
+      }
+    },
     "lines": [
       {
         "speaker": "Mevrouw Baert",
-        "text": "Stunt Solderie, al open sinds '85! Ik heb de hele wijk zien veranderen."
+        "text": "Stunt Solderie, al open sinds '85! Ik heb de hele wijk zien veranderen.",
+        "flag": "met_baert",
+        "flagVal": true
       },
       {
         "speaker": "Mevrouw Baert",
@@ -339,8 +353,10 @@
       {
         "speaker": "Mevrouw Baert",
         "text": "Voor Fatima's nicht! Natuurlijk. Ik had al een stukje apart gelegd — ik wist dat ze iemand zou sturen.",
-        "flag": "stunt_quest_active",
+        "flag": "fabric_quest_accepted",
         "flagVal": true,
+        "flag2": "stunt_quest_active",
+        "flagVal2": true,
         "item": "fabric_bolt"
       },
       {
@@ -408,7 +424,11 @@
   "reza_music": {
     "npc": "reza",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "oud_quest_accepted": false
+      }
+    },
     "lines": [
       {
         "speaker": "Reza",
@@ -632,13 +652,16 @@
     "priority": 100,
     "conditions": {
       "flags": {
-        "delivery_done": true
+        "delivery_done": true,
+        "yusuf_thanked": false
       }
     },
     "lines": [
       {
         "speaker": "Yusuf",
-        "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou."
+        "text": "Fiets is gerepareerd! Terug op de baan. Alle pakjes op tijd — dankzij jou.",
+        "flag": "yusuf_thanked",
+        "flagVal": true
       },
       {
         "speaker": "Yusuf",
@@ -697,11 +720,17 @@
   "reuzenpoort_legend": {
     "npc": "aziz",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "aziz_legend_seen": false
+      }
+    },
     "lines": [
       {
         "speaker": "Gids",
-        "text": "De Reuzenpoort dateert uit 1713. Ze bouwden hem voor het Reuzenhuis — lang voor het stadhuis hier stond."
+        "text": "De Reuzenpoort dateert uit 1713. Ze bouwden hem voor het Reuzenhuis — lang voor het stadhuis hier stond.",
+        "flag": "aziz_legend_seen",
+        "flagVal": true
       },
       {
         "speaker": "Gids",
@@ -716,7 +745,11 @@
   "hamza_marbles": {
     "npc": "hamza",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_hamza": false
+      }
+    },
     "lines": [
       {
         "speaker": "Hamza",
@@ -749,10 +782,29 @@
       }
     ]
   },
-  "district_mayor": {
+  "el_osri_busy": {
     "npc": "el_osri",
     "priority": 0,
     "conditions": {},
+    "lines": [
+      {
+        "speaker": "El Osri",
+        "text": "Goedemiddag — Mariam El Osri, districtsvoorzitter. Ik zit midden in de voorbereiding van iets groots voor deze straat."
+      },
+      {
+        "speaker": "El Osri",
+        "text": "Ga eerst eens langs De Roma (nr.286). Wie de ziel van de Turnhoutsebaan niet kent, kan haar niet helpen. Daarna praten we."
+      }
+    ]
+  },
+  "district_mayor": {
+    "npc": "el_osri",
+    "priority": 10,
+    "conditions": {
+      "flags": {
+        "visited_de_roma": true
+      }
+    },
     "lines": [
       {
         "speaker": "El Osri",
@@ -828,11 +880,17 @@
   "tine_intro": {
     "npc": "tine",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_tine": false
+      }
+    },
     "lines": [
       {
         "speaker": "Tine",
-        "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts."
+        "text": "Dag! Ik run de nachtwinkel hier al vijftien jaar. Je hebt altijd iemand nodig om drie uur 's nachts.",
+        "flag": "met_tine",
+        "flagVal": true
       },
       {
         "speaker": "Tine",
@@ -1037,9 +1095,18 @@
       {
         "speaker": "Frituur de Tram",
         "text": "Vijf munten voor de aanbetaling. Daarna regelen wij de rest.",
-        "flag": "frituur_faction_convinced",
-        "flagVal": true,
-        "coins": -5
+        "choice": [
+          {
+            "label": "Hier is de aanbetaling.",
+            "flag": "frituur_faction_convinced",
+            "flagVal": true,
+            "coins": -5,
+            "next": "frituur_agreed"
+          },
+          {
+            "label": "Ik kom straks terug."
+          }
+        ]
       }
     ]
   },
@@ -1094,13 +1161,13 @@
     "lines": [
       {
         "speaker": "Geest van '88",
-        "text": "Borgerokko! Dit is onze wijk! Jullie horen hier niet!"
+        "text": "Borgerokko! Dit is onze wijk! Jullie horen hier niet!",
+        "flag": "geest_encountered",
+        "flagVal": true
       },
       {
         "speaker": "Turnhoutsebaan",
-        "text": "De Geest van '88 kan niet worden verslagen door kracht. Gebruik 'Samen Aan Tafel' in de strijd.",
-        "flag": "geest_encountered",
-        "flagVal": true
+        "text": "De Geest van '88 kan niet worden verslagen door kracht. Gebruik 'Samen Aan Tafel' in de strijd."
       }
     ]
   },
@@ -1390,7 +1457,11 @@
   "lotte_intro": {
     "npc": "lotte",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_lotte": false
+      }
+    },
     "lines": [
       {
         "speaker": "Lotte",
@@ -1413,7 +1484,9 @@
     "priority": 20,
     "conditions": {
       "flags": {
-        "delivery_done": true
+        "delivery_done": true,
+        "met_lotte": true,
+        "knows_speculator": false
       }
     },
     "lines": [
@@ -1447,7 +1520,11 @@
   "bram_intro": {
     "npc": "bram",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_bram": false
+      }
+    },
     "lines": [
       {
         "speaker": "Bram",
@@ -1492,7 +1569,8 @@
       "flags": {
         "met_mayor": true,
         "baert_faction_convinced": true,
-        "has_permit_doc": true
+        "has_permit_doc": true,
+        "bram_acknowledged": false
       }
     },
     "lines": [
@@ -1524,7 +1602,8 @@
     "priority": 0,
     "conditions": {
       "flags": {
-        "met_mayor": true
+        "met_mayor": true,
+        "met_nathalie": false
       }
     },
     "lines": [
@@ -1550,13 +1629,16 @@
     "conditions": {
       "flags": {
         "met_mayor": true,
-        "met_nathalie": true
+        "met_nathalie": true,
+        "nathalie_context_seen": false
       }
     },
     "lines": [
       {
         "speaker": "Nathalie",
-        "text": "De zeven facties zijn geen toeval. Elk vertegenwoordigt een stuk van de wijk dat niet vanzelf samenkomt."
+        "text": "De zeven facties zijn geen toeval. Elk vertegenwoordigt een stuk van de wijk dat niet vanzelf samenkomt.",
+        "flag": "nathalie_context_seen",
+        "flagVal": true
       },
       {
         "speaker": "Nathalie",
@@ -1582,7 +1664,11 @@
   "kevin_intro": {
     "npc": "kevin",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_kevin": false
+      }
+    },
     "lines": [
       {
         "speaker": "Kevin",
@@ -1602,7 +1688,8 @@
     "conditions": {
       "flags": {
         "met_mayor": true,
-        "school_faction_convinced": false
+        "school_faction_convinced": false,
+        "has_permit_doc": true
       }
     },
     "lines": [
@@ -1632,7 +1719,11 @@
   "van_den_berg_intro": {
     "npc": "van_den_berg",
     "priority": 0,
-    "conditions": {},
+    "conditions": {
+      "flags": {
+        "met_van_den_berg": false
+      }
+    },
     "lines": [
       {
         "speaker": "Mevrouw Van den Berg",
@@ -1679,7 +1770,8 @@
     "priority": 65,
     "conditions": {
       "flags": {
-        "sig_aziz": true
+        "sig_aziz": true,
+        "van_den_berg_thanked": false
       }
     },
     "lines": [
@@ -1757,6 +1849,43 @@
       {
         "speaker": "Omar",
         "text": "Mijn moeder deed dit tijdens Ramadan voor de hele straat in Nador. Nu doe ik het hier. De cirkel sluit zich."
+      }
+    ]
+  },
+  "finale_tafel": {
+    "priority": 0,
+    "conditions": {},
+    "lines": [
+      {
+        "speaker": "Turnhoutsebaan",
+        "text": "De Grote 2km Tafel. Zeven facties, 7000 stoelen, één straat. Iedereen is gekomen.",
+        "flag": "finale_seen",
+        "flagVal": true
+      },
+      {
+        "speaker": "El Osri",
+        "text": "Kijk om je heen. De Marokkaanse vereniging naast Bar Leon. De moskee naast de school. Easter en Iftar aan dezelfde tafel."
+      },
+      {
+        "speaker": "Omar",
+        "text": "350 kilogram deeg, zoals beloofd! Khobz, msemmen, pistolets — niemand heeft honger op de Turnhoutsebaan."
+      },
+      {
+        "speaker": "Reza",
+        "text": "*speelt oud* Dit nummer heet 'Turnhoutsebaan'. Voor iedereen die hier zit. Voor iedereen die nog komt."
+      },
+      {
+        "speaker": "Fatima",
+        "text": "Mijn vader kwam hier in '72 met niets. Vandaag zit zijn straat aan één tafel. Dankzij jou."
+      },
+      {
+        "speaker": "El Osri",
+        "text": "Dit is geen einde — dit is hoe de Turnhoutsebaan verder gaat. Bedankt. Voor alles.",
+        "item": "smoske"
+      },
+      {
+        "speaker": "Turnhoutsebaan",
+        "text": "EINDE — Samen Aan Tafel. De straat is van iedereen die haar liefheeft."
       }
     ]
   },

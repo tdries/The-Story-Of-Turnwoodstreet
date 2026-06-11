@@ -89,6 +89,7 @@ export class DialogueSystem {
     if (!node || node.lines.length === 0) return;
 
     gameEventLogger.logDialogue(dialogueId);
+    this.flushPendingItem();
     this.dialogueId     = dialogueId;
     this.lines          = node.lines;
     this.lineIdx        = 0;
@@ -100,6 +101,7 @@ export class DialogueSystem {
 
   /** Show arbitrary text via the dialogue UI without triggering quest checks or auto-save. */
   openRaw(speaker: string, ...lines: string[]): void {
+    this.flushPendingItem();
     this.dialogueId     = '';
     this.lines          = lines.map(text => ({ speaker, text }));
     this.lineIdx        = 0;
@@ -235,9 +237,19 @@ export class DialogueSystem {
     }
   }
 
+  /** Grant any deferred item immediately (no animation). Prevents the item
+   *  from being lost when a dialogue is cancelled mid-line, or leaking into
+   *  the next dialogue's advance(). */
+  private flushPendingItem(): void {
+    if (!this._pendingItem) return;
+    stateManager.addItem(this._pendingItem.itemId);
+    this._pendingItem = null;
+  }
+
   private close(): void {
     this._isOpen        = false;
     this.pendingChoices = null;
+    this.flushPendingItem();
     this.box.hide();
     if (!this._isRaw) {
       QuestSystem.checkAll();

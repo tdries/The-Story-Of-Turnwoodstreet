@@ -191,6 +191,15 @@ const GLOBAL_EVENTS = {
       name: ({ event }: { event: { type: string; name?: string } }) => event.name ?? 'Speler',
     }),
   },
+  ADD_SKILL: {
+    actions: assign({
+      skills: ({ context, event }: { context: GameContext; event: { type: string; skillId?: string } }) => {
+        const id = event.skillId ?? '';
+        if (!id || context.skills.includes(id)) return context.skills;
+        return [...context.skills, id];
+      },
+    }),
+  },
 };
 
 // ── Main machine builder ──────────────────────────────────────────────────────
@@ -292,6 +301,11 @@ export function buildGetNavTarget(def: QuestsDef): (snapshot: AnySnapshot) => { 
     const v = snapshot.value;
 
     for (const t of targets) {
+      if (t.allFactionsComplete) {
+        if (factionCount(v) >= 7) return { x: t.x, label: t.label };
+        continue;
+      }
+
       if (t.faction !== undefined) {
         const isDone = factionIs(v, t.faction);
         if (t.done === false && !isDone) return { x: t.x, label: t.label };
@@ -338,8 +352,12 @@ export function buildGetHintText(def: QuestsDef): (snapshot: AnySnapshot) => str
         const allMatch = Object.entries(h.condition).every(([region, state]) =>
           regionIs(v, region, state),
         );
-        if (allMatch) return h.text;
+        if (!allMatch) continue;
       }
+      if (h.faction !== undefined) {
+        if (factionIs(v, h.faction) !== (h.done ?? true)) continue;
+      }
+      if (h.condition || h.faction !== undefined) return h.text;
     }
     return 'Verken de Turnhoutsebaan en spreek met de bewoners.';
   };

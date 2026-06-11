@@ -22,16 +22,15 @@ export class InventorySystem {
     const def = ITEMS[itemId];
     if (!def || !def.effect) return null;
 
-    const state = stateManager.get();
     const removed = stateManager.removeItem(itemId);
     if (!removed) return null;
 
     const { stat, amount } = def.effect;
     if (stat === 'hp') {
-      const before = state.player.hp;
-      state.player.hp = Math.min(state.player.maxHp, state.player.hp + amount);
-      const gained = state.player.hp - before;
-      return `${def.name} geeft +${gained} HP terug.`;
+      const player = stateManager.get().player;
+      const newHp  = Math.min(player.maxHp, player.hp + amount);
+      stateManager.setHP(newHp);
+      return `${def.name} geeft +${newHp - player.hp} HP terug.`;
     }
 
     return `${def.name} gebruikt.`;

@@ -45,11 +45,17 @@ export class OverworldScene extends Phaser.Scene {
   /** Per-NPC visibility conditions: checked each update, toggles NPC.setVisible(). */
   private npcVisibility: Array<{ npc: NPC; showFlag?: string; hideFlag?: string }> = [];
   private locationTriggers: LocationTrigger[] = [];
+  /** Trigger that already fired while the player is still inside its zone.
+   *  Suppressed until the player walks out, so an aborted dialogue or a lost
+   *  battle cannot re-fire the same trigger every frame (soft-lock loop). */
+  private armedTrigger: LocationTrigger | null = null;
   private playtimeSyncTimer = 0;
 
   // World entities (non-NPC interactable sprites)
   private geestSprite: Phaser.GameObjects.Sprite | null = null;
   private geestLabel:  Phaser.GameObjects.Text   | null = null;
+  private finaleGfx:   Phaser.GameObjects.Graphics | null = null;
+  private finaleLabel: Phaser.GameObjects.Text     | null = null;
 
   // Street side switching
   private currentSide: 'north' | 'south' = 'south';  // south = even = most shops face south
@@ -162,15 +168,21 @@ export class OverworldScene extends Phaser.Scene {
     this.lastPlayerX = this.player.sprite.x;
 
     // ── Location triggers (one-shot walk-in events) ────────────────────────
+    if (this.armedTrigger &&
+        (px < this.armedTrigger.x || px > this.armedTrigger.x + this.armedTrigger.width)) {
+      this.armedTrigger = null;
+    }
     if (!this.dialogueSystem.isOpen) {
       const flags = stateManager.get().questFlags;
       for (const trigger of this.locationTriggers) {
+        if (trigger === this.armedTrigger) continue;
         if (flags[trigger.onceFlag]) continue;
         if (trigger.requiredFlags) {
           const allMet = Object.entries(trigger.requiredFlags).every(([k, v]) => (flags[k] ?? false) === v);
           if (!allMet) continue;
         }
         if (px >= trigger.x && px <= trigger.x + trigger.width) {
+          this.armedTrigger = trigger;
           if (trigger.type === 'battle') {
             this.scene.pause(SCENE.OVERWORLD);
             // Bulldozer gets a cinematic intro before the battle
@@ -214,6 +226,7 @@ export class OverworldScene extends Phaser.Scene {
     for (const npc of this.npcs) npc.setNearby(npc === nearbyNpc);
 
     this.updateGeestVisibility();
+    this.updateFinaleTafel();
   }
 
   // ── World ─────────────────────────────────────────────────────────────────
@@ -586,6 +599,67 @@ export class OverworldScene extends Phaser.Scene {
       yoyo:     true,
       repeat:   -1,
     });
+
+    this.buildFinaleTafel();
+  }
+
+  /** The Grote 2km Tafel in zone 5 — appears once all 7 factions are convinced. */
+  private buildFinaleTafel(): void {
+    const H      = OverworldScene.WORLD_H;
+    const startX = 4620;
+    const endX   = Math.min(OverworldScene.WORLD_W - 40, 5720);
+    const tableY = Math.floor(H * 0.62);
+
+    const g = this.add.graphics().setDepth(tableY);
+
+    // Tablecloth — alternating warm panels along the whole zone
+    const panelColors = [0xE63946, 0xF0EAD6, 0x2A9D8F, 0xF4A261];
+    let i = 0;
+    for (let x = startX; x < endX; x += 64) {
+      g.fillStyle(panelColors[i % panelColors.length]);
+      g.fillRect(x, tableY - 6, Math.min(64, endX - x), 10);
+      i++;
+    }
+    // Table edge + legs
+    g.fillStyle(0x6B4226);
+    g.fillRect(startX, tableY + 4, endX - startX, 2);
+    for (let x = startX + 10; x < endX; x += 48) {
+      g.fillRect(x, tableY + 6, 3, 8);
+    }
+    // Plates and food dots on top
+    for (let x = startX + 16; x < endX; x += 32) {
+      g.fillStyle(0xFFFFFF);
+      g.fillCircle(x, tableY - 2, 3);
+      g.fillStyle((x / 32) % 2 === 0 ? 0xE76F51 : 0x52C41A);
+      g.fillCircle(x, tableY - 2, 1.5);
+    }
+    // Bunting above the street
+    for (let x = startX; x < endX; x += 24) {
+      g.fillStyle(panelColors[(x / 24) % 4 | 0]);
+      g.fillTriangle(x, 40, x + 8, 40, x + 4, 50);
+    }
+
+    const label = this.add.text((startX + endX) / 2, 28, 'DE GROTE 2KM TAFEL', {
+      fontFamily: '"Press Start 2P"',
+      fontSize:   '8px',
+      color:      '#FFD700',
+      stroke:     '#0A0A12',
+      strokeThickness: 4,
+    }).setOrigin(0.5).setDepth(500);
+
+    this.finaleGfx   = g;
+    this.finaleLabel = label;
+    g.setVisible(false);
+    label.setVisible(false);
+  }
+
+  private updateFinaleTafel(): void {
+    if (!this.finaleGfx) return;
+    const visible = QuestSystem.getFactionCount() >= 7;
+    if (this.finaleGfx.visible !== visible) {
+      this.finaleGfx.setVisible(visible);
+      this.finaleLabel!.setVisible(visible);
+    }
   }
 
   private updateGeestVisibility(): void {
@@ -1201,7 +1275,17 @@ export class OverworldScene extends Phaser.Scene {
       this.syncMusic();
     };
     this.dialogueSystem.onItemReceived = (itemId, speaker, done) => {
-      this.scene.launch(SCENE.ITEM_RECEIVE, { itemId, speakerName: speaker, onDone: done });
+      // Pause the overworld so the dismissal keypress cannot move the player,
+      // fire triggers, or open another NPC dialogue mid-animation.
+      this.scene.pause(SCENE.OVERWORLD);
+      this.scene.launch(SCENE.ITEM_RECEIVE, {
+        itemId,
+        speakerName: speaker,
+        onDone: () => {
+          this.scene.resume(SCENE.OVERWORLD);
+          done();
+        },
+      });
     };
 
     // Navigation arrow — bottom-centre, fixed to camera
@@ -1292,7 +1376,11 @@ export class OverworldScene extends Phaser.Scene {
     const candidates = Object.entries(DIALOGUES)
       .filter(([_, node]) => node.npc === npc.id && this.conditionsMet(node.conditions, flags))
       .sort((a, b) => b[1].priority - a[1].priority);
-    return candidates[0]?.[0] ?? npc.dialogueId;
+    if (candidates.length === 0) return npc.dialogueId;
+    // Equal-priority candidates (e.g. idle chatter pools) rotate randomly
+    const topPriority = candidates[0][1].priority;
+    const top = candidates.filter(([, node]) => node.priority === topPriority);
+    return top[Math.floor(Math.random() * top.length)][0];
   }
 
   /**

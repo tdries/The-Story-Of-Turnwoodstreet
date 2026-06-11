@@ -114,6 +114,7 @@ export interface NavTargetDef {
   condition?:  Record<string, string>;
   faction?:    string;
   done?:       boolean;
+  allFactionsComplete?: boolean;
   x:           number;
   label:       string;
   subState?:   string[];   // additional stateIs() path that must also be true
@@ -121,6 +122,8 @@ export interface NavTargetDef {
 
 export interface HintTextDef {
   condition?:         Record<string, string>;
+  faction?:           string;
+  done?:              boolean;
   allFactionsComplete?: boolean;
   text:               string;
 }

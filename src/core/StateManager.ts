@@ -21,6 +21,23 @@ const _getNavTarget = buildGetNavTarget(_questsDef);
 const _getHintText  = buildGetHintText(_questsDef);
 const _flagToEvent  = buildFlagToEvent(_questsDef);
 
+/** Flags owned by the machine (event-mapped or bridge-derived). Persisted
+ *  extraFlags must never contain these — a stale copy would permanently
+ *  shadow the machine-derived value in getFlags(). */
+const _machineOwnedFlags = new Set<string>([
+  ...Object.keys(_questsDef.flagToEvent),
+  ..._questsDef.flagBridge.map(r => r.flag),
+]);
+
+function sanitizeExtraFlags(flags: QuestFlags | undefined): QuestFlags {
+  if (!flags) return {};
+  const clean: QuestFlags = {};
+  for (const [k, v] of Object.entries(flags)) {
+    if (!_machineOwnedFlags.has(k)) clean[k] = v;
+  }
+  return clean;
+}
+
 /** GameEvent union — keep generic so any event string works via cast. */
 type GameEvent = { type: string; [key: string]: unknown };
 
@@ -92,7 +109,7 @@ class StateManager {
       this.spawnPoint      = persisted.spawnPoint;
       this.playtimeMs      = persisted.playtimeMs;
       this.gameTimeMinutes = persisted.gameTimeMinutes;
-      this.extraFlags      = persisted.questFlags ?? {};
+      this.extraFlags      = sanitizeExtraFlags(persisted.questFlags);
     } else {
       this.actor = createActor(_machine);
     }
@@ -244,6 +261,16 @@ class StateManager {
     return true;
   }
 
+  // ── Skills ──────────────────────────────────────────────────────────────────
+
+  hasSkill(skillId: string): boolean {
+    return this._ctx().skills.includes(skillId);
+  }
+
+  addSkill(skillId: string): void {
+    this.actor.send({ type: 'ADD_SKILL', skillId });
+  }
+
   // ── Coins / XP ─────────────────────────────────────────────────────────────
 
   setHP(hp: number): void {
@@ -338,7 +365,7 @@ class StateManager {
     this.spawnPoint      = s.spawnPoint      ?? { x: 64, y: 146 };
     this.playtimeMs      = s.playtimeMs      ?? 0;
     this.gameTimeMinutes = s.gameTimeMinutes ?? 9 * 60;
-    this.extraFlags      = s.questFlags      ?? {};
+    this.extraFlags      = sanitizeExtraFlags(s.questFlags);
   }
 
   private _loadPersistedSnapshot(): {

@@ -113,13 +113,19 @@ export class QuestSystem {
    *   - Any item pickup
    *
    * Returns list of newly completed quest IDs.
+   *
+   * Completion is tracked via a dedicated `q_rewarded_<id>` marker rather
+   * than the quest's completionFlag: most completionFlags are bridge-derived
+   * from the same machine state as the final objective, so they read true in
+   * the very tick the objectives are met — which used to make this loop skip
+   * the quest and never grant its rewards.
    */
   static checkAll(): string[] {
     const newlyDone: string[] = [];
 
     for (const q of Object.values(QUESTS)) {
-      if (QuestSystem.isComplete(q.id)) continue;
-      if (!QuestSystem.isActive(q.id)) continue;
+      if (stateManager.getFlag(`q_rewarded_${q.id}`) === true) continue;
+      if (!q.requiredFlags.every(f => stateManager.getFlag(f) === true)) continue;
 
       const allObjectivesMet = q.objectives.every(
         obj => stateManager.getFlag(obj.checkFlag) === obj.checkValue
@@ -160,14 +166,16 @@ export class QuestSystem {
       stateManager.gainXP(q.reward.xp);
     }
 
-    // Apply skill unlocks
+    // Apply skill unlocks — added to machine context so battles can use them
     for (const skillId of q.reward.skills) {
+      stateManager.addSkill(skillId);
       stateManager.setFlag(`skill_unlocked_${skillId}`, true);
     }
 
     // Mark quest complete — completionFlag is in flagBridge so it also
     // updates machine state where applicable
     stateManager.setFlag(q.completionFlag, true);
+    stateManager.setFlag(`q_rewarded_${q.id}`, true);
 
     // Persist
     stateManager.save();

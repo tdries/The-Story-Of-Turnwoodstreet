@@ -209,10 +209,23 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
       { text: "Great! Fries with Andalous for 7000 people. That'll go down in history." },
     ],
     frituur_cost: [
-      { text: "Five coins for the deposit. Then we'll sort the rest." },
+      { text: "Five coins for the deposit. Then we'll sort the rest.", choices: ["Here's the deposit.", "I'll come back later."] },
     ],
     borgerhub_faction: [
       { text: "An artists' collective at Samen Aan Tafel? If De Roma is also joining — absolutely. Art and community belong together." },
+    ],
+    el_osri_busy: [
+      { text: "Good afternoon — Mariam El Osri, district chair. I'm in the middle of preparing something big for this street." },
+      { text: "First go visit De Roma (no.286). Whoever doesn't know the soul of Turnhoutsebaan can't help her. Then we'll talk." },
+    ],
+    finale_tafel: [
+      { text: "The Great 2km Table. Seven factions, 7000 seats, one street. Everyone has come." },
+      { text: "Look around you. The Moroccan association next to Bar Leon. The mosque next to the school. Easter and Iftar at the same table." },
+      { text: "350 kilograms of dough, as promised! Khobz, msemmen, pistolets — nobody goes hungry on Turnhoutsebaan." },
+      { text: "*plays oud* This song is called 'Turnhoutsebaan'. For everyone sitting here. For everyone still to come." },
+      { text: "My father came here in '72 with nothing. Today his street sits at one table. Thanks to you." },
+      { text: "This is not an ending — this is how Turnhoutsebaan carries on. Thank you. For everything." },
+      { text: "THE END — Samen Aan Tafel. The street belongs to everyone who loves her." },
     ],
     geest_van_88_encounter: [
       { text: "Borgerokko! This is our neighbourhood! You don't belong here!" },
@@ -424,10 +437,23 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
       { text: "Super! Frites sauce Andalouse pour 7000 personnes. Ça entrera dans l'histoire." },
     ],
     frituur_cost: [
-      { text: "Cinq pièces pour l'acompte. Ensuite on s'occupe du reste." },
+      { text: "Cinq pièces pour l'acompte. Ensuite on s'occupe du reste.", choices: ["Voici l'acompte.", "Je reviendrai plus tard."] },
     ],
     borgerhub_faction: [
       { text: "Un collectif d'artistes au Samen Aan Tafel? Si De Roma participe aussi — absolument. Art et communauté vont ensemble." },
+    ],
+    el_osri_busy: [
+      { text: "Bonjour — Mariam El Osri, présidente de district. Je prépare quelque chose de grand pour cette rue." },
+      { text: "Va d'abord voir De Roma (n°286). Qui ne connaît pas l'âme de la Turnhoutsebaan ne peut pas l'aider. Ensuite on parlera." },
+    ],
+    finale_tafel: [
+      { text: "La Grande Table de 2 km. Sept factions, 7000 chaises, une rue. Tout le monde est venu." },
+      { text: "Regarde autour de toi. L'association marocaine à côté du Bar Leon. La mosquée à côté de l'école. Pâques et l'Iftar à la même table." },
+      { text: "350 kilos de pâte, comme promis! Khobz, msemmen, pistolets — personne n'a faim sur la Turnhoutsebaan." },
+      { text: "*joue de l'oud* Ce morceau s'appelle 'Turnhoutsebaan'. Pour tous ceux qui sont assis ici. Pour tous ceux qui viendront." },
+      { text: "Mon père est arrivé ici en '72 sans rien. Aujourd'hui sa rue est assise à une seule table. Grâce à toi." },
+      { text: "Ce n'est pas une fin — c'est ainsi que la Turnhoutsebaan continue. Merci. Pour tout." },
+      { text: "FIN — Samen Aan Tafel. La rue appartient à tous ceux qui l'aiment." },
     ],
     geest_van_88_encounter: [
       { text: "Borgerokko! C'est notre quartier! Vous n'avez rien à faire ici!" },
@@ -639,10 +665,23 @@ export const DIALOGUE_LOCALES: Record<'en' | 'fr' | 'ar', DialogueLocale> = {
       { text: "رائع! بطاطس بصلصة الأندلس لـ 7000 شخص. سيُسجَّل ذلك في التاريخ." },
     ],
     frituur_cost: [
-      { text: "خمسة عملات للدفعة الأولى. ثم سنرتب الباقي." },
+      { text: "خمسة عملات للدفعة الأولى. ثم سنرتب الباقي.", choices: ["هذه هي الدفعة الأولى.", "سأعود لاحقًا."] },
     ],
     borgerhub_faction: [
       { text: "مجموعة فنية في ساميناان تافيل؟ إذا شارك De Roma أيضًا — بالتأكيد. الفن والمجتمع ينتميان معًا." },
+    ],
+    el_osri_busy: [
+      { text: "مساء الخير — مريم العسري، رئيسة المقاطعة. أنا في وسط التحضير لشيء كبير لهذا الشارع." },
+      { text: "اذهب أولًا إلى De Roma (رقم 286). من لا يعرف روح Turnhoutsebaan لا يستطيع مساعدتها. ثم نتحدث." },
+    ],
+    finale_tafel: [
+      { text: "الطاولة الكبرى بطول 2 كم. سبع فصائل، 7000 كرسي، شارع واحد. الجميع أتى." },
+      { text: "انظر حولك. الجمعية المغربية بجانب بار ليون. المسجد بجانب المدرسة. عيد الفصح والإفطار على نفس الطاولة." },
+      { text: "350 كيلوغرامًا من العجين، كما وعدت! خبز، مسمن، بيستوليه — لا أحد يجوع في Turnhoutsebaan." },
+      { text: "*يعزف العود* هذه الأغنية اسمها 'Turnhoutsebaan'. لكل من يجلس هنا. ولكل من سيأتي." },
+      { text: "جاء أبي إلى هنا عام '72 بلا شيء. اليوم يجلس شارعه على طاولة واحدة. بفضلك." },
+      { text: "هذه ليست نهاية — هكذا تستمر Turnhoutsebaan. شكرًا. على كل شيء." },
+      { text: "النهاية — ساميناان تافيل. الشارع ملك لكل من يحبه." },
     ],
     geest_van_88_encounter: [
       { text: "بورغيروكو! هذا حينا! أنتم لا تنتمون هنا!" },

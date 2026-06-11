@@ -21,7 +21,7 @@
     ],
     "reward": {
       "flags":  { "delivery_done": true },
-      "items":  ["tram_ticket"],
+      "items":  [],
       "coins":  10,
       "xp":     20,
       "skills": []
@@ -39,7 +39,7 @@
       {
         "id":          "get_fabric",
         "description": "Haal de stof op bij Mevrouw Baert (Indian Boutique, nr.137)",
-        "checkFlag":   "stunt_quest_active",
+        "checkFlag":   "fabric_obtained",
         "checkValue":  true
       },
       {
@@ -69,7 +69,7 @@
       {
         "id":          "buy_flour",
         "description": "Koop bloem bij Budget Market (nr.326)",
-        "checkFlag":   "has_flour",
+        "checkFlag":   "flour_obtained",
         "checkValue":  true
       },
       {
@@ -81,7 +81,7 @@
     ],
     "reward": {
       "flags":  { "omar_flour_done": true, "knows_samen_tafel": true },
-      "items":  ["harira", "baklava"],
+      "items":  [],
       "coins":  5,
       "xp":     25,
       "skills": ["samen_aan_tafel"]
@@ -99,7 +99,7 @@
       {
         "id":          "find_string",
         "description": "Vind een oud-snaar bij Aziz (nr.239)",
-        "checkFlag":   "has_oud_string_item",
+        "checkFlag":   "oud_string_found",
         "checkValue":  true
       },
       {
@@ -189,7 +189,7 @@
     ],
     "reward": {
       "flags":  { "has_permit_doc": true },
-      "items":  ["permit_doc"],
+      "items":  [],
       "coins":  30,
       "xp":     80,
       "skills": ["bureaucratic_shield"]
@@ -243,7 +243,7 @@
     ],
     "reward": {
       "flags":  { "act4_started": true },
-      "items":  ["samen_flyer"],
+      "items":  [],
       "coins":  0,
       "xp":     20,
       "skills": []
@@ -411,7 +411,7 @@
     ],
     "reward": {
       "flags":  { "samen_tafel_faction_7": true },
-      "items":  ["friet"],
+      "items":  [],
       "coins":  5,
       "xp":     30,
       "skills": []

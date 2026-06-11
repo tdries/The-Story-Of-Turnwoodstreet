@@ -370,12 +370,13 @@ describe('Quest Simulation — Turnhoutsebaan', () => {
   // ── Act 3b: De Roma + Bulldozer ───────────────────────────────────────────
 
   describe('Act 3b — De Roma and Bulldozer', () => {
-    // Nav tests require delivery + fabric + oud done (earlier navTargets take priority)
+    // Nav tests require delivery + fabric + oud + flour done (earlier navTargets take priority)
     function setupThroughOudDone() {
       ['met_yusuf','delivery_accepted','delivered_137','delivered_170',
        'delivered_284','delivery_done','met_fatima','fabric_quest_accepted',
        'stunt_quest_active','stunt_quest_done',
-       'oud_quest_accepted','has_oud_string_item','reza_quest_done'].forEach(f => setFlag(actor, f));
+       'oud_quest_accepted','has_oud_string_item','reza_quest_done',
+       'flour_quest_accepted','has_flour','omar_flour_done'].forEach(f => setFlag(actor, f));
     }
 
     it('bulldozer battle blocked before visiting De Roma', () => {

@@ -29,8 +29,14 @@
  */
 
 import { supabase } from '@core/SupabaseClient';
-import type { GameContext } from '@systems/GameMachine';
-import { getNavTarget, getHintText } from '@systems/GameMachine';
+import { StreetLoader } from '@core/StreetLoader';
+import type { GameContext } from '@systems/StreetMachine';
+import { buildGetNavTarget, buildGetHintText } from '@systems/StreetMachine';
+
+// Nav/hint resolvers built from the SAME street data the game runs on, so
+// logged telemetry matches what the player actually saw.
+const getNavTarget = buildGetNavTarget(StreetLoader.quests);
+const getHintText  = buildGetHintText(StreetLoader.quests);
 
 type AnySnapshot = { value: unknown; context: GameContext };
 
