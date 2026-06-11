@@ -282,9 +282,26 @@ async function sendThankYouEmail(email, issueNumber, category, message) {
 
 app.use(express.static(path.join(__dirname, 'dist'), {
   setHeaders(res) {
-    res.set('X-Frame-Options',        'SAMEORIGIN');
-    res.set('X-Content-Type-Options', 'nosniff');
-    res.set('Referrer-Policy',        'no-referrer');
+    res.set('X-Frame-Options',           'SAMEORIGIN');
+    res.set('X-Content-Type-Options',    'nosniff');
+    res.set('Referrer-Policy',           'no-referrer');
+    res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    res.set('Permissions-Policy',        'camera=(), microphone=(), geolocation=()');
+    // 'unsafe-inline' for scripts is required: index.html ships 9 inline
+    // <script> blocks (login shell, scoreboard, radio, touch controls) and
+    // static serving has no nonce mechanism. Fonts, GitHub issues fetch and
+    // the Radio Minerva stream are explicit origins the game actually uses.
+    res.set('Content-Security-Policy', [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' https://*.googleusercontent.com https://*.supabase.co data:",
+      "connect-src 'self' https://*.supabase.co https://api.github.com",
+      "media-src 'self' https://streaming.radiominerva.be",
+      "object-src 'none'",
+      "base-uri 'self'",
+    ].join('; '));
   },
 }));
 
@@ -297,9 +314,10 @@ app.get('/api/news', async (req, res) => {
 app.post('/api/github-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   // ── 1. Verify signature ───────────────────────────────────────────────────
   const secret = process.env.GITHUB_WEBHOOK_SECRET;
+  if (!secret) return res.status(500).send('Webhook secret not configured');
   const sig    = req.headers['x-hub-signature-256'];
-  if (secret) {
-    if (!sig) return res.status(401).send('Missing signature');
+  if (!sig) return res.status(401).send('Missing signature');
+  {
     const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(req.body).digest('hex');
     try {
       if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))) {

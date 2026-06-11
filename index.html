@@ -1639,6 +1639,7 @@
     loginMusic.volume = 0.35;
     loginMusic.play().catch(() => {});   // autoplay may be blocked; fine
 
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
     function fmtTime(secs) {
       if (secs < 60)  return secs + 's';
       const m = Math.floor(secs / 60);
@@ -1731,14 +1732,14 @@
           return `<div class="score-item ${has ? 'collected' : 'missing'}" style="background-position:${bx}px 0" title="${id.replace(/_/g,' ')}"></div>`;
         }).join('');
         return `
-        <div class="score-row${r.user_id === currentUserId ? ' me' : ''}">
+        <div class="score-row">
           <span class="score-rank ${cls}">${sym}</span>
-          ${r.avatar_url
-            ? `<img class="score-avatar" src="${r.avatar_url}" alt="" />`
+          ${r.avatar_url && /^https:\/\//.test(r.avatar_url)
+            ? `<img class="score-avatar" src="${esc(r.avatar_url)}" alt="" />`
             : `<div class="score-avatar"></div>`}
           <div class="score-body">
             <div class="score-top">
-              <span class="score-name">${r.display_name ?? _playerDefault}</span>
+              <span class="score-name">${esc(r.display_name ?? _playerDefault)}</span>
               <span class="score-time">⏱ ${fmtTime(r.playtime_seconds ?? 0)}</span>
             </div>
             <div class="score-meta">
@@ -1997,8 +1998,8 @@
         }
         entries.innerHTML = rows.map(r => `
           <div class="gb-entry">
-            <div class="gb-name">${r.display_name || 'Anoniem'}</div>
-            <div class="gb-msg">${r.message.replace(/</g,'&lt;')}</div>
+            <div class="gb-name">${esc(r.display_name || 'Anoniem')}</div>
+            <div class="gb-msg">${esc(r.message)}</div>
           </div>`).join('');
       }
 
