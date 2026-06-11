@@ -1425,7 +1425,9 @@
 
   <script>
     // ── Subscription opt-in ────────────────────────────────────────────────
-    const subOverlay = document.getElementById('sub-overlay');
+    // NOTE: #sub-overlay markup sits near the end of <body>, after this
+    // script — element lookups must run lazily / after DOMContentLoaded.
+    function getSubOverlay() { return document.getElementById('sub-overlay'); }
 
     async function maybeShowSubscription() {
       // Client-side guard: only show once per browser session
@@ -1460,20 +1462,23 @@
       if (yesBtn) yesBtn.textContent = tx.yes;
       if (noBtn)  noBtn.textContent  = tx.no;
 
-      subOverlay.classList.add('open');
+      getSubOverlay()?.classList.add('open');
       if (window.__setGameKeyboard) window.__setGameKeyboard(false);
     }
 
     async function handleSub(optin) {
-      subOverlay.classList.remove('open');
+      getSubOverlay()?.classList.remove('open');
       if (window.__setGameKeyboard) window.__setGameKeyboard(true);
       if (window.__saveSubscription) await window.__saveSubscription(optin);
     }
 
-    document.getElementById('btn-sub-yes').addEventListener('click', () => handleSub(true));
-    document.getElementById('btn-sub-no').addEventListener('click',  () => handleSub(false));
-    subOverlay.addEventListener('click', (e) => {
-      if (e.target === subOverlay) handleSub(false);
+    document.addEventListener('DOMContentLoaded', () => {
+      const subOverlay = getSubOverlay();
+      document.getElementById('btn-sub-yes')?.addEventListener('click', () => handleSub(true));
+      document.getElementById('btn-sub-no')?.addEventListener('click',  () => handleSub(false));
+      subOverlay?.addEventListener('click', (e) => {
+        if (e.target === subOverlay) handleSub(false);
+      });
     });
   </script>
 

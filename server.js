@@ -296,7 +296,8 @@ app.use(express.static(path.join(__dirname, 'dist'), {
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' https://*.googleusercontent.com https://*.supabase.co data:",
+      // blob: is required — Phaser loads all textures via blob: object URLs
+      "img-src 'self' blob: data: https://*.googleusercontent.com https://*.supabase.co",
       "connect-src 'self' https://*.supabase.co https://api.github.com",
       "media-src 'self' https://streaming.radiominerva.be",
       "object-src 'none'",
